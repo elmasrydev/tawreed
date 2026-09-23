@@ -1,3 +1,4 @@
+!/public/
 *.log
 .DS_Store
 .env
