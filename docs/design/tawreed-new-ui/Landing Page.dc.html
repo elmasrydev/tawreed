@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<script src="image-slot.js"></script>
+<script src="i18n.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#fff;font-family:Inter,'IBM Plex Sans Arabic',system-ui,sans-serif;color:#111827;font-feature-settings:'tnum' 1;-webkit-font-smoothing:antialiased}
+a{color:#1565A0;text-decoration:none}a:hover{color:#0B3D5C}
+</style>
+</helmet>
+<div ref="{{ rootRef }}" style="width:1280px;margin:0 auto;background:#fff;display:flex;flex-direction:column">
+
+<!-- NAV -->
+<nav data-screen-label="Nav" style="position:sticky;top:0;z-index:20;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid #E5E7EB;height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 64px">
+  <img src="assets/logo-full-color.png" alt="TawreedHub" style="height:40px;width:auto">
+  <div style="display:flex;align-items:center;gap:32px;font-size:14px;font-weight:500;color:#374151;white-space:nowrap"><a href="#how" style="color:#374151">How it works</a><a href="#buyers" style="color:#374151">For Buyers</a><a href="#suppliers" style="color:#374151">For Suppliers</a><a href="#pricing" style="color:#374151">Pricing</a><a href="#faq" style="color:#374151">FAQ</a></div>
+  <div style="display:flex;align-items:center;gap:12px;flex-shrink:0">
+    <div style="display:inline-flex;border:1px solid #D1D5DB;border-radius:6px;overflow:hidden;height:32px;font-size:12px;font-weight:600"><span data-no-i18n="" onClick="{{ setEn }}" style="padding:0 10px;display:flex;align-items:center;cursor:pointer;background:{{ enBg }};color:{{ enFg }}">EN</span><span data-no-i18n="" onClick="{{ setAr }}" style="padding:0 10px;display:flex;align-items:center;cursor:pointer;font-family:'IBM Plex Sans Arabic',sans-serif;background:{{ arBg }};color:{{ arFg }}">عربي</span></div>
+    <a href="Auth Onboarding.dc.html" style="font-size:14px;font-weight:600;color:#0B3D5C;padding:0 8px;white-space:nowrap">Log in</a>
+    <a href="#cta" style="height:40px;padding:0 18px;border-radius:8px;background:#F28C28;color:#fff;font-size:14px;font-weight:600;display:inline-flex;align-items:center;white-space:nowrap" style-hover="background:#E07A15;color:#fff">Get started</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section data-screen-label="Hero" style="padding:80px 64px 72px;display:grid;grid-template-columns:1.05fr 1fr;gap:56px;align-items:center">
+  <div style="display:flex;flex-direction:column;gap:28px">
+    <span style="display:inline-flex;align-items:center;gap:8px;align-self:flex-start;height:30px;padding:0 12px;border-radius:999px;background:#E3F0FA;color:#0B3D5C;font-size:13px;font-weight:600"><img src="assets/icon-egypt-pin.png" alt="" style="height:18px">B2B RFQ marketplace for Egypt</span>
+    <h1 style="margin:0;font-size:56px;line-height:1.08;font-weight:800;letter-spacing:-1.5px;color:#0B3D5C;text-wrap:balance">Buy in bulk. Get real quotes. <span style="color:#1565A0">Stay anonymous.</span></h1>
+    <p style="margin:0;font-size:19px;line-height:1.55;color:#4B5563;max-width:520px;text-wrap:pretty">Post what your business needs. Verified Egyptian suppliers compete with real quotes. Pick the best one and open a chat — your identity stays hidden until you decide.</p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <a href="#buyers" style="height:52px;padding:0 26px;border-radius:10px;background:#F28C28;color:#fff;font-size:16px;font-weight:600;display:inline-flex;align-items:center;gap:10px" style-hover="background:#E07A15;color:#fff"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>I'm a Buyer — Post an RFQ</a>
+      <a href="#suppliers" style="height:52px;padding:0 26px;border-radius:10px;background:#fff;border:1.5px solid #0B3D5C;color:#0B3D5C;font-size:16px;font-weight:600;display:inline-flex;align-items:center;gap:10px" style-hover="background:#E3F0FA"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 9.4 7.5 4.21"></path><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>I'm a Supplier</a>
+    </div>
+    <div style="display:flex;align-items:center;gap:20px;font-size:13px;color:#6B7280"><span style="display:inline-flex;align-items:center;gap:6px"><img src="assets/icon-verified-shield.png" alt="" style="height:16px">Verified suppliers only</span><span style="display:inline-flex;align-items:center;gap:6px"><img src="assets/icon-zero-commission.png" alt="" style="height:16px">Zero commission</span><span>Free for buyers</span></div>
+  </div>
+  <div style="position:relative">
+    <img src="assets/hero-kitchen-delivery.png" alt="Cairo restaurant kitchen receiving a fresh-produce delivery" style="display:block;width:100%;aspect-ratio:5/4;object-fit:cover;object-position:center 40%;border-radius:16px;box-shadow:0 24px 64px rgba(11,61,92,.18)">
+    <div style="position:absolute;bottom:-22px;inset-inline-start:-22px;background:#fff;border:1px solid #E5E7EB;border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;width:300px;box-shadow:0 12px 32px rgba(17,24,39,.12)">
+      <div style="display:flex;justify-content:space-between;align-items:center"><span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:#4B5563"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>Hotel · Sharm El Sheikh</span><span style="font-size:11px;font-weight:600;color:#9A3412;background:#FFF7ED;border:1px solid #FED7AA;padding:2px 7px;border-radius:5px">Closes in 2d 4h</span></div>
+      <div style="font-size: 14px; font-weight: 600; line-height: 1.3; width: 310px; height: 17px">Frozen chicken breast, boneless — 2,000 kg</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#6B7280"><span><b style="color:#111827;font-variant-numeric:tabular-nums">4 quotes</b> · lowest EGP 142.50/kg</span><span style="color:#17A398;font-weight:700;display:inline-flex;align-items:center;gap:4px"><img src="assets/icon-verified-shield.png" alt="" style="height:12px">Verified</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST STRIP -->
+<section data-screen-label="Trust strip" style="margin:40px 64px 0;background:#0B3D5C;border-radius:16px;padding:28px 40px;display:grid;grid-template-columns:repeat(4,1fr);gap:24px;color:#fff">
+  <div style="display:flex;align-items:center;gap:16px"><span style="width:48px;height:48px;border-radius:12px;background:rgba(255,255,255,.12);display:grid;place-items:center;flex-shrink:0;color:#fff"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg></span><div><div style="font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1">1,240+</div><div style="font-size:13px;opacity:.8;margin-top:4px">Verified suppliers</div></div></div>
+  <div style="display:flex;align-items:center;gap:16px"><span style="width:48px;height:48px;border-radius:12px;background:rgba(255,255,255,.12);display:grid;place-items:center;flex-shrink:0;color:#fff"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 2 3.1-.4 1.2 2.9 2.8 1.4-.6 3.1 1.6 2.7-2.3 2.1.1 3.2-3 .9-1.7 2.7-3-1.1-3 1.1-1.7-2.7-3-.9.1-3.2L2 13.7l1.6-2.7-.6-3.1 2.8-1.4 1.2-2.9 3.1.4z" fill="#F28C28"></path><text x="12" y="15.6" text-anchor="middle" font-family="Inter,sans-serif" font-weight="800" font-size="9.5" fill="#fff">0%</text></svg></span><div><div style="font-size:26px;font-weight:700;line-height:1;color:#F28C28">0%</div><div style="font-size:13px;margin-top:4px;color:#F28C28">Commission on every deal</div></div></div>
+  <div style="display:flex;align-items:center;gap:16px"><span style="width:48px;height:48px;border-radius:12px;background:rgba(255,255,255,.12);display:grid;place-items:center;flex-shrink:0;color:#fff"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg></span><div><div style="font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1">EGP 48M</div><div style="font-size:13px;opacity:.8;margin-top:4px">Quoted this quarter</div></div></div>
+  <div style="display:flex;align-items:center;gap:16px"><span style="width:48px;height:48px;border-radius:12px;background:rgba(255,255,255,.12);display:grid;place-items:center;flex-shrink:0;color:#fff"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span><div><div style="font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1">27</div><div style="font-size:13px;opacity:.8;margin-top:4px">Governorates covered</div></div></div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how" data-screen-label="How it works" style="padding:96px 64px 80px;display:flex;flex-direction:column;gap:48px">
+  <div style="text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center"><span style="font-size:13px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:#1565A0">How it works</span><h2 style="margin:0;font-size:40px;font-weight:700;letter-spacing:-1px;color:#0B3D5C">From request to deal in four steps</h2></div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;align-items:stretch">
+    <sc-for list="{{ steps }}" as="st" hint-placeholder-count="4">
+      <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px;padding:32px 20px;border-radius:16px;background:#F9FAFB;border:1px solid #E5E7EB;position:relative">
+        <span style="position:absolute;top:16px;inset-inline-start:16px;width:28px;height:28px;border-radius:50%;background:#0B3D5C;color:#fff;font-size:13px;font-weight:700;display:grid;place-items:center">{{ st.n }}</span>
+        <div style="height:104px;width:100%;display:grid;place-items:center;margin-top:8px"><img src="{{ st.icon }}" alt="" style="max-height:96px;max-width:150px;width:auto;height:auto"></div>
+        <div style="font-size:19px;font-weight:700;color:#0B3D5C;line-height:1.25;text-wrap:balance;min-height:48px;display:flex;align-items:center;justify-content:center">{{ st.title }}</div>
+        <div style="font-size:14px;color:#6B7280;line-height:1.5">{{ st.text }}</div>
+      </div>
+    </sc-for>
+  </div>
+</section>
+
+<!-- BENEFITS SPLIT -->
+<section id="buyers" data-screen-label="Benefits" style="padding:0 64px 96px;display:grid;grid-template-columns:1fr 1fr;gap:24px">
+  <div style="border-radius:20px;background:#E3F0FA;padding:44px;display:flex;flex-direction:column;gap:24px">
+    <span style="width:64px;height:64px;border-radius:16px;background:#fff;display:grid;place-items:center;align-self:flex-start;color:#0B3D5C"><img src="assets/icon-pick-quote.png" alt="" style="width:40px;height:40px;object-fit:contain"></span>
+    <div><span style="font-size:13px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:#1565A0">For buyers</span><h3 style="margin:8px 0 0;font-size:30px;font-weight:700;letter-spacing:-0.6px;color:#0B3D5C;line-height:1.15">One request. Every serious supplier. No cold calls.</h3></div>
+    <ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:14px;font-size:15px;color:#374151;line-height:1.5">
+      <li style="display:flex;gap:12px"><span style="width:22px;height:22px;border-radius:50%;background:#17A398;display:grid;place-items:center;flex-shrink:0;margin-top:1px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span><span><b>Privacy by default.</b> Suppliers see your business type and area — never your name, phone or address until you choose one.</span></li>
+      <li style="display:flex;gap:12px"><span style="width:22px;height:22px;border-radius:50%;background:#17A398;display:grid;place-items:center;flex-shrink:0;margin-top:1px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span><span><b>Real competition.</b> Compare unit price, VAT, delivery and payment terms side by side.</span></li>
+      <li style="display:flex;gap:12px"><span style="width:22px;height:22px;border-radius:50%;background:#17A398;display:grid;place-items:center;flex-shrink:0;margin-top:1px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span><span><b>One place for procurement.</b> RFQs, quotes, chat and reviews — recurring orders included.</span></li>
+    </ul>
+    <a href="#cta" style="align-self:flex-start;height:46px;padding:0 22px;border-radius:10px;background:#0B3D5C;color:#fff;font-size:15px;font-weight:600;display:inline-flex;align-items:center" style-hover="background:#1565A0;color:#fff">Post your first RFQ — free</a>
+  </div>
+  <div id="suppliers" style="border-radius:20px;background:#0B3D5C;padding:44px;display:flex;flex-direction:column;gap:24px;color:#fff">
+    <span style="width:64px;height:64px;border-radius:16px;background:rgba(255,255,255,.12);display:grid;place-items:center;align-self:flex-start;color:#fff"><svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M3 21V10l5 3v-3l5 3V8l5-2.5V4h3v17z" fill="#fff"></path><rect x="6.5" y="15" width="3" height="3" rx=".6" fill="#17A398"></rect><rect x="12.5" y="15" width="3" height="3" rx=".6" fill="#17A398"></rect><rect x="2" y="20" width="20" height="2" rx="1" fill="#17A398"></rect></svg></span>
+    <div><span style="font-size:13px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:#F28C28">For suppliers</span><h3 style="margin:8px 0 0;font-size:30px;font-weight:700;letter-spacing:-0.6px;line-height:1.15">Real demand in your area. Keep 100% of the deal.</h3></div>
+    <ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:14px;font-size:15px;line-height:1.5;opacity:.95">
+      <li style="display:flex;gap:12px"><span style="width:22px;height:22px;border-radius:50%;background:#F28C28;display:grid;place-items:center;flex-shrink:0;margin-top:1px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span><span><b>Qualified leads only.</b> Every RFQ is a real business with a quantity, a deadline and a delivery area.</span></li>
+      <li style="display:flex;gap:12px"><span style="width:22px;height:22px;border-radius:50%;background:#F28C28;display:grid;place-items:center;flex-shrink:0;margin-top:1px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span><span><b>No listing fees, no commission.</b> One flat subscription from 150 EGP — quote as much as you want.</span></li>
+      <li style="display:flex;gap:12px"><span style="width:22px;height:22px;border-radius:50%;background:#F28C28;display:grid;place-items:center;flex-shrink:0;margin-top:1px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span><span><b>The Verified badge sells for you.</b> Documents checked once; buyers trust you from the first quote.</span></li>
+    </ul>
+    <a href="#pricing" style="align-self:flex-start;height:46px;padding:0 22px;border-radius:10px;background:#F28C28;color:#fff;font-size:15px;font-weight:600;display:inline-flex;align-items:center" style-hover="background:#E07A15;color:#fff">Become a verified supplier</a>
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<section data-screen-label="Categories" style="padding:0 64px 96px;display:flex;flex-direction:column;gap:32px">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end"><div><span style="font-size:13px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:#1565A0">Categories</span><h2 style="margin:8px 0 0;font-size:34px;font-weight:700;letter-spacing:-0.8px;color:#0B3D5C">Whatever your business buys in bulk</h2></div><a href="#" style="font-size:14px;font-weight:600">All 42 categories →</a></div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
+    <sc-for list="{{ cats }}" as="c" hint-placeholder-count="8">
+      <a href="#cta" style="display:flex;flex-direction:column;border-radius:14px;overflow:hidden;border:1px solid #E5E7EB;background:#fff;color:#111827" style-hover="border-color:#1565A0;box-shadow:0 8px 24px rgba(11,61,92,.1)">
+        <div data-no-i18n style="aspect-ratio:16/9;position:relative"><image-slot id="{{ c.slotId }}" shape="rect" placeholder="{{ c.photo }}" style="position:absolute;inset:0;width:100%;height:100%"></image-slot></div>
+        <div style="padding:14px 16px;display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:15px;font-weight:600">{{ c.name }}</div><div style="font-size:12px;color:#6B7280;font-variant-numeric:tabular-nums">{{ c.count }} open RFQs</div></div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+      </a>
+    </sc-for>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" data-screen-label="Pricing" style="background:#F9FAFB;border-top:1px solid #E5E7EB;border-bottom:1px solid #E5E7EB;padding:96px 64px;display:flex;flex-direction:column;gap:44px;align-items:center">
+  <div style="text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center;max-width:640px"><img src="assets/icon-subscription.png" alt="" style="height:64px"><span style="font-size:13px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:#1565A0">Supplier pricing</span><h2 style="margin:0;font-size:40px;font-weight:700;letter-spacing:-1px;color:#0B3D5C">One flat subscription. Zero commission.</h2><p style="margin:0;font-size:17px;color:#4B5563;line-height:1.5">Buyers use TawreedHub for free. Suppliers pay a simple subscription — unlimited quotes, unlimited wins, nothing taken from your deals.</p></div>
+  <div style="display:grid;grid-template-columns:repeat(3,300px);gap:20px;align-items:stretch">
+    <sc-for list="{{ plans }}" as="p" hint-placeholder-count="3">
+      <div style="background:#fff;border-radius:16px;padding:32px 28px;display:flex;flex-direction:column;gap:18px;position:relative;border:{{ p.border }};box-shadow:{{ p.shadow }}">
+        <sc-if value="{{ p.badge }}"><span style="position:absolute;top:-13px;inset-inline-start:24px;background:#17A398;color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:5px;letter-spacing:.5px">{{ p.badge }}</span></sc-if>
+        <div><div style="font-size:14px;font-weight:600;color:#6B7280">{{ p.name }}</div><div style="display:flex;align-items:baseline;gap:6px;margin-top:6px"><span style="font-size:40px;font-weight:800;color:#0B3D5C;letter-spacing:-1px;font-variant-numeric:tabular-nums">{{ p.price }}</span><span style="font-size:15px;color:#6B7280">EGP</span></div><div style="font-size:13px;color:#9CA3AF;font-variant-numeric:tabular-nums">{{ p.per }}</div></div>
+        <ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px;font-size:14px;color:#374151"><li style="display:flex;gap:8px;align-items:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#17A398" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>Unlimited quotes</li><li style="display:flex;gap:8px;align-items:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#17A398" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>Verified Supplier badge</li><li style="display:flex;gap:8px;align-items:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#17A398" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>RFQ alerts in your areas</li><li style="display:flex;gap:8px;align-items:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#17A398" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>{{ p.extra }}</li></ul>
+        <a href="#cta" style="margin-top:auto;height:46px;border-radius:10px;font-size:15px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;background:{{ p.btnBg }};color:{{ p.btnFg }};border:{{ p.btnBorder }}">{{ p.cta }}</a>
+      </div>
+    </sc-for>
+  </div>
+  <div style="font-size:13px;color:#6B7280;display:flex;align-items:center;gap:8px"><img src="assets/icon-zero-commission.png" alt="" style="height:18px">New suppliers get a 7-day free trial after verification. Pay by card, mobile wallet or Fawry.</div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section data-screen-label="Testimonials" style="padding:96px 64px;display:flex;flex-direction:column;gap:40px">
+  <div style="text-align:center"><span style="font-size:13px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:#1565A0">From the platform</span><h2 style="margin:8px 0 0;font-size:34px;font-weight:700;letter-spacing:-0.8px;color:#0B3D5C">Buyers and suppliers across Egypt</h2></div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">
+    <sc-for list="{{ quotes }}" as="q" hint-placeholder-count="3">
+      <div style="border:1px solid #E5E7EB;border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:18px;background:#fff"><span style="color:#F28C28;font-size:16px;letter-spacing:2px">★★★★★</span><p style="margin:0;font-size:16px;line-height:1.6;color:#111827;flex:1">“{{ q.text }}”</p><div style="display:flex;align-items:center;gap:12px;border-top:1px solid #F3F4F6;padding-top:16px"><div style="width:40px;height:40px;border-radius:10px;display:grid;place-items:center;font-weight:700;font-size:13px;background:{{ q.bg }};color:{{ q.fg }}">{{ q.initials }}</div><div><div style="font-size:14px;font-weight:600">{{ q.who }}</div><div style="font-size:12px;color:#6B7280">{{ q.where }}</div></div></div></div>
+    </sc-for>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" data-screen-label="FAQ" style="padding:0 64px 96px;display:grid;grid-template-columns:380px 1fr;gap:64px;align-items:start">
+  <div style="display:flex;flex-direction:column;gap:14px;position:sticky;top:96px"><span style="font-size:13px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:#1565A0">FAQ</span><h2 style="margin:0;font-size:34px;font-weight:700;letter-spacing:-0.8px;color:#0B3D5C;line-height:1.15">Questions we hear most</h2><p style="margin:0;font-size:15px;color:#6B7280;line-height:1.5">Still unsure? <a href="#">Talk to our team</a> — we reply in Arabic or English within a business day.</p></div>
+  <div style="display:flex;flex-direction:column;border-top:1px solid #E5E7EB">
+    <sc-for list="{{ faqs }}" as="f" hint-placeholder-count="5">
+      <div style="border-bottom:1px solid #E5E7EB">
+        <div onClick="{{ f.toggle }}" style="display:flex;justify-content:space-between;align-items:center;gap:20px;padding:22px 0;cursor:pointer"><span style="font-size:17px;font-weight:600;color:#0B3D5C">{{ f.q }}</span><span style="width:28px;height:28px;border-radius:50%;border:1px solid #D1D5DB;display:grid;place-items:center;flex-shrink:0;color:#0B3D5C;transform:{{ f.rot }};transition:transform .2s"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span></div>
+        <sc-if value="{{ f.open }}"><p style="margin:0;padding:0 48px 22px 0;font-size:15px;line-height:1.65;color:#4B5563">{{ f.a }}</p></sc-if>
+      </div>
+    </sc-for>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section id="cta" data-screen-label="Final CTA" style="margin:0 64px;border-radius:24px;background:#0B3D5C;padding:64px;display:grid;grid-template-columns:auto 1fr auto;gap:40px;align-items:center;color:#fff">
+  <span style="width:104px;height:104px;border-radius:24px;background:rgba(255,255,255,.12);display:grid;place-items:center;color:#fff;flex-shrink:0"><svg width="56" height="56" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="#fff"></path><rect x="7" y="8" width="10" height="1.8" rx=".9" fill="#17A398"></rect><rect x="7" y="12" width="6" height="1.8" rx=".9" fill="#17A398"></rect><circle cx="17.5" cy="16.5" r="4.5" fill="#17A398"></circle><path d="M15.4 16.5l1.5 1.5 2.7-2.9" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+  <div style="display:flex;flex-direction:column;gap:16px"><h2 style="margin:0;font-size:34px;font-weight:700;letter-spacing:-0.8px;line-height:1.15;max-width:480px">Your next bulk order starts with one request.</h2><p style="margin:0;font-size:16px;opacity:.85;line-height:1.5;max-width:460px">Takes 3 minutes. Verified suppliers in your area start quoting within hours.</p></div>
+  <div style="display:flex;flex-direction:column;gap:12px;justify-content:center;align-items:stretch">
+    <a href="#" style="height:52px;padding:0 28px;border-radius:10px;background:#F28C28;color:#fff;font-size:16px;font-weight:600;display:inline-flex;align-items:center;min-width:280px;justify-content:center" style-hover="background:#E07A15;color:#fff">Post your first request</a>
+    <a href="#" style="height:52px;padding:0 28px;border-radius:10px;background:transparent;border:1.5px solid rgba(255,255,255,.5);color:#fff;font-size:16px;font-weight:600;display:inline-flex;align-items:center;min-width:280px;justify-content:center" style-hover="background:rgba(255,255,255,.1);color:#fff">Become a supplier</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer data-screen-label="Footer" style="padding:64px 64px 40px;display:flex;flex-direction:column;gap:40px">
+  <div style="display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr 1fr;gap:32px">
+    <div style="display:flex;flex-direction:column;gap:14px"><img src="assets/logo-full-color.png" alt="TawreedHub" style="height:36px;width:auto;align-self:flex-start"><p style="margin:0;font-size:14px;color:#6B7280;line-height:1.55;max-width:300px">The anonymous B2B RFQ marketplace built for Egyptian businesses. Cairo · Alexandria · everywhere in between.</p><div style="display:inline-flex;border:1px solid #D1D5DB;border-radius:6px;overflow:hidden;height:32px;font-size:12px;font-weight:600;align-self:flex-start"><span data-no-i18n="" onClick="{{ setEn }}" style="padding:0 10px;display:flex;align-items:center;cursor:pointer;background:{{ enBg }};color:{{ enFg }}">EN</span><span data-no-i18n="" onClick="{{ setAr }}" style="padding:0 10px;display:flex;align-items:center;cursor:pointer;font-family:'IBM Plex Sans Arabic',sans-serif;background:{{ arBg }};color:{{ arFg }}">عربي</span></div></div>
+    <div style="display:flex;flex-direction:column;gap:10px;font-size:14px"><span style="font-weight:700;color:#0B3D5C;margin-bottom:4px">Product</span><a href="#how" style="color:#4B5563">How it works</a><a href="#buyers" style="color:#4B5563">For buyers</a><a href="#suppliers" style="color:#4B5563">For suppliers</a><a href="#pricing" style="color:#4B5563">Pricing</a></div>
+    <div style="display:flex;flex-direction:column;gap:10px;font-size:14px"><span style="font-weight:700;color:#0B3D5C;margin-bottom:4px">Company</span><a href="#" style="color:#4B5563">About</a><a href="#" style="color:#4B5563">Careers</a><a href="#" style="color:#4B5563">Blog</a><a href="#" style="color:#4B5563">Contact</a></div>
+    <div style="display:flex;flex-direction:column;gap:10px;font-size:14px"><span style="font-weight:700;color:#0B3D5C;margin-bottom:4px">Legal</span><a href="#" style="color:#4B5563">Terms of service</a><a href="#" style="color:#4B5563">Privacy policy</a><a href="#" style="color:#4B5563">Supplier rules</a><a href="#" style="color:#4B5563">Refund policy</a></div>
+    <div style="display:flex;flex-direction:column;gap:10px;font-size:14px"><span style="font-weight:700;color:#0B3D5C;margin-bottom:4px">Contact</span><a href="#" style="color:#4B5563">hello@tawreedhub.com</a><a href="#" dir="ltr" style="color:#4B5563;font-variant-numeric:tabular-nums">+20 2 2735 0000</a><span style="color:#4B5563">Sun–Thu, 9am–6pm</span><div style="display:flex;gap:8px;margin-top:4px"><span style="width:32px;height:32px;border-radius:8px;border:1px solid #D1D5DB;display:grid;place-items:center;font-size:11px;font-weight:700;color:#0B3D5C">in</span><span style="width:32px;height:32px;border-radius:8px;border:1px solid #D1D5DB;display:grid;place-items:center;font-size:11px;font-weight:700;color:#0B3D5C">f</span><span style="width:32px;height:32px;border-radius:8px;border:1px solid #D1D5DB;display:grid;place-items:center;font-size:11px;font-weight:700;color:#0B3D5C">X</span></div></div>
+  </div>
+  <div style="border-top:1px solid #E5E7EB;padding-top:20px;display:flex;justify-content:space-between;font-size:13px;color:#9CA3AF"><span>© 2026 TawreedHub. All rights reserved.</span><span style="display:inline-flex;align-items:center;gap:6px"><img src="assets/icon-egypt-pin.png" alt="" style="height:14px">Made in Egypt</span></div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;highlightPlan&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;trial&quot;,&quot;month&quot;,&quot;year&quot;],&quot;default&quot;:&quot;year&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pricing&quot;},&quot;lang&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;en&quot;,&quot;ar&quot;],&quot;default&quot;:&quot;en&quot;,&quot;tsType&quot;:&quot;'en'|'ar'&quot;,&quot;section&quot;:&quot;Preview&quot;}}">
+const DICT = {
+  'For Buyers': 'للمشترين', 'For Suppliers': 'للمورّدين', 'For buyers': 'للمشترين', 'For suppliers': 'للمورّدين',
+  'B2B RFQ marketplace for Egypt': 'منصة طلبات عروض الأسعار بين الشركات في مصر',
+  'Buy in bulk. Get real quotes.': 'اشترِ بالجملة. احصل على عروض حقيقية.', 'Stay anonymous.': 'وابقَ مجهولًا.',
+  'Post what your business needs. Verified Egyptian suppliers compete with real quotes. Pick the best one and open a chat — your identity stays hidden until you decide.': 'انشر ما يحتاجه عملك. مورّدون مصريون موثّقون يتنافسون بعروض أسعار حقيقية. اختر الأفضل وابدأ المحادثة — هويتك تبقى مخفية حتى تقرر.',
+  "I'm a Buyer — Post an RFQ": 'أنا مشتري — انشر طلب عرض سعر', "I'm a Supplier": 'أنا مورّد',
+  'Verified suppliers only': 'مورّدون موثّقون فقط', 'Free for buyers': 'مجاني للمشترين',
+  'Hotel · Sharm El Sheikh': 'فندق · شرم الشيخ', 'Closes in 2d 4h': 'يُغلق خلال يومين و4 ساعات', 'Frozen chicken breast, boneless — 2,000 kg': 'صدور دجاج مجمدة بدون عظم — 2,000 كجم', '4 quotes': '4 عروض', '· lowest EGP 142.50/kg': '· الأقل 142.50 ج.م/كجم',
+  'Commission on every deal': 'عمولة على كل صفقة', 'EGP 48M': '48 مليون ج.م', 'Quoted this quarter': 'قيمة العروض هذا الربع', 'Governorates covered': 'محافظة مغطاة',
+  'From request to deal in four steps': 'من الطلب إلى الصفقة في أربع خطوات',
+  'Buyers post anonymous RFQs': 'المشترون ينشرون طلبات مجهولة الهوية', 'Share product, quantity, delivery area and deadline. Your company stays hidden.': 'حدّد المنتج والكمية ومنطقة التسليم والموعد. تبقى شركتك مخفية.',
+  'Verified suppliers submit quotes': 'المورّدون الموثّقون يقدّمون عروضهم', 'Only document-checked suppliers in your area can see and quote your request.': 'فقط المورّدون المفحوصة مستنداتهم في منطقتك يمكنهم رؤية طلبك والتسعير عليه.',
+  'Buyer picks a quote': 'المشتري يختار عرضًا', 'Compare price, VAT, delivery and terms side by side. Shortlist, then select.': 'قارن السعر والضريبة والتسليم والشروط جنبًا إلى جنب. رشّح ثم اختر.',
+  'Open chat with the supplier': 'افتح محادثة مع المورّد', 'Selection unlocks a private chat. Negotiate details, request a sample, close the deal.': 'الاختيار يفتح محادثة خاصة. فاوض على التفاصيل، اطلب عينة، وأتمّ الصفقة.',
+  'One request. Every serious supplier. No cold calls.': 'طلب واحد. كل مورّد جاد. بلا مكالمات عشوائية.',
+  'Privacy by default.': 'الخصوصية افتراضيًا.', 'Suppliers see your business type and area — never your name, phone or address until you choose one.': 'يرى المورّدون نوع نشاطك ومنطقتك فقط — لا اسمك ولا هاتفك ولا عنوانك حتى تختار أحدهم.',
+  'Real competition.': 'تنافس حقيقي.', 'Compare unit price, VAT, delivery and payment terms side by side.': 'قارن سعر الوحدة والضريبة والتسليم وشروط الدفع جنبًا إلى جنب.',
+  'One place for procurement.': 'مكان واحد للمشتريات.', 'RFQs, quotes, chat and reviews — recurring orders included.': 'الطلبات والعروض والمحادثات والتقييمات — والطلبات المتكررة أيضًا.',
+  'Post your first RFQ — free': 'انشر أول طلب لك — مجانًا',
+  'Real demand in your area. Keep 100% of the deal.': 'طلب حقيقي في منطقتك. واحتفظ بـ100% من الصفقة.',
+  'Qualified leads only.': 'عملاء جادّون فقط.', 'Every RFQ is a real business with a quantity, a deadline and a delivery area.': 'كل طلب هو نشاط تجاري حقيقي بكمية وموعد ومنطقة تسليم.',
+  'No listing fees, no commission.': 'بلا رسوم إدراج، بلا عمولة.', 'One flat subscription from 150 EGP — quote as much as you want.': 'اشتراك ثابت يبدأ من 150 ج.م — قدّم عروضًا بلا حدود.',
+  'The Verified badge sells for you.': 'شارة «موثّق» تبيع نيابةً عنك.', 'Documents checked once; buyers trust you from the first quote.': 'تُفحص المستندات مرة واحدة؛ ويثق بك المشترون من أول عرض.',
+  'Become a verified supplier': 'كن مورّدًا موثّقًا',
+  'Whatever your business buys in bulk': 'كل ما يشتريه عملك بالجملة', 'All 42 categories →': '← كل الفئات الـ42',
+  'Supplier pricing': 'أسعار المورّدين', 'One flat subscription. Zero commission.': 'اشتراك ثابت واحد. صفر عمولة.',
+  'Buyers use TawreedHub for free. Suppliers pay a simple subscription — unlimited quotes, unlimited wins, nothing taken from your deals.': 'يستخدم المشترون TawreedHub مجانًا. يدفع المورّدون اشتراكًا بسيطًا — عروض غير محدودة، صفقات غير محدودة، ولا نأخذ شيئًا من صفقاتك.',
+  '10 EGP / day': '10 ج.م / يوم', '8.3 EGP / day': '8.3 ج.م / يوم', '6.8 EGP / day · 2 months free': '6.8 ج.م / يوم · شهران مجانًا', 'Good for testing a new region': 'مناسب لتجربة منطقة جديدة', 'Cancel any time': 'ألغِ في أي وقت', 'Priority in Verified directory': 'أولوية في دليل الموثّقين', 'SAVE 17%': 'وفّر 17%', 'Start with 15 days': 'ابدأ بـ15 يومًا', 'Start with 1 month': 'ابدأ بشهر واحد', 'Start with 1 year': 'ابدأ بسنة واحدة',
+  'Unlimited quotes': 'عروض غير محدودة', 'Verified Supplier badge': 'شارة مورّد موثّق', 'RFQ alerts in your areas': 'تنبيهات الطلبات في مناطقك', 'Start free trial': 'ابدأ التجربة المجانية', 'Choose plan': 'اختر الخطة', 'Choose': 'اختر',
+  'New suppliers get a 7-day free trial after verification. Pay by card, mobile wallet or Fawry.': 'يحصل المورّدون الجدد على 7 أيام مجانية بعد التوثيق. ادفع بالبطاقة أو المحفظة الإلكترونية أو فوري.',
+  'From the platform': 'من المنصة', 'Buyers and suppliers across Egypt': 'مشترون ومورّدون من كل مصر',
+  "We used to call eight suppliers for every rice order. Now one RFQ brings six quotes by the next morning — and nobody knows it's us until we pick.": 'كنا نتصل بثمانية مورّدين لكل طلب أرز. الآن طلب واحد يجلب ستة عروض بحلول صباح اليوم التالي — ولا أحد يعرف أننا نحن حتى نختار.',
+  'Purchasing manager, 5-star hotel': 'مدير مشتريات، فندق 5 نجوم',
+  'Our win rate on TawreedHub is higher than any tender site because the buyers are real and the quantities are real. 250 pounds a month is nothing.': 'نسبة فوزنا على TawreedHub أعلى من أي موقع مناقصات لأن المشترين حقيقيون والكميات حقيقية. 250 جنيهًا في الشهر لا شيء.',
+  'Sales manager, frozen foods manufacturer': 'مدير مبيعات، مصنع أغذية مجمدة', '10th of Ramadan City': 'مدينة العاشر من رمضان',
+  'The Verified badge did the selling for us in Upper Egypt, where nobody had heard our name.': 'شارة «موثّق» باعت لنا في الصعيد، حيث لم يسمع أحد باسمنا.',
+  'Owner, cleaning chemicals distributor': 'مالك، موزّع كيماويات تنظيف', 'Tanta, Gharbia': 'طنطا، الغربية',
+  'Questions we hear most': 'أكثر الأسئلة التي نسمعها',
+  'How does anonymity actually work?': 'كيف تعمل إخفاء الهوية فعليًا؟', 'Suppliers see only your business type (e.g. "Hotel") and delivery area. Your company name, contact and address are masked until you select a quote — and even then only the supplier you selected sees them. You control which fields are revealed in Privacy settings.': 'يرى المورّدون نوع نشاطك فقط (مثل «فندق») ومنطقة التسليم. اسم شركتك وبيانات الاتصال والعنوان مخفية حتى تختار عرضًا — وحتى حينها يراها المورّد الذي اخترته فقط. تتحكم في الحقول المكشوفة من إعدادات الخصوصية.',
+  'How are suppliers verified?': 'كيف يتم توثيق المورّدين؟', 'Every supplier uploads a commercial register, tax card and facility address. Our team checks them within 48 hours before the Verified badge is granted. Re-uploaded documents trigger a new review.': 'يرفع كل مورّد السجل التجاري والبطاقة الضريبية وعنوان المنشأة. يفحصها فريقنا خلال 48 ساعة قبل منح شارة «موثّق». إعادة رفع المستندات تستدعي مراجعة جديدة.',
+  'Do buyers pay anything?': 'هل يدفع المشترون شيئًا؟', 'No. Posting RFQs, comparing quotes and chatting with your selected supplier are free for buyers, forever.': 'لا. نشر الطلبات ومقارنة العروض والمحادثة مع المورّد الذي اخترته مجانية للمشترين، دائمًا.',
+  'Does TawreedHub take a commission?': 'هل تأخذ TawreedHub عمولة؟', 'Never. Suppliers pay a flat subscription — 150 EGP for 15 days, 250 EGP a month or 2,500 EGP a year. The deal value is entirely between you and the supplier, paid however you agree.': 'أبدًا. يدفع المورّدون اشتراكًا ثابتًا — 150 ج.م لـ15 يومًا، أو 250 ج.م شهريًا، أو 2,500 ج.م سنويًا. قيمة الصفقة بينك وبين المورّد بالكامل، وتُدفع كما تتفقان.',
+  'What happens if my subscription expires?': 'ماذا يحدث إذا انتهى اشتراكي؟', 'Your account becomes read-only: you can still see RFQs and your history, but Submit Quote and buyer details are locked. Renew any time to reactivate instantly — nothing is deleted.': 'يصبح حسابك للقراءة فقط: ما زلت ترى الطلبات وسجلّك، لكن تقديم العروض وبيانات المشترين مقفلة. جدّد في أي وقت لإعادة التفعيل فورًا — لا يُحذف شيء.',
+  'Can I cancel?': 'هل يمكنني الإلغاء؟', 'Yes. Turn off auto-renew and your plan simply ends at the end of the period. Unused days are not refunded.': 'نعم. أوقف التجديد التلقائي وتنتهي خطتك ببساطة في نهاية المدة. الأيام غير المستخدمة لا تُسترد.',
+  'Still unsure?': 'ما زلت غير متأكد؟', 'Talk to our team': 'تحدّث مع فريقنا', '— we reply in Arabic or English within a business day.': '— نردّ بالعربية أو الإنجليزية خلال يوم عمل.',
+  'Your next bulk order starts with one request.': 'طلبيتك الكبيرة التالية تبدأ بطلب واحد.', 'Takes 3 minutes. Verified suppliers in your area start quoting within hours.': 'يستغرق 3 دقائق. يبدأ المورّدون الموثّقون في منطقتك بالتسعير خلال ساعات.',
+  'Post your first request': 'انشر طلبك الأول', 'Become a supplier': 'كن مورّدًا',
+  'The anonymous B2B RFQ marketplace built for Egyptian businesses. Cairo · Alexandria · everywhere in between.': 'منصة طلبات عروض الأسعار مجهولة الهوية بين الشركات، مبنية للأعمال المصرية. القاهرة · الإسكندرية · وكل ما بينهما.',
+  'Supplier rules': 'قواعد المورّدين', 'Refund policy': 'سياسة الاسترداد', 'Sun–Thu, 9am–6pm': 'الأحد–الخميس، 9ص–6م',
+  '© 2026 TawreedHub. All rights reserved.': '© 2026 TawreedHub. جميع الحقوق محفوظة.', 'Made in Egypt': 'صُنع في مصر',
+  'photo · restaurant kitchen receiving crates': 'صورة · مطبخ مطعم يستلم صناديق', 'photo · packaging line, kraft boxes': 'صورة · خط تغليف، علب كرافت', 'photo · hotel housekeeping cart': 'صورة · عربة تدبير فندقي', 'photo · cement bags on site': 'صورة · أكياس أسمنت في الموقع', 'photo · office storeroom': 'صورة · مخزن مكتبي', 'photo · clinic supply shelves': 'صورة · أرفف مستلزمات عيادة', 'photo · flour sacks and fresh bread trays': 'صورة · شكائر دقيق وصواني خبز طازج', 'Bakery supplies': 'مستلزمات مخابز', 'photo · coffee beans and tea leaves': 'صورة · حبوب بن وأوراق شاي', 'Coffee & tea': 'بن وشاي',
+};
+class Component extends DCLogic {
+  state = { faq: 0, lang: 'en' };
+  rootRef = React.createRef();
+  componentDidMount() { this.i18n(); }
+  componentDidUpdate() { this.i18n(); }
+  i18n() { const lang = this.props.lang && !this._langTouched ? this.props.lang : this.state.lang; if (window.TH_I18N) window.TH_I18N.apply(this.rootRef.current, lang, DICT); }
+  renderVals() {
+    const s = this.state;
+    const highlight = this.props.highlightPlan ?? 'year';
+    const steps = [
+      { n: '1', icon: 'assets/icon-post-rfq.png', title: 'Buyers post anonymous RFQs', text: 'Share product, quantity, delivery area and deadline. Your company stays hidden.' },
+      { n: '2', icon: 'assets/icon-verified-suppliers.png', title: 'Verified suppliers submit quotes', text: 'Only document-checked suppliers in your area can see and quote your request.' },
+      { n: '3', icon: 'assets/icon-pick-quote.png', title: 'Buyer picks a quote', text: 'Compare price, VAT, delivery and terms side by side. Shortlist, then select.' },
+      { n: '4', icon: 'assets/icon-open-chat.png', title: 'Open chat with the supplier', text: 'Selection unlocks a private chat. Negotiate details, request a sample, close the deal.' },
+    ];
+    const slotIds = ['cat-food', 'cat-packaging', 'cat-cleaning', 'cat-construction', 'cat-office', 'cat-medical', 'cat-bakery', 'cat-coffee'];
+    const cats = [
+      ['Food & beverage', 312, 'photo · restaurant kitchen receiving crates'], ['Packaging', 148, 'photo · packaging line, kraft boxes'], ['Cleaning & hygiene', 96, 'photo · hotel housekeeping cart'], ['Construction materials', 174, 'photo · cement bags on site'],
+      ['Office supplies', 58, 'photo · office storeroom'], ['Medical supplies', 71, 'photo · clinic supply shelves'], ['Bakery supplies', 122, 'photo · flour sacks and fresh bread trays'], ['Coffee & tea', 64, 'photo · coffee beans and tea leaves'],
+    ].map(([name, count, photo], i) => ({ name, count, photo, slotId: slotIds[i] }));
+    const plans = [['15 days', '150', '10 EGP / day', 'Good for testing a new region', 'trial'], ['1 month', '250', '8.3 EGP / day', 'Cancel any time', 'month'], ['1 year', '2,500', '6.8 EGP / day · 2 months free', 'Priority in Verified directory', 'year']].map(([name, price, per, extra, key]) => { const hi = key === highlight; return { name, price, per, extra, cta: 'Start with ' + name, badge: key === 'year' ? 'SAVE 17%' : '', border: hi ? '2px solid #F28C28' : '1px solid #E5E7EB', shadow: hi ? '0 16px 40px rgba(242,140,40,.18)' : 'none', btnBg: hi ? '#F28C28' : '#fff', btnFg: hi ? '#fff' : '#0B3D5C', btnBorder: hi ? 'none' : '1.5px solid #0B3D5C' }; });
+    const quotes = [
+      { text: 'We used to call eight suppliers for every rice order. Now one RFQ brings six quotes by the next morning — and nobody knows it\'s us until we pick.', who: 'Purchasing manager, 5-star hotel', where: 'Sharm El Sheikh', initials: 'HS', bg: '#E3F0FA', fg: '#0B3D5C' },
+      { text: 'Our win rate on TawreedHub is higher than any tender site because the buyers are real and the quantities are real. 250 pounds a month is nothing.', who: 'Sales manager, frozen foods manufacturer', where: '10th of Ramadan City', initials: 'EN', bg: '#0B3D5C', fg: '#fff' },
+      { text: 'The Verified badge did the selling for us in Upper Egypt, where nobody had heard our name.', who: 'Owner, cleaning chemicals distributor', where: 'Tanta, Gharbia', initials: 'DH', bg: '#D9F2EF', fg: '#0F7A72' },
+    ];
+    const faqData = [
+      ['How does anonymity actually work?', 'Suppliers see only your business type (e.g. "Hotel") and delivery area. Your company name, contact and address are masked until you select a quote — and even then only the supplier you selected sees them. You control which fields are revealed in Privacy settings.'],
+      ['How are suppliers verified?', 'Every supplier uploads a commercial register, tax card and facility address. Our team checks them within 48 hours before the Verified badge is granted. Re-uploaded documents trigger a new review.'],
+      ['Do buyers pay anything?', 'No. Posting RFQs, comparing quotes and chatting with your selected supplier are free for buyers, forever.'],
+      ['Does TawreedHub take a commission?', 'Never. Suppliers pay a flat subscription — 150 EGP for 15 days, 250 EGP a month or 2,500 EGP a year. The deal value is entirely between you and the supplier, paid however you agree.'],
+      ['What happens if my subscription expires?', 'Your account becomes read-only: you can still see RFQs and your history, but Submit Quote and buyer details are locked. Renew any time to reactivate instantly — nothing is deleted.'],
+      ['Can I cancel?', 'Yes. Turn off auto-renew and your plan simply ends at the end of the period. Unused days are not refunded.'],
+    ];
+    const faqs = faqData.map(([q, a], i) => ({ q, a, open: s.faq === i, rot: s.faq === i ? 'rotate(180deg)' : 'rotate(0deg)', toggle: () => this.setState({ faq: s.faq === i ? -1 : i }) }));
+    const lang = this.props.lang && !this._langTouched ? this.props.lang : s.lang;
+    const setLang = (l) => () => { this._langTouched = true; this.setState({ lang: l }); };
+    return { rootRef: this.rootRef, steps, cats, plans, quotes, faqs, setEn: setLang('en'), setAr: setLang('ar'), enBg: lang === 'en' ? '#0B3D5C' : 'transparent', enFg: lang === 'en' ? '#fff' : '#374151', arBg: lang === 'ar' ? '#0B3D5C' : 'transparent', arFg: lang === 'ar' ? '#fff' : '#374151' };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,272 @@
+@import 'tailwindcss';
+
+@source '../views';
+@source '../../app';
+
+/*
+ * TawreedHub design tokens, taken from the design system in
+ * docs/design/tawreed-new-ui. The default palette is cleared so every screen
+ * draws from the same brand colours: navy/blue primary, orange for the main
+ * call to action, teal for verified and success states.
+ */
+@theme {
+    --font-sans: var(--font-inter), var(--font-ibm-plex-sans-arabic), ui-sans-serif, system-ui, sans-serif;
+    --font-arabic: var(--font-ibm-plex-sans-arabic), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+    --color-*: initial;
+    --color-white: #ffffff;
+    --color-black: #000000;
+
+    --color-gray-50: #f9fafb;
+    --color-gray-100: #f3f4f6;
+    --color-gray-200: #e5e7eb;
+    --color-gray-300: #d1d5db;
+    --color-gray-400: #9ca3af;
+    --color-gray-500: #6b7280;
+    --color-gray-600: #4b5563;
+    --color-gray-700: #374151;
+    --color-gray-800: #1f2937;
+    --color-gray-900: #111827;
+
+    /* Primary: tint, info border, secondary blue and brand navy. */
+    --color-brand-100: #e3f0fa;
+    --color-brand-200: #bfdbfe;
+    --color-brand-500: #1565a0;
+    --color-brand-700: #0b3d5c;
+
+    /* Orange call to action. */
+    --color-accent-50: #fff7ed;
+    --color-accent-200: #fed7aa;
+    --color-accent-500: #f28c28;
+    --color-accent-600: #e07a15;
+    --color-accent-800: #9a3412;
+
+    /* Teal: verified, selected, success. */
+    --color-success-25: #f0faf9;
+    --color-success-50: #d9f2ef;
+    --color-success-200: #a7e0da;
+    --color-success-500: #17a398;
+    --color-success-600: #128a80;
+    --color-success-700: #0f7a72;
+
+    --color-warning-100: #fef3c7;
+    --color-warning-200: #fde68a;
+    --color-warning-400: #f59e0b;
+    --color-warning-600: #d97706;
+    --color-warning-700: #b45309;
+    --color-warning-800: #92400e;
+
+    --color-danger-25: #fffbfb;
+    --color-danger-50: #fef2f2;
+    --color-danger-100: #fee2e2;
+    --color-danger-200: #fecaca;
+    --color-danger-600: #dc2626;
+    --color-danger-700: #b91c1c;
+    --color-danger-800: #991b1b;
+    --color-danger-900: #7f1d1d;
+
+    --radius-card: 10px;
+
+    --shadow-focus: 0 0 0 3px #e3f0fa;
+    --shadow-focus-danger: 0 0 0 3px #fee2e2;
+    --shadow-card: 0 1px 2px rgb(17 24 39 / 0.06);
+    --shadow-card-hover: 0 4px 16px rgb(11 61 92 / 0.08);
+    --shadow-dropdown: 0 12px 32px rgb(17 24 39 / 0.15);
+    --shadow-modal: 0 24px 64px rgb(0 0 0 / 0.25);
+    --shadow-drawer: -16px 0 48px rgb(0 0 0 / 0.2);
+    --shadow-toast: 0 8px 24px rgb(17 24 39 / 0.3);
+    --shadow-hero: 0 24px 64px rgb(11 61 92 / 0.18);
+    --shadow-float: 0 12px 32px rgb(17 24 39 / 0.12);
+    --shadow-plan: 0 16px 40px rgb(242 140 40 / 0.18);
+
+    --animate-shimmer: shimmer 1.4s infinite;
+
+    @keyframes shimmer {
+        0% {
+            background-position: 200% 0;
+        }
+        100% {
+            background-position: -200% 0;
+        }
+    }
+}
+
+@layer base {
+    html {
+        background-color: var(--color-gray-50);
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+        @apply bg-gray-50 text-gray-900 antialiased;
+        font-family: var(--font-sans);
+        font-feature-settings: 'tnum' 1;
+    }
+
+    /* Arabic reads better in Plex with a slightly taller line. */
+    html[lang='ar'] body {
+        font-family: var(--font-arabic);
+    }
+
+    a {
+        color: inherit;
+    }
+
+    :focus-visible {
+        @apply outline-2 outline-offset-2 outline-brand-500;
+    }
+
+    [x-cloak] {
+        display: none !important;
+    }
+}
+
+@layer components {
+    /* Page body inside the app shell. */
+    .shell-page {
+        @apply mx-auto flex w-full max-w-[1400px] flex-col gap-5 px-4 py-5 sm:px-6 lg:px-7 lg:py-6;
+    }
+
+    .card {
+        @apply rounded-card border border-gray-200 bg-white;
+    }
+
+    .card-title {
+        @apply flex items-center gap-2 text-[15px] font-semibold text-gray-900;
+    }
+
+    .eyebrow {
+        @apply text-[11px] font-semibold tracking-[0.6px] text-gray-500 uppercase;
+    }
+
+    .link {
+        @apply font-semibold text-brand-500 hover:text-brand-700;
+    }
+
+    /*
+     * Buttons: combine .btn with one variant and optionally a size,
+     * e.g. class="btn btn-accent btn-lg".
+     */
+    .btn {
+        @apply inline-flex h-9 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-lg px-4 text-sm font-semibold whitespace-nowrap transition-colors disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-400 disabled:shadow-none;
+    }
+
+    .btn-lg {
+        @apply h-11 px-5 text-[15px];
+    }
+
+    .btn-sm {
+        @apply h-8 rounded-md px-3 text-[13px];
+    }
+
+    .btn-xs {
+        @apply h-7 rounded-md px-2.5 text-xs;
+    }
+
+    .btn-icon {
+        @apply size-9 px-0;
+    }
+
+    .btn-accent {
+        @apply bg-accent-500 text-white hover:bg-accent-600;
+    }
+
+    .btn-primary {
+        @apply bg-brand-700 text-white hover:bg-brand-500;
+    }
+
+    .btn-success {
+        @apply bg-success-500 text-white hover:bg-success-600;
+    }
+
+    .btn-secondary {
+        @apply border border-gray-300 bg-white text-brand-700 hover:border-gray-400 hover:bg-gray-50;
+    }
+
+    .btn-ghost {
+        @apply bg-transparent text-brand-500 hover:bg-brand-100;
+    }
+
+    .btn-danger {
+        @apply bg-danger-600 text-white hover:bg-danger-700;
+    }
+
+    .btn-danger-outline {
+        @apply border border-danger-200 bg-white text-danger-600 hover:bg-danger-50;
+    }
+
+    .btn-danger-ghost {
+        @apply bg-transparent text-danger-600 hover:bg-danger-50;
+    }
+
+    /* Form controls. */
+    .label {
+        @apply mb-1.5 block text-[13px] font-semibold text-gray-700;
+    }
+
+    .input {
+        @apply block h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-900 transition placeholder:text-gray-400 focus:border-brand-500 focus:shadow-focus focus:outline-none disabled:bg-gray-50 disabled:text-gray-500;
+    }
+
+    textarea.input {
+        @apply h-auto min-h-24 py-2.5 leading-relaxed;
+    }
+
+    select.input {
+        @apply appearance-none bg-[url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%236B7280'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpolyline%20points='6%209%2012%2015%2018%209'/%3E%3C/svg%3E")] bg-[length:16px] bg-no-repeat pe-9 [background-position:right_0.75rem_center] rtl:[background-position:left_0.75rem_center];
+    }
+
+    .input-error {
+        @apply border-danger-600 focus:border-danger-600 focus:shadow-focus-danger;
+    }
+
+    .helper {
+        @apply mt-1.5 text-xs text-gray-500;
+    }
+
+    .error-text {
+        @apply mt-1.5 text-xs font-medium text-danger-600;
+    }
+
+    /* Soft single/multi choice (segmented options, plan tiles, chips). */
+    .choice {
+        @apply inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3.5 text-sm text-gray-700 transition select-none hover:border-brand-500 has-checked:border-brand-500 has-checked:bg-brand-100 has-checked:font-semibold has-checked:text-brand-700 has-focus-visible:shadow-focus;
+    }
+
+    .choice-selected {
+        @apply border-brand-500 bg-brand-100 font-semibold text-brand-700;
+    }
+
+    .pill-choice {
+        @apply inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-full border border-gray-300 bg-white px-3 text-[13px] font-medium text-gray-700 transition select-none hover:border-brand-700 has-checked:border-brand-700 has-checked:bg-brand-700 has-checked:font-semibold has-checked:text-white has-focus-visible:shadow-focus;
+    }
+
+    /* Grid-based data tables that collapse to cards on small screens. */
+    .table-head {
+        @apply hidden border-b border-gray-200 bg-gray-50 px-4 py-2.5 text-[11px] font-semibold tracking-[0.5px] text-gray-500 uppercase md:grid;
+    }
+
+    .data-row {
+        @apply grid gap-2 border-b border-gray-100 px-4 py-3.5 text-sm transition-colors last:border-b-0 hover:bg-gray-50 md:items-center md:gap-4 md:py-3;
+    }
+
+    /* Striped placeholder used where an image has not been uploaded yet. */
+    .placeholder-stripes {
+        background: repeating-linear-gradient(135deg, #cbd5e1 0 6px, #e2e8f0 6px 12px);
+    }
+
+    .skeleton {
+        @apply animate-shimmer rounded-sm bg-[linear-gradient(90deg,#e5e7eb_25%,#f3f4f6_50%,#e5e7eb_75%)] bg-[length:200%_100%];
+    }
+}
+
+@utility scrollbar-none {
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+@utility tabular {
+    font-variant-numeric: tabular-nums;
+}

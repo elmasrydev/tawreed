@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<script src="i18n.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+html,body{height:100%}body{margin:0;background:#fff;font-family:Inter,'IBM Plex Sans Arabic',system-ui,sans-serif;color:#111827;font-feature-settings:'tnum' 1;-webkit-font-smoothing:antialiased}
+a{color:#1565A0;text-decoration:none}a:hover{color:#0B3D5C;text-decoration:underline}
+input:focus,select:focus,textarea:focus{border-color:#1565A0!important;box-shadow:0 0 0 3px rgba(21,101,160,.15)}
+</style>
+</helmet>
+<div ref="{{ rootRef }}" style="width:100%;min-width:1024px;height:100vh;min-height:720px;margin:0;background:#fff;display:grid;grid-template-columns:480px 1fr;overflow:hidden;position:relative">
+
+<!-- BRAND PANEL -->
+<aside style="background:#0B3D5C;color:#fff;display:flex;flex-direction:column;padding:40px 44px;position:relative;overflow:hidden">
+  <div style="position:absolute;inset-inline-end:-120px;bottom:-160px;width:420px;height:420px;border-radius:50%;background:#1565A0;opacity:.35"></div>
+  <div style="position:absolute;inset-inline-end:60px;bottom:120px;width:220px;height:220px;border-radius:50%;background:#F28C28;opacity:.18"></div>
+  <a href="#" onClick="{{ goLogin }}" style="display:inline-flex;align-self:flex-start"><img src="assets/logo-white.png" alt="TawreedHub" style="height:40px;width:auto"></a>
+  <div style="margin-top:auto;display:flex;flex-direction:column;gap:22px;position:relative;z-index:1">
+    <span style="display:inline-flex;align-items:center;gap:8px;align-self:flex-start;height:28px;padding:0 12px;border-radius:999px;background:rgba(255,255,255,.12);font-size:12px;font-weight:600;letter-spacing:.3px;white-space:nowrap">{{ sideTag }}</span>
+    <h2 style="margin:0;font-size:34px;line-height:1.15;font-weight:800;letter-spacing:-0.8px;text-wrap:balance">{{ sideTitle }}</h2>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <sc-for list="{{ sideBullets }}" as="b" hint-placeholder-count="3">
+        <div style="display:flex;gap:12px;align-items:flex-start;font-size:15px;line-height:1.45;color:rgba(255,255,255,.88)"><span style="width:22px;height:22px;border-radius:50%;background:#F28C28;display:grid;place-items:center;flex-shrink:0;margin-top:1px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>{{ b }}</div>
+      </sc-for>
+    </div>
+    <div style="display:flex;gap:28px;padding-top:22px;border-top:1px solid rgba(255,255,255,.15);margin-top:8px">
+      <div><div style="font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1">1,240+</div><div style="font-size:12px;opacity:.75;margin-top:4px">Verified suppliers</div></div>
+      <div><div style="font-size:24px;font-weight:700;line-height:1">0%</div><div style="font-size:12px;opacity:.75;margin-top:4px">Commission</div></div>
+      <div><div style="font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1">27</div><div style="font-size:12px;opacity:.75;margin-top:4px">Governorates</div></div>
+    </div>
+  </div>
+</aside>
+
+<!-- FORM PANEL -->
+<main style="display:flex;flex-direction:column;overflow:auto;position:relative">
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 48px 0">
+    <span style="font-size:13px;color:#6B7280">{{ topHint }} <a href="#" onClick="{{ topGo }}" style="font-weight:600">{{ topLink }}</a></span>
+    <div style="display:inline-flex;border:1px solid #D1D5DB;border-radius:6px;overflow:hidden;height:30px;font-size:12px;font-weight:600"><span data-no-i18n onClick="{{ setEn }}" style="padding:0 10px;display:flex;align-items:center;cursor:pointer;background:{{ enBg }};color:{{ enFg }}">EN</span><span data-no-i18n onClick="{{ setAr }}" style="padding:0 10px;display:flex;align-items:center;cursor:pointer;font-family:'IBM Plex Sans Arabic',sans-serif;background:{{ arBg }};color:{{ arFg }}">عربي</span></div>
+  </div>
+
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:24px 48px 40px">
+  <div style="width:100%;max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:24px">
+
+  <!-- STEPPER -->
+  <sc-if value="{{ hasSteps }}" hint-placeholder-val="{{ false }}">
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:#6B7280"><span style="font-weight:600;color:#0B3D5C">{{ stepLabel }}</span><span style="font-variant-numeric:tabular-nums">Step {{ stepNum }} of {{ stepTotal }}</span></div>
+    <div style="display:flex;gap:6px"><sc-for list="{{ stepDots }}" as="d" hint-placeholder-count="5"><span style="flex:1;height:4px;border-radius:2px;background:{{ d.bg }}"></span></sc-for></div>
+  </div>
+  </sc-if>
+
+  <!-- LOGIN -->
+  <sc-if value="{{ isLogin }}" hint-placeholder-val="{{ true }}">
+  <div data-screen-label="Login" style="display:flex;flex-direction:column;gap:22px">
+    <div><h1 style="margin:0;font-size:28px;font-weight:700;color:#0B3D5C;letter-spacing:-0.5px">Welcome back</h1><p style="margin:6px 0 0;font-size:15px;color:#6B7280">Log in with your mobile number and password.</p></div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#374151">Mobile number<div style="display:flex;border:1px solid #D1D5DB;border-radius:8px;overflow:hidden;height:46px"><span style="display:flex;align-items:center;gap:6px;padding:0 12px;background:#F9FAFB;border-inline-end:1px solid #D1D5DB;font-size:14px;font-weight:600;color:#374151;font-variant-numeric:tabular-nums" dir="ltr"><img src="assets/icon-egypt-pin.png" alt="" style="height:16px">+20</span><input value="{{ phone }}" onChange="{{ setPhone }}" placeholder="10x xxx xxxx" dir="ltr" inputMode="tel" style="flex:1;border:none;padding:0 12px;font:15px Inter,sans-serif;outline:none;font-variant-numeric:tabular-nums"></div></label>
+      <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#374151"><span style="display:flex;justify-content:space-between">Password<a href="#" onClick="{{ goForgot }}" style="font-weight:500">Forgot password?</a></span><div style="position:relative"><input type="{{ pwType }}" value="{{ pw }}" onChange="{{ setPw }}" placeholder="••••••••" style="width:100%;box-sizing:border-box;height:46px;border:1px solid #D1D5DB;border-radius:8px;padding-inline:12px 44px;font:15px Inter,sans-serif;outline:none"><span onClick="{{ togPw }}" style="position:absolute;inset-inline-end:12px;top:0;height:46px;display:flex;align-items:center;font-size:12px;font-weight:600;color:#6B7280;cursor:pointer">{{ pwLabel }}</span></div></label>
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:#374151;cursor:pointer"><span onClick="{{ togRemember }}" style="width:18px;height:18px;border-radius:4px;display:grid;place-items:center;border:1.5px solid {{ remBorder }};background:{{ remBg }}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>Keep me logged in on this device</label>
+    </div>
+    <button onClick="{{ doLogin }}" style="height:48px;border-radius:10px;border:none;background:#F28C28;color:#fff;font:600 15px Inter,sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px" style-hover="background:#E07A15">Log in<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></button>
+  </div>
+  </sc-if>
+
+
+  <!-- FORGOT -->
+  <sc-if value="{{ isForgot }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="Forgot password" style="display:flex;flex-direction:column;gap:22px">
+    <a href="#" onClick="{{ goLogin }}" style="font-size:13px;color:#6B7280;display:inline-flex;align-items:center;gap:4px;align-self:flex-start"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Back to login</a>
+    <div><h1 style="margin:0;font-size:28px;font-weight:700;color:#0B3D5C;letter-spacing:-0.5px">Reset your password</h1><p style="margin:6px 0 0;font-size:15px;color:#6B7280">Enter your mobile number — we'll email a reset link to the address on your account, or our team will call you if none is set.</p></div>
+    <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#374151">Mobile number<div style="display:flex;border:1px solid #D1D5DB;border-radius:8px;overflow:hidden;height:46px"><span style="display:flex;align-items:center;gap:6px;padding:0 12px;background:#F9FAFB;border-inline-end:1px solid #D1D5DB;font-size:14px;font-weight:600;color:#374151" dir="ltr"><img src="assets/icon-egypt-pin.png" alt="" style="height:16px">+20</span><input value="{{ phone }}" onChange="{{ setPhone }}" placeholder="10x xxx xxxx" dir="ltr" style="flex:1;border:none;padding:0 12px;font:15px Inter,sans-serif;outline:none"></div></label>
+    <button onClick="{{ sendReset }}" style="height:48px;border-radius:10px;border:none;background:#F28C28;color:#fff;font:600 15px Inter,sans-serif;cursor:pointer" style-hover="background:#E07A15">Send reset link</button>
+  </div>
+  </sc-if>
+
+  <!-- ROLE -->
+  <sc-if value="{{ isRole }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="Role selection" style="display:flex;flex-direction:column;gap:22px">
+    <div><h1 style="margin:0;font-size:28px;font-weight:700;color:#0B3D5C;letter-spacing:-0.5px">How will you use TawreedHub?</h1><p style="margin:6px 0 0;font-size:15px;color:#6B7280">You can add the other role later from settings.</p></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div onClick="{{ pickBuyer }}" style="border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:14px;cursor:pointer;border:2px solid {{ buyerBorder }};background:{{ buyerBg }}" style-hover="border-color:#1565A0"><img src="assets/icon-pick-quote.png" alt="" style="width:52px;height:52px"><div><div style="font-size:18px;font-weight:700;color:#0B3D5C">I'm a Buyer</div><div style="font-size:13px;color:#6B7280;line-height:1.5;margin-top:4px">Hotels, restaurants, contractors, retailers. Post RFQs and get quotes from verified suppliers.</div></div><div style="font-size:13px;font-weight:600;color:#0F7A72;display:flex;align-items:center;gap:6px"><span style="width:6px;height:6px;border-radius:50%;background:#17A398"></span>Free forever · 3 quick steps</div></div>
+      <div onClick="{{ pickSupplier }}" style="border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:14px;cursor:pointer;border:2px solid {{ supBorder }};background:{{ supBg }}" style-hover="border-color:#1565A0"><img src="assets/icon-role-supplier-v2.svg" alt="" style="width:52px;height:52px"><div><div style="font-size:18px;font-weight:700;color:#0B3D5C">I'm a Supplier</div><div style="font-size:13px;color:#6B7280;line-height:1.5;margin-top:4px">Manufacturers, farms, importers, distributors. Browse RFQs and quote with zero commission.</div></div><div style="font-size:13px;font-weight:600;color:#1565A0;display:flex;align-items:center;gap:6px"><span style="width:6px;height:6px;border-radius:50%;background:#1565A0"></span>7-day free trial · 5 steps · verified in 48h</div></div>
+    </div>
+    <button onClick="{{ roleContinue }}" disabled="{{ roleDisabled }}" style="height:48px;border-radius:10px;border:none;color:#fff;font:600 15px Inter,sans-serif;cursor:pointer;background:{{ roleBtnBg }}">Continue</button>
+  </div>
+  </sc-if>
+
+  <!-- ACCOUNT (shared step 1) -->
+  <sc-if value="{{ isAccount }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="Signup · Account" style="display:flex;flex-direction:column;gap:20px">
+    <div><h1 style="margin:0;font-size:26px;font-weight:700;color:#0B3D5C;letter-spacing:-0.5px">Create your account</h1><p style="margin:6px 0 0;font-size:14px;color:#6B7280">Your mobile number is your login.</p></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#374151">Full name<input placeholder="e.g. Karim Fathy" style="height:44px;border:1px solid #D1D5DB;border-radius:8px;padding:0 12px;font:14px Inter,sans-serif;outline:none"></label>
+      <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#374151">Mobile number<div style="display:flex;border:1px solid #D1D5DB;border-radius:8px;overflow:hidden;height:44px"><span style="display:flex;align-items:center;padding:0 10px;background:#F9FAFB;border-inline-end:1px solid #D1D5DB;font-size:14px;font-weight:600;color:#374151" dir="ltr">+20</span><input value="{{ phone }}" onChange="{{ setPhone }}" placeholder="10x xxx xxxx" dir="ltr" style="flex:1;min-width:0;border:none;padding:0 12px;font:14px Inter,sans-serif;outline:none"></div></label>
+      <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#374151">Email <span style="color:#9CA3AF;font-weight:400">(optional, for invoices)</span><input placeholder="name@company.com" style="height:44px;border:1px solid #D1D5DB;border-radius:8px;padding:0 12px;font:14px Inter,sans-serif;outline:none"></label>
+      <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#374151">Password<input type="password" placeholder="8+ characters" style="height:44px;border:1px solid #D1D5DB;border-radius:8px;padding:0 12px;font:14px Inter,sans-serif;outline:none"></label>
+    </div>
+    <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#374151">Preferred language<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><span onClick="{{ langEn }}" style="height:42px;border-radius:8px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;cursor:pointer;border:1.5px solid {{ prefEnBorder }};background:{{ prefEnBg }};font-weight:{{ prefEnWeight }}">English</span><span onClick="{{ langAr }}" style="height:42px;border-radius:8px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:15px;cursor:pointer;font-family:'IBM Plex Sans Arabic',sans-serif;border:1.5px solid {{ prefArBorder }};background:{{ prefArBg }};font-weight:{{ prefArWeight }}">العربية</span></div></label>
+    <label style="display:flex;align-items:flex-start;gap:8px;font-size:12px;color:#6B7280;line-height:1.5;cursor:pointer"><span onClick="{{ togTerms }}" style="width:18px;height:18px;border-radius:4px;display:grid;place-items:center;flex-shrink:0;margin-top:1px;border:1.5px solid {{ termsBorder }};background:{{ termsBg }}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span><span>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>, including the no-off-platform-dealing rule.</span></label>
+    <div style="display:flex;gap:10px"><button onClick="{{ goRole }}" style="height:46px;padding:0 18px;border-radius:10px;border:1px solid #D1D5DB;background:#fff;color:#374151;font:600 14px Inter,sans-serif;cursor:pointer">Back</button><button onClick="{{ next }}" disabled="{{ termsDisabled }}" style="flex:1;height:46px;border-radius:10px;border:none;color:#fff;font:600 15px Inter,sans-serif;cursor:pointer;background:{{ termsBtnBg }}">Continue</button></div>
+  </div>
+  </sc-if>
+
+  <!-- SUPPLIER 2 · COMPANY -->
+  <sc-if value="{{ isSupCompany }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="Supplier · Company" style="display:flex;flex-direction:column;gap:20px">
+    <div><h1 style="margin:0;font-size:26px;font-weight:700;color:#0B3D5C;letter-spacing:-0.5px">Tell us about your company</h1><p style="margin:6px 0 0;font-size:14px;color:#6B7280">Must match your commercial register — we check it during verification.</p></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#374151">Company name (English)<input placeholder="Nile Fresh Produce Co." style="height:44px;border:1px solid #D1D5DB;border-radius:8px;padding:0 12px;font:14px Inter,sans-serif;outline:none"></label>
+      <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#374151">اسم الشركة (عربي)<input dir="rtl" placeholder="شركة النيل للمنتجات الطازجة" style="height:44px;border:1px solid #D1D5DB;border-radius:8px;padding:0 12px;font:14px 'IBM Plex Sans Arabic',sans-serif;outline:none"></label>
+      <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#374151">Supplier type<div style="height:44px;border:1px solid #D1D5DB;border-radius:8px;padding:0 12px;display:flex;align-items:center;justify-content:space-between;font-size:14px;color:#111827">{{ supType }}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></div></label>
+      <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#374151">Governorate (HQ)<div style="height:44px;border:1px solid #D1D5DB;border-radius:8px;padding:0 12px;display:flex;align-items:center;justify-content:space-between;font-size:14px;color:#111827">Beheira<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></div></label>
+      <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#374151">Tax registration number<input placeholder="xxx-xxx-xxx" style="height:44px;border:1px solid #D1D5DB;border-radius:8px;padding:0 12px;font:14px Inter,sans-serif;outline:none;font-variant-numeric:tabular-nums"></label>
+      <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#374151">Commercial register no.<input placeholder="e.g. 204118" style="height:44px;border:1px solid #D1D5DB;border-radius:8px;padding:0 12px;font:14px Inter,sans-serif;outline:none;font-variant-numeric:tabular-nums"></label>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><sc-for list="{{ supTypes }}" as="t" hint-placeholder-count="6"><span onClick="{{ t.pick }}" style="height:32px;padding:0 12px;border-radius:999px;display:inline-flex;align-items:center;font-size:13px;cursor:pointer;border:1px solid {{ t.border }};background:{{ t.bg }};color:{{ t.color }};font-weight:{{ t.weight }}">{{ t.label }}</span></sc-for></div>
+    <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#374151">Facility address<input placeholder="Street, district, city" style="height:44px;border:1px solid #D1D5DB;border-radius:8px;padding:0 12px;font:14px Inter,sans-serif;outline:none"></label>
+    <div style="display:flex;gap:10px"><button onClick="{{ back }}" style="height:46px;padding:0 18px;border-radius:10px;border:1px solid #D1D5DB;background:#fff;color:#374151;font:600 14px Inter,sans-serif;cursor:pointer">Back</button><button onClick="{{ next }}" style="flex:1;height:46px;border-radius:10px;border:none;background:#0B3D5C;color:#fff;font:600 15px Inter,sans-serif;cursor:pointer">Continue</button></div>
+  </div>
+  </sc-if>
+
+  <!-- SUPPLIER 3 · CATEGORIES & COVERAGE -->
+  <sc-if value="{{ isSupCats }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="Supplier · Categories & coverage" style="display:flex;flex-direction:column;gap:20px">
+    <div><h1 style="margin:0;font-size:26px;font-weight:700;color:#0B3D5C;letter-spacing:-0.5px">What do you supply, and where?</h1><p style="margin:6px 0 0;font-size:14px;color:#6B7280">You'll only be notified about RFQs that match. Change anytime.</p></div>
+    <div style="display:flex;flex-direction:column;gap:10px"><div style="display:flex;justify-content:space-between;font-size:13px;font-weight:500;color:#374151"><span>Categories</span><span style="color:#6B7280;font-weight:400;font-variant-numeric:tabular-nums">{{ catCount }} selected · up to 5</span></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><sc-for list="{{ cats }}" as="c" hint-placeholder-count="12"><span onClick="{{ c.pick }}" style="height:34px;padding:0 13px;border-radius:999px;display:inline-flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;border:1px solid {{ c.border }};background:{{ c.bg }};color:{{ c.color }};font-weight:{{ c.weight }}"><sc-if value="{{ c.on }}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></sc-if>{{ c.label }}</span></sc-for></div></div>
+    <div style="display:flex;flex-direction:column;gap:10px"><div style="display:flex;justify-content:space-between;font-size:13px;font-weight:500;color:#374151"><span>Delivery coverage</span><a href="#" onClick="{{ allGovs }}" style="font-weight:500">{{ govsLinkLabel }}</a></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><sc-for list="{{ govs }}" as="g" hint-placeholder-count="14"><span onClick="{{ g.pick }}" style="height:32px;padding:0 12px;border-radius:8px;display:inline-flex;align-items:center;font-size:13px;cursor:pointer;border:1px solid {{ g.border }};background:{{ g.bg }};color:{{ g.color }};font-weight:{{ g.weight }}">{{ g.label }}</span></sc-for></div></div>
+    <div style="display:flex;gap:10px"><button onClick="{{ back }}" style="height:46px;padding:0 18px;border-radius:10px;border:1px solid #D1D5DB;background:#fff;color:#374151;font:600 14px Inter,sans-serif;cursor:pointer">Back</button><button onClick="{{ next }}" disabled="{{ catsDisabled }}" style="flex:1;height:46px;border-radius:10px;border:none;color:#fff;font:600 15px Inter,sans-serif;cursor:pointer;background:{{ catsBtnBg }}">Continue</button></div>
+  </div>
+  </sc-if>
+
+  <!-- SUPPLIER 4 · DOCUMENTS -->
+  <sc-if value="{{ isSupDocs }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="Supplier · Documents" style="display:flex;flex-direction:column;gap:20px">
+    <div><h1 style="margin:0;font-size:26px;font-weight:700;color:#0B3D5C;letter-spacing:-0.5px">Upload verification documents</h1><p style="margin:6px 0 0;font-size:14px;color:#6B7280">Photos or PDFs, up to 10 MB each. Reviewed by our team within 48 hours; only the Verified badge is shown to buyers.</p></div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <sc-for list="{{ docs }}" as="d" hint-placeholder-count="4">
+        <div onClick="{{ d.pick }}" style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:10px;cursor:pointer;border:1.5px {{ d.borderStyle }} {{ d.border }};background:{{ d.bg }}"><span style="width:40px;height:40px;border-radius:9px;display:grid;place-items:center;flex-shrink:0;background:{{ d.iconBg }};color:{{ d.iconFg }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" dangerouslySetInnerHTML="{{ d.icon }}"></svg></span><div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px">{{ d.name }}<sc-if value="{{ d.optional }}"><span style="font-size:11px;font-weight:600;color:#6B7280;background:#F3F4F6;padding:1px 6px;border-radius:4px">Optional</span></sc-if></div><div style="font-size:12px;color:#6B7280;margin-top:2px">{{ d.meta }}</div></div><span style="font-size:13px;font-weight:600;white-space:nowrap;color:{{ d.actionColor }}">{{ d.action }}</span></div>
+      </sc-for>
+    </div>
+    <div style="display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:8px;background:#E3F0FA;font-size:12px;color:#0B3D5C;line-height:1.5"><img src="assets/icon-verified-shield.png" alt="" style="width:22px;height:22px;flex-shrink:0">Your documents are encrypted and never shown to buyers or other suppliers. You can browse RFQs right away; quoting unlocks once verified.</div>
+    <div style="display:flex;gap:10px"><button onClick="{{ back }}" style="height:46px;padding:0 18px;border-radius:10px;border:1px solid #D1D5DB;background:#fff;color:#374151;font:600 14px Inter,sans-serif;cursor:pointer">Back</button><button onClick="{{ next }}" disabled="{{ docsDisabled }}" style="flex:1;height:46px;border-radius:10px;border:none;color:#fff;font:600 15px Inter,sans-serif;cursor:pointer;background:{{ docsBtnBg }}">{{ docsBtnLabel }}</button></div>
+  </div>
+  </sc-if>
+
+  <!-- SUPPLIER 5 · PLAN -->
+  <sc-if value="{{ isSupPlan }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="Supplier · Plan & payment" style="display:flex;flex-direction:column;gap:20px">
+    <div><h1 style="margin:0;font-size:26px;font-weight:700;color:#0B3D5C;letter-spacing:-0.5px">Choose your plan</h1><p style="margin:6px 0 0;font-size:14px;color:#6B7280">Every plan starts with 7 free days. No commission on any deal, ever.</p></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+      <sc-for list="{{ plans }}" as="p" hint-placeholder-count="3">
+        <div onClick="{{ p.pick }}" style="border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px;cursor:pointer;position:relative;border:2px solid {{ p.border }};background:{{ p.bg }}"><sc-if value="{{ p.badge }}"><span style="position:absolute;top:-10px;inset-inline-start:12px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;background:#F28C28;color:#fff;padding:2px 8px;border-radius:999px">{{ p.badge }}</span></sc-if><div style="font-size:14px;font-weight:600;color:#374151">{{ p.name }}</div><div style="display:flex;align-items:baseline;gap:4px"><span style="font-size:26px;font-weight:800;color:#0B3D5C;font-variant-numeric:tabular-nums;letter-spacing:-0.5px">{{ p.price }}</span><span style="font-size:12px;color:#6B7280">EGP</span></div><div style="font-size:12px;color:#6B7280">{{ p.per }}</div></div>
+      </sc-for>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px"><span style="font-size:13px;font-weight:500;color:#374151">Payment method <span style="color:#9CA3AF;font-weight:400">— charged after your trial on 23 Sep</span></span>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><sc-for list="{{ payMethods }}" as="m" hint-placeholder-count="4"><div onClick="{{ m.pick }}" style="display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:9px;cursor:pointer;font-size:13px;border:1.5px solid {{ m.border }};background:{{ m.bg }}"><span style="width:16px;height:16px;border-radius:50%;border:2px solid {{ m.dot }};display:grid;place-items:center;flex-shrink:0"><span style="width:8px;height:8px;border-radius:50%;background:{{ m.fill }}"></span></span><div><div style="font-weight:600">{{ m.name }}</div><div style="font-size:11px;color:#6B7280">{{ m.sub }}</div></div></div></sc-for></div></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-radius:8px;background:#F9FAFB;border:1px solid #E5E7EB;font-size:13px"><span style="color:#6B7280">Due today</span><span style="display:flex;align-items:baseline;gap:8px"><span style="text-decoration:line-through;color:#9CA3AF;font-variant-numeric:tabular-nums">EGP {{ planPrice }}</span><b style="font-size:18px;color:#0F7A72">EGP 0</b></span></div>
+    <div style="display:flex;gap:10px"><button onClick="{{ back }}" style="height:46px;padding:0 18px;border-radius:10px;border:1px solid #D1D5DB;background:#fff;color:#374151;font:600 14px Inter,sans-serif;cursor:pointer">Back</button><button onClick="{{ finishSupplier }}" style="flex:1;height:46px;border-radius:10px;border:none;background:#F28C28;color:#fff;font:600 15px Inter,sans-serif;cursor:pointer" style-hover="background:#E07A15">Start free trial</button></div>
+  </div>
+  </sc-if>
+
+  <!-- BUYER 2 · BUSINESS -->
+  <sc-if value="{{ isBuyBiz }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="Buyer · Business" style="display:flex;flex-direction:column;gap:20px">
+    <div><h1 style="margin:0;font-size:26px;font-weight:700;color:#0B3D5C;letter-spacing:-0.5px">Who's buying?</h1><p style="margin:6px 0 0;font-size:14px;color:#6B7280">Suppliers see only your business type and governorate until you award a quote.</p></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><span onClick="{{ bizCompany }}" style="height:44px;border-radius:9px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;cursor:pointer;border:1.5px solid {{ coBorder }};background:{{ coBg }};font-weight:{{ coWeight }}">Company / organisation</span><span onClick="{{ bizIndividual }}" style="height:44px;border-radius:9px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;cursor:pointer;border:1.5px solid {{ inBorder }};background:{{ inBg }};font-weight:{{ inWeight }}">Individual</span></div>
+    <sc-if value="{{ isCompany }}">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#374151">Business name<input placeholder="Steigenberger Hotel El Gouna" style="height:44px;border:1px solid #D1D5DB;border-radius:8px;padding:0 12px;font:14px Inter,sans-serif;outline:none"></label>
+      <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#374151">Your role<input placeholder="Procurement manager" style="height:44px;border:1px solid #D1D5DB;border-radius:8px;padding:0 12px;font:14px Inter,sans-serif;outline:none"></label>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:13px;font-weight:500;color:#374151">Business type</span><div style="display:flex;gap:8px;flex-wrap:wrap"><sc-for list="{{ bizTypes }}" as="t" hint-placeholder-count="8"><span onClick="{{ t.pick }}" style="height:32px;padding:0 12px;border-radius:999px;display:inline-flex;align-items:center;font-size:13px;cursor:pointer;border:1px solid {{ t.border }};background:{{ t.bg }};color:{{ t.color }};font-weight:{{ t.weight }}">{{ t.label }}</span></sc-for></div></div>
+    </sc-if>
+    <sc-if value="{{ isIndividual }}"><div style="display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:8px;background:#FEF3C7;font-size:12px;color:#92400E;line-height:1.5">Individuals can post RFQs up to EGP 500,000. Add company documents later to lift the limit.</div></sc-if>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#374151">Governorate<div style="height:44px;border:1px solid #D1D5DB;border-radius:8px;padding:0 12px;display:flex;align-items:center;justify-content:space-between;font-size:14px">Red Sea<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></div></label>
+      <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#374151">Delivery city / area<input placeholder="El Gouna" style="height:44px;border:1px solid #D1D5DB;border-radius:8px;padding:0 12px;font:14px Inter,sans-serif;outline:none"></label>
+    </div>
+    <div style="display:flex;gap:10px"><button onClick="{{ back }}" style="height:46px;padding:0 18px;border-radius:10px;border:1px solid #D1D5DB;background:#fff;color:#374151;font:600 14px Inter,sans-serif;cursor:pointer">Back</button><button onClick="{{ next }}" style="flex:1;height:46px;border-radius:10px;border:none;background:#0B3D5C;color:#fff;font:600 15px Inter,sans-serif;cursor:pointer">Continue</button></div>
+  </div>
+  </sc-if>
+
+  <!-- BUYER 3 · INTERESTS -->
+  <sc-if value="{{ isBuyPrefs }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="Buyer · Interests" style="display:flex;flex-direction:column;gap:20px">
+    <div><h1 style="margin:0;font-size:26px;font-weight:700;color:#0B3D5C;letter-spacing:-0.5px">What do you usually buy?</h1><p style="margin:6px 0 0;font-size:14px;color:#6B7280">We'll pre-fill your first RFQ and show relevant suppliers. Optional.</p></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><sc-for list="{{ cats }}" as="c" hint-placeholder-count="12"><span onClick="{{ c.pick }}" style="height:34px;padding:0 13px;border-radius:999px;display:inline-flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;border:1px solid {{ c.border }};background:{{ c.bg }};color:{{ c.color }};font-weight:{{ c.weight }}"><sc-if value="{{ c.on }}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></sc-if>{{ c.label }}</span></sc-for></div>
+    <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:13px;font-weight:500;color:#374151">How often do you purchase?</span><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px"><sc-for list="{{ freqs }}" as="f" hint-placeholder-count="4"><span onClick="{{ f.pick }}" style="height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-weight:{{ f.weight }}">{{ f.label }}</span></sc-for></div></div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <label style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border:1px solid #E5E7EB;border-radius:9px;font-size:13px"><span><div style="font-weight:500">Notify me when quotes arrive</div><div style="font-size:12px;color:#6B7280">SMS + WhatsApp, max 3 per day</div></span><span onClick="{{ togNotif }}" style="width:34px;height:20px;border-radius:10px;position:relative;cursor:pointer;background:{{ notifBg }}"><span style="position:absolute;top:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .15s;left:{{ notifLeft }}"></span></span></label>
+    </div>
+    <div style="display:flex;gap:10px"><button onClick="{{ back }}" style="height:46px;padding:0 18px;border-radius:10px;border:1px solid #D1D5DB;background:#fff;color:#374151;font:600 14px Inter,sans-serif;cursor:pointer">Back</button><button onClick="{{ finishBuyer }}" style="flex:1;height:46px;border-radius:10px;border:none;background:#F28C28;color:#fff;font:600 15px Inter,sans-serif;cursor:pointer" style-hover="background:#E07A15">Finish &amp; post my first RFQ</button></div>
+  </div>
+  </sc-if>
+
+  <!-- DONE -->
+  <sc-if value="{{ isDone }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="Signup complete" style="display:flex;flex-direction:column;gap:22px;align-items:flex-start">
+    <img src="{{ doneIcon }}" alt="" style="width:72px;height:72px">
+    <div><h1 style="margin:0;font-size:28px;font-weight:700;color:#0B3D5C;letter-spacing:-0.5px">{{ doneTitle }}</h1><p style="margin:8px 0 0;font-size:15px;color:#6B7280;line-height:1.55;max-width:480px;text-wrap:pretty">{{ doneBody }}</p></div>
+    <div style="width:100%;display:flex;flex-direction:column;gap:8px">
+      <sc-for list="{{ doneSteps }}" as="d" hint-placeholder-count="3">
+        <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:9px;border:1px solid #E5E7EB;font-size:13px"><span style="width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;flex-shrink:0;background:{{ d.bg }};color:{{ d.fg }}">{{ d.n }}</span><span style="flex:1;color:#374151"><b style="color:#111827">{{ d.title }}</b> — {{ d.sub }}</span><span style="font-size:12px;font-weight:600;white-space:nowrap;color:{{ d.stateColor }}">{{ d.state }}</span></div>
+      </sc-for>
+    </div>
+    <div style="display:flex;gap:10px;width:100%"><a href="{{ doneHref }}" style="flex:1;height:48px;border-radius:10px;background:#F28C28;color:#fff;font-size:15px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:8px" style-hover="background:#E07A15;color:#fff;text-decoration:none">{{ doneCta }}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></a><button onClick="{{ goLogin }}" style="height:48px;padding:0 18px;border-radius:10px;border:1px solid #D1D5DB;background:#fff;color:#374151;font:600 14px Inter,sans-serif;cursor:pointer">Restart demo</button></div>
+  </div>
+  </sc-if>
+
+  </div>
+  </div>
+  <div style="padding:0 48px 18px;display:flex;justify-content:space-between;font-size:12px;color:#9CA3AF"><span>© 2026 TawreedHub · Cairo, Egypt</span><span style="display:flex;gap:16px"><a href="#" style="color:#9CA3AF">Terms</a><a href="#" style="color:#9CA3AF">Privacy</a><a href="#" style="color:#9CA3AF">Help</a></span></div>
+</main>
+
+<sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;bottom:24px;inset-inline-start:50%;transform:translateX(-50%);display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:8px;background:#111827;color:#fff;font-size:14px;box-shadow:0 8px 24px rgba(17,24,39,.3);z-index:50;white-space:nowrap"><span style="width:22px;height:22px;border-radius:50%;background:#17A398;display:grid;place-items:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>{{ toast }}</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;uiLang&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;en&quot;,&quot;ar&quot;],&quot;default&quot;:&quot;en&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Preview&quot;},&quot;screen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;login&quot;,&quot;forgot&quot;,&quot;role&quot;,&quot;account&quot;,&quot;sup-company&quot;,&quot;sup-cats&quot;,&quot;sup-docs&quot;,&quot;sup-plan&quot;,&quot;buy-biz&quot;,&quot;buy-prefs&quot;,&quot;done&quot;],&quot;default&quot;:&quot;login&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Preview&quot;}}">
+const DICT = {
+  'B2B RFQ marketplace · Egypt': 'منصة طلبات عروض الأسعار بين الشركات · مصر', 'Buy in bulk. Get real quotes. Stay anonymous.': 'اشترِ بالجملة. احصل على عروض حقيقية. وابقَ مجهولًا.',
+  'Post an RFQ in 2 minutes': 'انشر طلب عرض سعر في دقيقتين', 'Verified suppliers compete on price': 'مورّدون موثّقون يتنافسون على السعر', 'Chat only when you choose to': 'تحادث فقط عندما تختار',
+  'For suppliers': 'للمورّدين', 'Real buyers. Real orders. Zero commission.': 'مشترون حقيقيون. طلبات حقيقية. صفر عمولة.', 'Get notified only for RFQs you can fulfil': 'تُنبَّه فقط للطلبات التي تستطيع توفيرها', 'Quote directly — no middlemen, no % cut': 'سعّر مباشرة — بلا وسطاء، بلا نسبة', 'Verified badge builds buyer trust in 48h': 'شارة «موثّق» تبني ثقة المشترين خلال 48 ساعة',
+  'For buyers': 'للمشترين', 'One RFQ. Many quotes. Your identity stays hidden.': 'طلب واحد. عروض كثيرة. هويتك تبقى مخفية.', 'Free forever — no fees for buyers': 'مجاني للأبد — بلا رسوم على المشترين', 'Compare quotes side by side': 'قارن العروض جنبًا إلى جنب', 'Reveal yourself only when you award': 'اكشف هويتك فقط عند الترسية',
+  'New to TawreedHub?': 'جديد على TawreedHub؟', 'Create an account': 'أنشئ حسابًا', 'Already have an account?': 'لديك حساب بالفعل؟',
+  'Welcome back': 'مرحبًا بعودتك', 'Log in with your mobile number and password.': 'سجّل الدخول برقم هاتفك وكلمة المرور.', 'Mobile number': 'رقم الهاتف', 'Password': 'كلمة المرور', 'Forgot password?': 'نسيت كلمة المرور؟', 'Keep me logged in on this device': 'أبقني مسجلًا على هذا الجهاز', 'Show': 'إظهار', 'Hide': 'إخفاء',
+  'Back to login': 'رجوع لتسجيل الدخول', 'Reset your password': 'إعادة تعيين كلمة المرور', "Enter your mobile number — we'll email a reset link to the address on your account, or our team will call you if none is set.": 'أدخل رقم هاتفك — سنرسل رابط إعادة التعيين إلى البريد المسجّل في حسابك، أو يتصل بك فريقنا إن لم يكن هناك بريد.', 'Send reset link': 'إرسال رابط إعادة التعيين',
+  'How will you use TawreedHub?': 'كيف ستستخدم TawreedHub؟', 'You can add the other role later from settings.': 'يمكنك إضافة الدور الآخر لاحقًا من الإعدادات.', "I'm a Buyer": 'أنا مشتري', 'Hotels, restaurants, contractors, retailers. Post RFQs and get quotes from verified suppliers.': 'فنادق ومطاعم ومقاولون وتجار تجزئة. انشر طلبات واحصل على عروض من مورّدين موثّقين.', 'Free forever · 3 quick steps': 'مجاني للأبد · 3 خطوات سريعة', "I'm a Supplier": 'أنا مورّد', 'Manufacturers, farms, importers, distributors. Browse RFQs and quote with zero commission.': 'مصانع ومزارع ومستوردون وموزّعون. استعرض الطلبات وسعّر بصفر عمولة.', '7-day free trial · 5 steps · verified in 48h': 'تجربة 7 أيام مجانًا · 5 خطوات · توثيق خلال 48 ساعة',
+  'Account': 'الحساب', 'Business': 'النشاط', 'Interests': 'الاهتمامات', 'Categories & coverage': 'الفئات والتغطية', 'Documents': 'المستندات', 'Plan & payment': 'الخطة والدفع',
+  'Create your account': 'أنشئ حسابك', 'Your mobile number is your login.': 'رقم هاتفك هو اسم الدخول.', 'Full name': 'الاسم الكامل', 'Email': 'البريد الإلكتروني', '(optional, for invoices)': '(اختياري، للفواتير)', 'Preferred language': 'اللغة المفضلة', 'English': 'English', 'I agree to the': 'أوافق على', ', including the no-off-platform-dealing rule.': '، بما في ذلك قاعدة عدم التعامل خارج المنصة.',
+  'Tell us about your company': 'أخبرنا عن شركتك', 'Must match your commercial register — we check it during verification.': 'يجب أن تطابق السجل التجاري — نتحقق منها أثناء التوثيق.', 'Company name (English)': 'اسم الشركة (إنجليزي)', 'Supplier type': 'نوع المورّد', 'Governorate (HQ)': 'المحافظة (المقر)', 'Tax registration number': 'رقم التسجيل الضريبي', 'Commercial register no.': 'رقم السجل التجاري', 'Facility address': 'عنوان المنشأة',
+  'What do you supply, and where?': 'ماذا تورّد، وأين؟', "You'll only be notified about RFQs that match. Change anytime.": 'ستُنبَّه فقط للطلبات المطابقة. غيّرها في أي وقت.', 'Delivery coverage': 'نطاق التسليم', 'Select all 27': 'اختر الكل (27)', 'Clear all': 'مسح الكل', 'selected · up to 5': 'مختارة · حتى 5',
+  'Upload verification documents': 'ارفع مستندات التوثيق', 'Photos or PDFs, up to 10 MB each. Reviewed by our team within 48 hours; only the Verified badge is shown to buyers.': 'صور أو PDF حتى 10 ميجابايت لكل ملف. يراجعها فريقنا خلال 48 ساعة؛ ولا يظهر للمشترين سوى شارة «موثّق».',
+  'Commercial register': 'السجل التجاري', 'Front page showing company name & register number': 'الصفحة الأولى تُظهر اسم الشركة ورقم السجل', 'Tax card': 'البطاقة الضريبية', 'Both sides, valid date visible': 'الوجهان، مع تاريخ صلاحية واضح', 'Tax registration certificate': 'شهادة التسجيل الضريبي', 'From the Egyptian Tax Authority': 'من مصلحة الضرائب المصرية', 'Facility photos': 'صور المنشأة', 'Up to 3 photos of your farm, factory or warehouse': 'حتى 3 صور لمزرعتك أو مصنعك أو مخزنك', '✓ Uploaded · Replace': '✓ تم الرفع · استبدال', '3 photos': '3 صور',
+  'Your documents are encrypted and never shown to buyers or other suppliers. You can browse RFQs right away; quoting unlocks once verified.': 'مستنداتك مشفّرة ولا تُعرض أبدًا للمشترين أو المورّدين الآخرين. يمكنك استعراض الطلبات فورًا؛ ويُفتح التسعير بعد التوثيق.', 'Skip for now — upload later': 'تخطَّ الآن — ارفع لاحقًا',
+  'Choose your plan': 'اختر خطتك', 'Every plan starts with 7 free days. No commission on any deal, ever.': 'كل خطة تبدأ بـ7 أيام مجانية. لا عمولة على أي صفقة، أبدًا.', 'Most popular': 'الأكثر شيوعًا', 'per 15 days': 'لكل 15 يومًا', 'per month': 'شهريًا', 'per year · save 17%': 'سنويًا · وفّر 17%', 'Payment method': 'طريقة الدفع', '— charged after your trial on 23 Sep': '— يُخصم بعد التجربة في 23 سبتمبر', 'Pay cash at any outlet with a reference code': 'ادفع نقدًا في أي منفذ برمز مرجعي', 'Mobile wallet': 'محفظة إلكترونية', 'Visa, Mastercard, Meeza': 'فيزا، ماستركارد، ميزة', 'Confirmed within 1 business day': 'يُؤكَّد خلال يوم عمل', 'Due today': 'المستحق اليوم', 'EGP 0': '0 ج.م', 'Start free trial': 'ابدأ التجربة المجانية',
+  "Who's buying?": 'من الذي يشتري؟', 'Suppliers see only your business type and governorate until you award a quote.': 'يرى المورّدون نوع نشاطك ومحافظتك فقط حتى ترسّي عرضًا.', 'Company / organisation': 'شركة / مؤسسة', 'Business name': 'اسم النشاط', 'Your role': 'وظيفتك', 'Business type': 'نوع النشاط', 'Individuals can post RFQs up to EGP 500,000. Add company documents later to lift the limit.': 'يمكن للأفراد نشر طلبات حتى 500,000 ج.م. أضف مستندات الشركة لاحقًا لرفع الحد.', 'Delivery city / area': 'مدينة / منطقة التسليم',
+  'What do you usually buy?': 'ماذا تشتري عادةً؟', "We'll pre-fill your first RFQ and show relevant suppliers. Optional.": 'سنملأ طلبك الأول مسبقًا ونعرض المورّدين المناسبين. اختياري.', 'How often do you purchase?': 'كم مرة تشتري؟', 'Notify me when quotes arrive': 'نبّهني عند وصول العروض', 'SMS + WhatsApp, max 3 per day': 'رسائل SMS + واتساب، بحد أقصى 3 يوميًا', 'Finish & post my first RFQ': 'إنهاء ونشر أول طلب لي',
+  "You're in — verification underway": 'تم التسجيل — التوثيق جارٍ', "You're all set": 'كل شيء جاهز', 'Your 7-day trial has started. Browse open RFQs now; quoting unlocks as soon as our team verifies your documents (usually within 48 hours). We\'ll text you.': 'بدأت تجربتك لمدة 7 أيام. استعرض الطلبات المفتوحة الآن؛ ويُفتح التسعير بمجرد توثيق فريقنا لمستنداتك (عادةً خلال 48 ساعة). سنراسلك.', 'Your buyer account is ready and free forever. Post your first RFQ — matching verified suppliers are notified instantly and you stay anonymous until you award.': 'حساب المشتري جاهز ومجاني للأبد. انشر طلبك الأول — يُنبَّه المورّدون الموثّقون المطابقون فورًا وتبقى مجهولًا حتى الترسية.',
+  'Account created': 'تم إنشاء الحساب', 'ready to log in': 'جاهز لتسجيل الدخول', 'Documents submitted': 'تم تقديم المستندات', '3 of 3 required': '3 من 3 مطلوبة', 'upload pending — quoting stays locked': 'الرفع معلّق — التسعير يبقى مقفلًا', 'Action needed': 'إجراء مطلوب', 'Team review': 'مراجعة الفريق', 'usually within 48h · SMS on decision': 'عادةً خلال 48 ساعة · رسالة عند القرار', 'In progress': 'جارٍ', 'Business profile': 'ملف النشاط', 'Post your first RFQ': 'انشر طلبك الأول', 'Browse open RFQs': 'استعرض الطلبات المفتوحة', 'Post my first RFQ': 'انشر أول طلب لي', 'Restart demo': 'إعادة العرض',
+  '© 2026 TawreedHub · Cairo, Egypt': '© 2026 TawreedHub · القاهرة، مصر',
+  '10x xxx xxxx': '10x xxx xxxx', 'e.g. Karim Fathy': 'مثال: كريم فتحي', 'name@company.com': 'name@company.com', '8+ characters': '8 أحرف أو أكثر', 'Nile Fresh Produce Co.': 'شركة النيل للمنتجات الطازجة', 'xxx-xxx-xxx': 'xxx-xxx-xxx', 'e.g. 204118': 'مثال: 204118', 'Street, district, city': 'الشارع، الحي، المدينة', 'Steigenberger Hotel El Gouna': 'فندق شتايجنبرجر الجونة', 'Procurement manager': 'مدير مشتريات',
+};
+class Component extends DCLogic {
+  state = { screen: 'login', role: '', phone: '106 771 2244', pw: '', showPw: false, remember: true, lang: 'en', terms: false, supType: 'Farm / local producer', cats: ['Food & beverage', 'Fresh produce'], govs: ['Beheira', 'Alexandria', 'Cairo'], docs: { 0: 'done', 1: 'done' }, plan: 1, pay: 'fawry', biz: 'company', bizType: 'Hotel / resort', freq: 'Weekly', notif: true, toast: '' };
+  flash(t) { this.setState({ toast: t }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 2600); }
+  rootRef = React.createRef();
+  componentDidMount() { this.i18n(); }
+  componentDidUpdate() { this.i18n(); }
+  componentWillUnmount() { clearTimeout(this._t); }
+  uiLang() { return this.props.uiLang && !this._langTouched ? this.props.uiLang : (this.state.uiLang || 'en'); }
+  i18n() { if (window.TH_I18N) window.TH_I18N.apply(this.rootRef.current, this.uiLang(), DICT); }
+  renderVals() {
+    const s = this.state;
+    const ui = this.uiLang();
+    const screen = this.props.screen && !this._touched ? this.props.screen : s.screen;
+    const go = (k, extra) => (e) => { e && e.preventDefault && e.preventDefault(); this._touched = true; this.setState({ screen: k, ...(extra || {}) }); };
+    const role = screen.startsWith('sup') ? 'supplier' : screen.startsWith('buy') ? 'buyer' : s.role;
+    const supFlow = ['account', 'sup-company', 'sup-cats', 'sup-docs', 'sup-plan'], buyFlow = ['account', 'buy-biz', 'buy-prefs'];
+    const flow = role === 'supplier' ? supFlow : buyFlow;
+    const stepIdx = flow.indexOf(screen);
+    const hasSteps = stepIdx >= 0 && !!role;
+    const stepNames = role === 'supplier' ? ['Account', 'Company', 'Categories & coverage', 'Documents', 'Plan & payment'] : ['Account', 'Business', 'Interests'];
+    const next = (e) => { e && e.preventDefault(); this._touched = true; this.setState({ screen: flow[stepIdx + 1] }); };
+    const back = (e) => { e && e.preventDefault(); this._touched = true; this.setState({ screen: stepIdx <= 0 ? 'role' : flow[stepIdx - 1] }); };
+    const chip = (on) => ({ border: on ? '#0B3D5C' : '#D1D5DB', bg: on ? '#0B3D5C' : '#fff', color: on ? '#fff' : '#374151', weight: on ? 600 : 500 });
+    const soft = (on) => ({ border: on ? '#1565A0' : '#D1D5DB', bg: on ? '#E3F0FA' : '#fff', weight: on ? 600 : 500 });
+    const toggle = (arr, v, max) => arr.includes(v) ? arr.filter(x => x !== v) : (max && arr.length >= max ? arr : [...arr, v]);
+    const catList = ['Food & beverage', 'Fresh produce', 'Frozen meat & poultry', 'Dairy & eggs', 'Beverages', 'Packaging', 'Cleaning & hygiene', 'Construction materials', 'Raw materials', 'Hotel amenities', 'Medical supplies', 'Office supplies', 'Equipment rental', 'Textiles & uniforms'];
+    const catsSel = role === 'buyer' ? (s.buyCats || ['Hotel amenities', 'Food & beverage']) : s.cats;
+    const catKey = role === 'buyer' ? 'buyCats' : 'cats';
+    const cats = catList.map(c => { const on = catsSel.includes(c); return { label: c, on, ...chip(on), pick: () => this.setState({ [catKey]: toggle(catsSel, c, role === 'buyer' ? 0 : 5) }) }; });
+    const govList = ['Cairo', 'Giza', 'Alexandria', 'Beheira', 'Kafr El Sheikh', 'Gharbia', 'Dakahlia', 'Sharqia', 'Qalyubia', 'Monufia', 'Red Sea', 'South Sinai', 'Suez', 'Ismailia', 'Port Said', 'Fayoum', 'Beni Suef', 'Minya', 'Assiut', 'Sohag', 'Qena', 'Luxor', 'Aswan', 'Matrouh', 'New Valley', 'North Sinai', 'Damietta'];
+    const allOn = s.govs.length === govList.length;
+    const govs = govList.map(g => { const on = s.govs.includes(g); return { label: g, ...chip(on), pick: () => this.setState({ govs: toggle(s.govs, g) }) }; });
+    const supTypes = ['Manufacturer', 'Farm / local producer', 'Importer', 'Distributor', 'Wholesaler', 'Equipment / contracting'].map(t => ({ label: t, ...chip(t === s.supType), pick: () => this.setState({ supType: t }) }));
+    const bizTypes = ['Hotel / resort', 'Restaurant / café', 'Contractor', 'Retail chain', 'Hospital / clinic', 'Factory', 'Facility management', 'School / university', 'Other'].map(t => ({ label: t, ...chip(t === s.bizType), pick: () => this.setState({ bizType: t }) }));
+    const freqs = ['Daily', 'Weekly', 'Monthly', 'One-off'].map(f => ({ label: f, ...soft(f === s.freq), pick: () => this.setState({ freq: f }) }));
+    const docIcons = ['<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>', '<rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/>', '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>', '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>'];
+    const docDefs = [['Commercial register', 'Front page showing company name & register number', false, 'commercial-register.pdf · 1.2 MB'], ['Tax card', 'Both sides, valid date visible', false, 'tax-card.jpg · 840 KB'], ['Tax registration certificate', 'From the Egyptian Tax Authority', false, 'tax-certificate.pdf · 610 KB'], ['Facility photos', 'Up to 3 photos of your farm, factory or warehouse', true, '3 photos']];
+    const docs = docDefs.map(([name, help, optional, fileMeta], i) => { const st = s.docs[i]; const done = st === 'done'; return { name, optional, meta: done ? fileMeta : help, icon: { __html: docIcons[i] }, borderStyle: done ? 'solid' : 'dashed', border: done ? '#17A398' : '#D1D5DB', bg: done ? '#F0FAF9' : '#fff', iconBg: done ? '#17A398' : '#F3F4F6', iconFg: done ? '#fff' : '#6B7280', action: done ? '✓ Uploaded · Replace' : 'Upload', actionColor: done ? '#0F7A72' : '#1565A0', pick: () => this.setState({ docs: { ...s.docs, [i]: done ? undefined : 'done' } }) }; });
+    const requiredDone = [0, 1, 2].every(i => s.docs[i] === 'done');
+    const planDefs = [['15 days', '150', 'per 15 days', ''], ['1 month', '250', 'per month', 'Most popular'], ['1 year', '2,500', 'per year · save 17%', '']];
+    const plans = planDefs.map(([name, price, per, badge], i) => { const on = s.plan === i; return { name, price, per, badge, border: on ? '#1565A0' : '#E5E7EB', bg: on ? '#E3F0FA' : '#fff', pick: () => this.setState({ plan: i }) }; });
+    const payDefs = [['fawry', 'Fawry', 'Pay cash at any outlet with a reference code'], ['wallet', 'Vodafone Cash / InstaPay', 'Mobile wallet'], ['card', 'Debit / credit card', 'Visa, Mastercard, Meeza'], ['bank', 'Bank transfer', 'Confirmed within 1 business day']];
+    const payMethods = payDefs.map(([k, name, sub]) => { const on = s.pay === k; return { name, sub, border: on ? '#1565A0' : '#E5E7EB', bg: on ? '#E3F0FA' : '#fff', dot: on ? '#1565A0' : '#D1D5DB', fill: on ? '#1565A0' : 'transparent', pick: () => this.setState({ pay: k }) }; });
+    const side = {
+      login: ['B2B RFQ marketplace · Egypt', 'Buy in bulk. Get real quotes. Stay anonymous.', ['Post an RFQ in 2 minutes', 'Verified suppliers compete on price', 'Chat only when you choose to']],
+      supplier: ['For suppliers', 'Real buyers. Real orders. Zero commission.', ['Get notified only for RFQs you can fulfil', 'Quote directly — no middlemen, no % cut', 'Verified badge builds buyer trust in 48h']],
+      buyer: ['For buyers', 'One RFQ. Many quotes. Your identity stays hidden.', ['Free forever — no fees for buyers', 'Compare quotes side by side', 'Reveal yourself only when you award']],
+    };
+    const sideKey = screen === 'login' || screen === 'forgot' ? 'login' : role || 'login';
+    const [sideTag, sideTitle, sideBullets] = side[sideKey];
+    const isAuth = ['login', 'forgot'].includes(screen);
+    const doneSup = role === 'supplier';
+    return {
+      goLogin: go('login'), goRole: go('role'), goForgot: go('forgot'), sendReset: () => { this._touched = true; this.flash('Reset link sent — check your email'); this.setState({ screen: 'login' }); },
+      topHint: isAuth ? 'New to TawreedHub?' : 'Already have an account?', topLink: isAuth ? 'Create an account' : 'Log in', topGo: go(isAuth ? 'role' : 'login'),
+      sideTag, sideTitle, sideBullets,
+      hasSteps, stepLabel: stepNames[stepIdx] || '', stepNum: stepIdx + 1, stepTotal: flow.length, stepDots: flow.map((_, i) => ({ bg: i <= stepIdx ? '#F28C28' : '#E5E7EB' })),
+      isLogin: screen === 'login', isForgot: screen === 'forgot', isRole: screen === 'role', isAccount: screen === 'account', isSupCompany: screen === 'sup-company', isSupCats: screen === 'sup-cats', isSupDocs: screen === 'sup-docs', isSupPlan: screen === 'sup-plan', isBuyBiz: screen === 'buy-biz', isBuyPrefs: screen === 'buy-prefs', isDone: screen === 'done',
+      phone: s.phone, setPhone: (e) => this.setState({ phone: e.target.value }), pw: s.pw, setPw: (e) => this.setState({ pw: e.target.value }), pwType: s.showPw ? 'text' : 'password', pwLabel: s.showPw ? 'Hide' : 'Show', togPw: () => this.setState({ showPw: !s.showPw }),
+      remBorder: s.remember ? '#0B3D5C' : '#D1D5DB', remBg: s.remember ? '#0B3D5C' : '#fff', togRemember: (e) => { e.preventDefault(); this.setState({ remember: !s.remember }); },
+      doLogin: () => { this._touched = true; this.flash('Welcome back, Karim'); this.setState({ screen: 'role' }); },
+      pickBuyer: () => this.setState({ role: 'buyer' }), pickSupplier: () => this.setState({ role: 'supplier' }), buyerBorder: s.role === 'buyer' ? '#1565A0' : '#E5E7EB', buyerBg: s.role === 'buyer' ? '#E3F0FA' : '#fff', supBorder: s.role === 'supplier' ? '#1565A0' : '#E5E7EB', supBg: s.role === 'supplier' ? '#E3F0FA' : '#fff', roleDisabled: !s.role, roleBtnBg: s.role ? '#0B3D5C' : '#9CA3AF', roleContinue: go('account'),
+      langEn: () => { this._langTouched = true; this.setState({ lang: 'en', uiLang: 'en' }); }, langAr: () => { this._langTouched = true; this.setState({ lang: 'ar', uiLang: 'ar' }); }, prefEnBorder: s.lang === 'en' ? '#1565A0' : '#D1D5DB', prefEnBg: s.lang === 'en' ? '#E3F0FA' : '#fff', prefEnWeight: s.lang === 'en' ? 600 : 500, prefArBorder: s.lang === 'ar' ? '#1565A0' : '#D1D5DB', prefArBg: s.lang === 'ar' ? '#E3F0FA' : '#fff', prefArWeight: s.lang === 'ar' ? 600 : 500,
+      togTerms: (e) => { e.preventDefault(); this.setState({ terms: !s.terms }); }, termsBorder: s.terms ? '#0B3D5C' : '#D1D5DB', termsBg: s.terms ? '#0B3D5C' : '#fff', termsDisabled: !s.terms, termsBtnBg: s.terms ? '#0B3D5C' : '#9CA3AF',
+      next, back, supType: s.supType, supTypes, cats, catCount: catsSel.length, govs, allGovs: (e) => { e.preventDefault(); this.setState({ govs: allOn ? [] : govList }); }, govsLinkLabel: allOn ? 'Clear all' : 'Select all 27', catsDisabled: !s.cats.length || !s.govs.length, catsBtnBg: s.cats.length && s.govs.length ? '#0B3D5C' : '#9CA3AF',
+      docs, docsDisabled: false, docsBtnBg: requiredDone ? '#0B3D5C' : '#1565A0', docsBtnLabel: requiredDone ? 'Continue' : 'Skip for now — upload later',
+      plans, payMethods, planPrice: planDefs[s.plan][1], finishSupplier: () => { this.setState({ screen: 'done' }); this.flash('Trial started · ' + planDefs[s.plan][0] + ' plan via ' + payDefs.find(p => p[0] === s.pay)[1]); },
+      bizCompany: () => this.setState({ biz: 'company' }), bizIndividual: () => this.setState({ biz: 'individual' }), isCompany: s.biz === 'company', isIndividual: s.biz === 'individual', coBorder: s.biz === 'company' ? '#1565A0' : '#D1D5DB', coBg: s.biz === 'company' ? '#E3F0FA' : '#fff', coWeight: s.biz === 'company' ? 600 : 500, inBorder: s.biz === 'individual' ? '#1565A0' : '#D1D5DB', inBg: s.biz === 'individual' ? '#E3F0FA' : '#fff', inWeight: s.biz === 'individual' ? 600 : 500, bizTypes,
+      freqs, togNotif: (e) => { e.preventDefault(); this.setState({ notif: !s.notif }); }, notifBg: s.notif ? '#17A398' : '#D1D5DB', notifLeft: s.notif ? '16px' : '2px', finishBuyer: () => this.setState({ screen: 'done' }),
+      doneIcon: doneSup ? 'assets/icon-verified-shield.png' : 'assets/icon-post-rfq.png',
+      doneTitle: doneSup ? 'You\'re in — verification underway' : 'You\'re all set',
+      doneBody: doneSup ? 'Your 7-day trial has started. Browse open RFQs now; quoting unlocks as soon as our team verifies your documents (usually within 48 hours). We\'ll text you.' : 'Your buyer account is ready and free forever. Post your first RFQ — matching verified suppliers are notified instantly and you stay anonymous until you award.',
+      doneSteps: doneSup ? [{ n: '✓', title: 'Account created', sub: 'ready to log in', state: 'Done', bg: '#17A398', fg: '#fff', stateColor: '#0F7A72' }, { n: '✓', title: 'Documents submitted', sub: requiredDone ? '3 of 3 required' : 'upload pending — quoting stays locked', state: requiredDone ? 'Done' : 'Action needed', bg: requiredDone ? '#17A398' : '#F28C28', fg: '#fff', stateColor: requiredDone ? '#0F7A72' : '#B45309' }, { n: '3', title: 'Team review', sub: 'usually within 48h · SMS on decision', state: 'In progress', bg: '#E3F0FA', fg: '#0B3D5C', stateColor: '#1565A0' }] : [{ n: '✓', title: 'Account created', sub: 'ready to log in', state: 'Done', bg: '#17A398', fg: '#fff', stateColor: '#0F7A72' }, { n: '✓', title: 'Business profile', sub: s.biz === 'company' ? s.bizType + ' · Red Sea' : 'Individual · Red Sea', state: 'Done', bg: '#17A398', fg: '#fff', stateColor: '#0F7A72' }, { n: '3', title: 'Post your first RFQ', sub: 'pre-filled with ' + (catsSel[0] || 'your category'), state: 'Next', bg: '#E3F0FA', fg: '#0B3D5C', stateColor: '#1565A0' }],
+      doneCta: doneSup ? 'Browse open RFQs' : 'Post my first RFQ', doneHref: doneSup ? 'Supplier App.dc.html' : 'Buyer App.dc.html',
+      toast: s.toast,
+      rootRef: this.rootRef, setEn: () => { this._langTouched = true; this.setState({ uiLang: 'en' }); }, setAr: () => { this._langTouched = true; this.setState({ uiLang: 'ar' }); },
+      enBg: ui === 'en' ? '#0B3D5C' : 'transparent', enFg: ui === 'en' ? '#fff' : '#374151', arBg: ui === 'ar' ? '#0B3D5C' : 'transparent', arFg: ui === 'ar' ? '#fff' : '#374151',
+    };
+  }
+}
+</script>
+</body>
+</html>

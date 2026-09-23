@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<script src="i18n.js"></script>
+<script src="i18n-admin.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+html,body{height:100%}body{margin:0;background:#fff;font-family:Inter,system-ui,sans-serif;color:#111827;font-feature-settings:'tnum' 1;}
+a{color:#1565A0;text-decoration:none}a:hover{color:#0B3D5C;text-decoration:underline}
+</style>
+</helmet>
+<div ref="{{ rootRef }}" style="width:100%;min-width:1024px;height:100vh;min-height:720px;margin:0;background:#F9FAFB;display:grid;grid-template-columns:232px 1fr;grid-template-rows:60px 1fr;overflow:hidden;position:relative">
+
+<aside style="grid-row:1/3;background:#111827;color:#fff;display:flex;flex-direction:column;padding:16px 12px;gap:2px;overflow:auto">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 8px 18px"><img src="assets/logo-white.png" alt="TawreedHub" style="height:34px;width:auto"><span style="font-size:10px;font-weight:700;letter-spacing:.8px;background:#F28C28;color:#fff;padding:2px 6px;border-radius:4px">ADMIN</span></div>
+  <sc-for list="{{ nav }}" as="n" hint-placeholder-count="10">
+    <a href="#" onClick="{{ n.go }}" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;font-size:13px;text-decoration:none;background:{{ n.bg }};color:{{ n.color }};font-weight:{{ n.weight }}" style-hover="background:rgba(255,255,255,.1);color:#fff"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;opacity:.9" dangerouslySetInnerHTML="{{ n.icon }}"></svg>{{ n.label }}<sc-if value="{{ n.badge }}"><span style="margin-inline-start:auto;font-size:11px;font-weight:700;padding:1px 6px;border-radius:999px;background:{{ n.badgeBg }}">{{ n.badge }}</span></sc-if></a>
+  </sc-for>
+  <div style="margin-top:auto;display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;background:rgba(255,255,255,.06)"><div style="width:30px;height:30px;border-radius:50%;background:#F28C28;color:#fff;display:grid;place-items:center;font-weight:700;font-size:11px">YK</div><div style="min-width:0"><div style="font-size:13px;font-weight:600">Youssef Kamal</div><div style="font-size:11px;opacity:.6">Super admin</div></div></div>
+</aside>
+
+<header style="background:#fff;border-bottom:1px solid #E5E7EB;display:flex;align-items:center;gap:16px;padding:0 24px">
+  <div style="flex:1;max-width:460px;height:36px;border:1px solid #D1D5DB;border-radius:8px;display:flex;align-items:center;gap:8px;padding:0 12px;color:#9CA3AF;font-size:14px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>Search users, RFQs, quotes, invoices…</div>
+  <div style="margin-inline-start:auto;display:flex;align-items:center;gap:12px"><div style="display:inline-flex;border:1px solid #D1D5DB;border-radius:6px;overflow:hidden;height:28px;font-size:12px;font-weight:600"><span data-no-i18n onClick="{{ setEn }}" style="padding:0 10px;display:flex;align-items:center;cursor:pointer;background:{{ enBg }};color:{{ enFg }}">EN</span><span data-no-i18n onClick="{{ setAr }}" style="padding:0 10px;display:flex;align-items:center;cursor:pointer;font-family:'IBM Plex Sans Arabic',sans-serif;background:{{ arBg }};color:{{ arFg }}">عربي</span></div><span style="font-size:12px;color:#6B7280;font-variant-numeric:tabular-nums">Tue 16 Sep 2026 · 10:42</span><div style="position:relative;width:36px;height:36px;border-radius:8px;border:1px solid #E5E7EB;display:grid;place-items:center;color:#374151"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg><span style="position:absolute;top:6px;right:7px;width:8px;height:8px;border-radius:50%;background:#DC2626;border:2px solid #fff"></span></div></div>
+</header>
+
+<main style="overflow:auto;min-height:0">
+
+<!-- OVERVIEW -->
+<sc-if value="{{ isOverview }}" hint-placeholder-val="{{ true }}">
+<div data-screen-label="Admin Overview" style="padding:24px 28px;display:flex;flex-direction:column;gap:20px">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end"><div><h1 style="margin:0;font-size:24px;font-weight:700;color:#0B3D5C;letter-spacing:-0.3px">Overview</h1><div style="font-size:14px;color:#6B7280;margin-top:2px">Platform health · last 30 days</div></div><div style="display:inline-flex;border:1px solid #D1D5DB;border-radius:8px;overflow:hidden;height:32px;font-size:13px;font-weight:600;background:#fff"><span style="padding:0 12px;display:flex;align-items:center;color:#374151">7d</span><span style="padding:0 12px;display:flex;align-items:center;background:#0B3D5C;color:#fff">30d</span><span style="padding:0 12px;display:flex;align-items:center;color:#374151">90d</span></div></div>
+  <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px">
+    <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="6">
+      <div onClick="{{ k.go }}" style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:4px;cursor:pointer;border-top:3px solid {{ k.accent }}" style-hover="box-shadow:0 4px 16px rgba(11,61,92,.08)"><div style="font-size:11px;color:#6B7280;font-weight:600;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap">{{ k.label }}</div><div style="font-size:26px;font-weight:700;color:#0B3D5C;font-variant-numeric:tabular-nums;line-height:1.1">{{ k.value }}</div><div style="font-size:12px;color:{{ k.deltaColor }}">{{ k.delta }}</div></div>
+    </sc-for>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:16px">
+    <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:15px;font-weight:600">RFQs &amp; quotes per day</span><div style="display:flex;gap:14px;font-size:12px;color:#6B7280"><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:2px;background:#1565A0"></span>RFQs</span><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:2px;background:#F28C28"></span>Quotes</span></div></div>
+      <div style="display:flex;align-items:flex-end;gap:6px;height:160px;border-bottom:1px solid #E5E7EB;padding-bottom:0">
+        <sc-for list="{{ bars }}" as="b" hint-placeholder-count="14">
+          <div style="flex:1;display:flex;align-items:flex-end;gap:2px;height:100%"><div style="flex:1;border-radius:3px 3px 0 0;background:#1565A0;height:{{ b.r }}"></div><div style="flex:1;border-radius:3px 3px 0 0;background:#F28C28;height:{{ b.q }}"></div></div>
+        </sc-for>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:#9CA3AF;font-variant-numeric:tabular-nums"><span>3 Sep</span><span>9 Sep</span><span>16 Sep</span></div>
+    </div>
+    <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px">
+      <span style="font-size:15px;font-weight:600">Revenue by plan · Sep</span>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <sc-for list="{{ revenue }}" as="r" hint-placeholder-count="3">
+          <div style="display:flex;flex-direction:column;gap:6px"><div style="display:flex;justify-content:space-between;font-size:13px"><span style="font-weight:500">{{ r.plan }}</span><span style="font-weight:600;font-variant-numeric:tabular-nums">{{ r.amount }} <span style="color:#6B7280;font-weight:400">· {{ r.count }}</span></span></div><div style="height:8px;border-radius:4px;background:#F3F4F6;overflow:hidden"><div style="height:100%;background:{{ r.color }};width:{{ r.pct }}"></div></div></div>
+        </sc-for>
+      </div>
+      <div style="border-top:1px solid #E5E7EB;padding-top:12px;display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:13px;color:#6B7280">MRR</span><span style="font-size:22px;font-weight:700;color:#0B3D5C;font-variant-numeric:tabular-nums">EGP 186,250</span></div>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:12px">
+      <span style="font-size:15px;font-weight:600">Top categories · open RFQs</span>
+      <sc-for list="{{ topCats }}" as="c" hint-placeholder-count="5">
+        <div style="display:flex;align-items:center;gap:12px;font-size:13px"><span style="width:130px;color:#374151;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ c.name }}</span><div style="flex:1;height:8px;border-radius:4px;background:#F3F4F6;overflow:hidden"><div style="height:100%;background:#1565A0;width:{{ c.pct }}"></div></div><span style="width:36px;text-align:end;font-weight:600;font-variant-numeric:tabular-nums">{{ c.n }}</span></div>
+      </sc-for>
+    </div>
+    <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:15px;font-weight:600">Activity by governorate</span><span style="font-size:12px;color:#6B7280">RFQs · 30d</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 20px">
+        <sc-for list="{{ govs }}" as="g" hint-placeholder-count="8">
+          <div style="display:flex;align-items:center;gap:10px;font-size:13px"><span style="width:10px;height:10px;border-radius:2px;flex-shrink:0;background:{{ g.color }}"></span><span style="flex:1;color:#374151">{{ g.name }}</span><span style="font-weight:600;font-variant-numeric:tabular-nums">{{ g.n }}</span></div>
+        </sc-for>
+      </div>
+      <div style="font-size:12px;color:#9CA3AF;border-top:1px solid #F3F4F6;padding-top:10px">Egypt map view available in full-screen report.</div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- VERIFICATION QUEUE -->
+<sc-if value="{{ isQueue }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Verification Queue" style="padding:24px 28px;display:flex;flex-direction:column;gap:18px">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end"><div><h1 style="margin:0;font-size:24px;font-weight:700;color:#0B3D5C;letter-spacing:-0.3px">Supplier verification</h1><div style="font-size:14px;color:#6B7280;margin-top:2px">14 pending · oldest waiting 39h · SLA 48h</div></div><div style="display:flex;gap:8px"><div style="height:34px;border:1px solid #D1D5DB;border-radius:8px;padding:0 12px;display:flex;align-items:center;gap:8px;font-size:13px;background:#fff">Status: Pending<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></div><div style="height:34px;border:1px solid #D1D5DB;border-radius:8px;padding:0 12px;display:flex;align-items:center;gap:8px;font-size:13px;background:#fff">All types<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></div></div></div>
+  <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;overflow:hidden">
+    <div style="display:grid;grid-template-columns:2.2fr 1.3fr 1.4fr 1fr 1fr 1fr 0.8fr;column-gap:14px;padding:10px 18px;background:#F9FAFB;border-bottom:1px solid #E5E7EB;font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.5px"><span>Supplier</span><span>Type</span><span>Governorate</span><span>Documents</span><span>Waiting</span><span>Status</span><span></span></div>
+    <sc-for list="{{ queue }}" as="q" hint-placeholder-count="7">
+      <div style="display:grid;grid-template-columns:2.2fr 1.3fr 1.4fr 1fr 1fr 1fr 0.8fr;column-gap:14px;padding:12px 18px;border-bottom:1px solid #F3F4F6;font-size:13px;align-items:center;background:{{ q.rowBg }}" style-hover="background:#F9FAFB">
+        <div style="display:flex;align-items:center;gap:10px;min-width:0"><div style="width:32px;height:32px;border-radius:7px;background:#0B3D5C;color:#fff;display:grid;place-items:center;font-weight:700;font-size:11px;flex-shrink:0">{{ q.initials }}</div><div style="min-width:0"><div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ q.name }}</div><div style="font-size:11px;color:#6B7280;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ q.contact }}</div></div></div>
+        <span style="color:#374151">{{ q.type }}</span><span style="color:#374151">{{ q.gov }}</span>
+        <span style="display:flex;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:{{ q.d1 }}"></span><span style="width:8px;height:8px;border-radius:50%;background:{{ q.d2 }}"></span><span style="width:8px;height:8px;border-radius:50%;background:{{ q.d3 }}"></span></span>
+        <span style="font-variant-numeric:tabular-nums;font-weight:600;color:{{ q.waitColor }}">{{ q.wait }}</span>
+        <span><span style="display:inline-flex;height:22px;padding:0 8px;border-radius:999px;font-size:11px;font-weight:600;align-items:center;white-space:nowrap;background:{{ q.bg }};color:{{ q.fg }}">{{ q.status }}</span></span>
+        <span style="text-align:end"><a href="#" onClick="{{ goReview }}" style="font-size:13px;font-weight:600">Review</a></span>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</sc-if>
+
+<!-- VERIFICATION DETAIL -->
+<sc-if value="{{ isReview }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Verification Review" style="padding:20px 28px 28px;display:flex;flex-direction:column;gap:16px">
+  <a href="#" onClick="{{ goQueue }}" style="font-size:13px;color:#6B7280;display:inline-flex;align-items:center;gap:4px;align-self:flex-start"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Verification queue</a>
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:20px">
+    <div style="display:flex;align-items:center;gap:14px"><div style="width:52px;height:52px;border-radius:12px;background:#0B3D5C;color:#fff;display:grid;place-items:center;font-weight:700;font-size:16px">NF</div><div><div style="display:flex;align-items:center;gap:10px"><h1 style="margin:0;font-size:22px;font-weight:700;color:#0B3D5C;letter-spacing:-0.3px">Nile Fresh Produce Co.</h1><span style="display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 8px;border-radius:999px;font-size:11px;font-weight:600;white-space:nowrap;background:{{ revBg }};color:{{ revFg }}">{{ revStatus }}</span></div><div style="font-size:13px;color:#6B7280;margin-top:3px">Farm / local producer · Beheira · Submitted 14 Sep 19:20 · Waiting <b style="color:#B91C1C">39h</b></div></div></div>
+    <sc-if value="{{ revPending }}"><div style="display:flex;gap:8px;flex-shrink:0"><button onClick="{{ reqDocs }}" style="height:36px;padding:0 14px;border-radius:8px;border:1px solid #D1D5DB;background:#fff;color:#0B3D5C;font:600 13px Inter,sans-serif;cursor:pointer;white-space:nowrap">Request more docs</button><button onClick="{{ openReject }}" style="height:36px;padding:0 14px;border-radius:8px;border:1px solid #FECACA;background:#fff;color:#DC2626;font:600 13px Inter,sans-serif;cursor:pointer">Reject</button><button onClick="{{ approve }}" style="height:36px;padding:0 16px;border-radius:8px;border:none;background:#17A398;color:#fff;font:600 13px Inter,sans-serif;cursor:pointer;display:inline-flex;align-items:center;gap:6px" style-hover="background:#128A80"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>Approve &amp; verify</button></div></sc-if>
+    <sc-if value="{{ revDone }}"><button style="height:36px;padding:0 14px;border-radius:8px;border:1px solid #D1D5DB;background:#fff;color:#374151;font:600 13px Inter,sans-serif;cursor:pointer">Suspend account</button></sc-if>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 360px;gap:16px;align-items:start">
+    <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;overflow:hidden;display:grid;grid-template-columns:220px 1fr;min-height:480px">
+      <div style="border-inline-end:1px solid #E5E7EB;background:#F9FAFB;display:flex;flex-direction:column;padding:8px">
+        <div style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.6px;padding:8px 10px">Documents</div>
+        <sc-for list="{{ docs }}" as="d" hint-placeholder-count="4">
+          <div onClick="{{ d.pick }}" style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;cursor:pointer;background:{{ d.bg }}"><span style="width:8px;height:8px;border-radius:50%;flex-shrink:0;background:{{ d.dot }}"></span><div style="min-width:0;flex:1"><div style="font-size:13px;font-weight:{{ d.weight }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ d.name }}</div><div style="font-size:11px;color:#6B7280">{{ d.meta }}</div></div></div>
+        </sc-for>
+      </div>
+      <div style="display:flex;flex-direction:column">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid #E5E7EB;font-size:12px;color:#6B7280"><span style="font-weight:600;color:#111827">{{ docName }}</span><div style="display:flex;gap:6px"><span style="padding:4px 8px;border:1px solid #D1D5DB;border-radius:6px">−</span><span style="padding:4px 8px;border:1px solid #D1D5DB;border-radius:6px;font-variant-numeric:tabular-nums">100%</span><span style="padding:4px 8px;border:1px solid #D1D5DB;border-radius:6px">+</span><span style="padding:4px 8px;border:1px solid #D1D5DB;border-radius:6px">↻</span><span style="padding:4px 8px;border:1px solid #D1D5DB;border-radius:6px">Download</span></div></div>
+        <div style="flex:1;background:#374151;display:grid;place-items:center;padding:24px"><div style="width:300px;aspect-ratio:1/1.35;background:repeating-linear-gradient(135deg,#CBD5E1 0 8px,#E2E8F0 8px 16px);border-radius:4px;display:grid;place-items:center;font-family:ui-monospace,monospace;font-size:11px;color:#475569;text-align:center;padding:20px;box-shadow:0 8px 24px rgba(0,0,0,.3)">scanned document · {{ docName }}</div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-top:1px solid #E5E7EB;font-size:13px"><span style="color:#6B7280">Mark this document</span><div style="display:flex;gap:6px"><button onClick="{{ docOk }}" style="height:30px;padding:0 12px;border-radius:6px;border:1px solid #17A398;background:#D9F2EF;color:#0F7A72;font:600 12px Inter,sans-serif;cursor:pointer">✓ Valid</button><button onClick="{{ docBad }}" style="height:30px;padding:0 12px;border-radius:6px;border:1px solid #FECACA;background:#fff;color:#DC2626;font:600 12px Inter,sans-serif;cursor:pointer">Unreadable / mismatch</button></div></div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:10px;font-size:13px">
+        <div style="font-size:12px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.6px">Submitted info</div>
+        <div style="display:grid;grid-template-columns:110px 1fr;gap:8px 10px;color:#374151"><span style="color:#6B7280">Company</span><span style="font-weight:500">Nile Fresh Produce Co.</span><span style="color:#6B7280">Tax number</span><span style="font-variant-numeric:tabular-nums;font-weight:500">614-220-985</span><span style="color:#6B7280">Register no.</span><span style="font-variant-numeric:tabular-nums;font-weight:500">204118 · Damanhour</span><span style="color:#6B7280">Contact</span><span>Karim Fathy · <span dir="ltr" style="font-variant-numeric:tabular-nums">+20 106 771 2244</span></span><span style="color:#6B7280">Facility</span><span>Km 12 Damanhour–Kafr El Dawwar Rd, Beheira <a href="#" style="font-size:12px">Map</a></span><span style="color:#6B7280">Coverage</span><span>Beheira, Alexandria, Kafr El Sheikh, Cairo</span><span style="color:#6B7280">Plan</span><span>1 year · EGP 2,500 · paid 14 Sep</span></div>
+      </div>
+      <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:10px">
+        <div style="font-size:12px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.6px">Checks</div>
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:13px"><div style="display:flex;justify-content:space-between"><span>Tax number format</span><span style="color:#0F7A72;font-weight:600">✓ Valid</span></div><div style="display:flex;justify-content:space-between"><span>Name matches register</span><span style="color:#0F7A72;font-weight:600">✓ Match</span></div><div style="display:flex;justify-content:space-between"><span>Duplicate account</span><span style="color:#0F7A72;font-weight:600">✓ None</span></div><div style="display:flex;justify-content:space-between"><span>Phone previously banned</span><span style="color:#0F7A72;font-weight:600">✓ Clear</span></div></div>
+      </div>
+      <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:10px">
+        <div style="font-size:12px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.6px">Audit log</div>
+        <sc-for list="{{ audit }}" as="a" hint-placeholder-count="3">
+          <div style="display:flex;gap:10px;font-size:12px;line-height:1.4"><span style="width:6px;height:6px;border-radius:50%;background:{{ a.dot }};margin-top:6px;flex-shrink:0"></span><span style="flex:1;color:#374151">{{ a.text }}</span><span style="color:#9CA3AF;white-space:nowrap;font-variant-numeric:tabular-nums">{{ a.time }}</span></div>
+        </sc-for>
+        <textarea placeholder="Add an internal note…" style="min-height:56px;border:1px solid #D1D5DB;border-radius:8px;padding:8px 10px;font:12px/1.5 Inter,sans-serif;outline:none;resize:vertical;margin-top:4px"></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- SUBSCRIPTIONS -->
+<sc-if value="{{ isSubs }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Subscriptions & Payments" style="padding:24px 28px;display:flex;flex-direction:column;gap:18px">
+  <div><h1 style="margin:0;font-size:24px;font-weight:700;color:#0B3D5C;letter-spacing:-0.3px">Subscriptions &amp; payments</h1><div style="font-size:14px;color:#6B7280;margin-top:2px">745 active · 38 expiring in 7 days · 12 failed payments this week</div></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+    <sc-for list="{{ planCards }}" as="p" hint-placeholder-count="3">
+      <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:16px 18px;display:grid;grid-template-columns:1fr auto;gap:8px 12px;align-items:center">
+        <div><div style="font-size:15px;font-weight:600">{{ p.name }}</div><div style="font-size:12px;color:#6B7280">{{ p.sub }}</div></div>
+        <span style="display:inline-flex;height:22px;padding:0 8px;border-radius:999px;font-size:11px;font-weight:600;align-items:center;background:{{ p.bg }};color:{{ p.fg }}">{{ p.state }}</span>
+        <div style="display:flex;gap:16px;font-size:13px;color:#374151"><span><b style="font-variant-numeric:tabular-nums">{{ p.price }}</b> EGP</span><span><b style="font-variant-numeric:tabular-nums">{{ p.active }}</b> active</span><span><b style="font-variant-numeric:tabular-nums">{{ p.trial }}</b>d trial</span></div>
+        <a href="#" style="font-size:12px;font-weight:600;text-align:end">Edit plan</a>
+      </div>
+    </sc-for>
+  </div>
+  <div style="display:flex;gap:4px;border-bottom:1px solid #E5E7EB">
+    <sc-for list="{{ subTabs }}" as="t" hint-placeholder-count="4"><span onClick="{{ t.go }}" style="padding:10px 14px;font-size:14px;cursor:pointer;margin-bottom:-1px;font-weight:{{ t.weight }};color:{{ t.color }};border-bottom:2px solid {{ t.border }}">{{ t.label }} <span style="font-variant-numeric:tabular-nums;color:#6B7280;font-weight:500">{{ t.count }}</span></span></sc-for>
+  </div>
+  <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;overflow:hidden">
+    <div style="display:grid;grid-template-columns:1.2fr 2fr 1fr 1fr 1.2fr 1fr 1.2fr;column-gap:14px;padding:10px 18px;background:#F9FAFB;border-bottom:1px solid #E5E7EB;font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.5px"><span>Date</span><span>Supplier</span><span>Plan</span><span style="text-align:end">Amount</span><span>Method</span><span>Status</span><span></span></div>
+    <sc-for list="{{ txns }}" as="t" hint-placeholder-count="7">
+      <div style="display:grid;grid-template-columns:1.2fr 2fr 1fr 1fr 1.2fr 1fr 1.2fr;column-gap:14px;padding:12px 18px;border-bottom:1px solid #F3F4F6;font-size:13px;align-items:center" style-hover="background:#F9FAFB"><span style="color:#6B7280;font-variant-numeric:tabular-nums">{{ t.date }}</span><span style="font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ t.supplier }}</span><span style="color:#374151">{{ t.plan }}</span><span style="text-align:end;font-weight:600;font-variant-numeric:tabular-nums">{{ t.amount }}</span><span style="color:#374151">{{ t.method }}</span><span><span style="display:inline-flex;height:22px;padding:0 8px;border-radius:6px;font-size:11px;font-weight:600;align-items:center;background:{{ t.bg }};color:{{ t.fg }}">{{ t.status }}</span></span><span style="display:flex;gap:10px;justify-content:flex-end;font-size:12px;font-weight:600"><a href="#">Invoice</a><a href="#" style="color:{{ t.actionColor }}">{{ t.action }}</a></span></div>
+    </sc-for>
+  </div>
+</div>
+</sc-if>
+
+<!-- CATEGORIES -->
+<sc-if value="{{ isCats }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Categories" style="padding:24px 28px;display:flex;flex-direction:column;gap:18px">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end"><div><h1 style="margin:0;font-size:24px;font-weight:700;color:#0B3D5C;letter-spacing:-0.3px">Categories &amp; units</h1><div style="font-size:14px;color:#6B7280;margin-top:2px">12 main · 68 sub-categories · 14 units of measure</div></div><button style="height:36px;padding:0 14px;border-radius:8px;border:none;background:#0B3D5C;color:#fff;font:600 13px Inter,sans-serif;cursor:pointer">+ Main category</button></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 300px;gap:16px;align-items:start">
+    <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;overflow:hidden">
+      <div style="padding:10px 16px;background:#F9FAFB;border-bottom:1px solid #E5E7EB;font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.5px">Main categories</div>
+      <sc-for list="{{ mainCats }}" as="c" hint-placeholder-count="8">
+        <div onClick="{{ c.pick }}" style="display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid #F3F4F6;font-size:13px;cursor:pointer;background:{{ c.bg }}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><circle cx="9" cy="6" r="1"></circle><circle cx="15" cy="6" r="1"></circle><circle cx="9" cy="12" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="9" cy="18" r="1"></circle><circle cx="15" cy="18" r="1"></circle></svg><span style="flex:1;font-weight:{{ c.weight }}">{{ c.name }}<span style="font-family:'IBM Plex Sans Arabic',sans-serif;color:#6B7280;font-weight:400"> · {{ c.ar }}</span></span><span style="font-size:11px;color:#6B7280;font-variant-numeric:tabular-nums">{{ c.subs }} sub · {{ c.rfqs }} RFQs</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+      </sc-for>
+    </div>
+    <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;overflow:hidden">
+      <div style="padding:10px 16px;background:#F9FAFB;border-bottom:1px solid #E5E7EB;font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.5px;display:flex;justify-content:space-between"><span>{{ selCat }} › sub-categories</span><a href="#" style="text-transform:none;letter-spacing:0">+ Add</a></div>
+      <sc-for list="{{ subCats }}" as="sc" hint-placeholder-count="6">
+        <div style="display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid #F3F4F6;font-size:13px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><circle cx="9" cy="6" r="1"></circle><circle cx="15" cy="6" r="1"></circle><circle cx="9" cy="12" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="9" cy="18" r="1"></circle><circle cx="15" cy="18" r="1"></circle></svg><span style="flex:1">{{ sc.name }}<span style="font-family:'IBM Plex Sans Arabic',sans-serif;color:#6B7280"> · {{ sc.ar }}</span></span><span style="font-size:11px;color:#6B7280;font-variant-numeric:tabular-nums">{{ sc.rfqs }}</span><span style="width:28px;height:20px;border-radius:10px;position:relative;background:{{ sc.togBg }}"><span style="position:absolute;top:2px;width:16px;height:16px;border-radius:50%;background:#fff;left:{{ sc.togLeft }}"></span></span><a href="#" style="font-size:12px;font-weight:600">Edit</a></div>
+      </sc-for>
+    </div>
+    <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;overflow:hidden">
+      <div style="padding:10px 16px;background:#F9FAFB;border-bottom:1px solid #E5E7EB;font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.5px;display:flex;justify-content:space-between"><span>Units of measure</span><a href="#" style="text-transform:none;letter-spacing:0">+ Add</a></div>
+      <sc-for list="{{ units }}" as="u" hint-placeholder-count="8">
+        <div style="display:flex;align-items:center;gap:10px;padding:9px 16px;border-bottom:1px solid #F3F4F6;font-size:13px"><span style="width:44px;font-weight:600;font-variant-numeric:tabular-nums">{{ u.sym }}</span><span style="flex:1;color:#374151">{{ u.name }}</span><span style="font-family:'IBM Plex Sans Arabic',sans-serif;color:#6B7280">{{ u.ar }}</span></div>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- SUPPLIERS / BUYERS LIST -->
+<sc-if value="{{ isUsers }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Users list" style="padding:24px 28px;display:flex;flex-direction:column;gap:18px">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end"><div><h1 style="margin:0;font-size:24px;font-weight:700;color:#0B3D5C;letter-spacing:-0.3px">{{ usersTitle }}</h1><div style="font-size:14px;color:#6B7280;margin-top:2px">{{ usersSub }}</div></div><div style="display:flex;gap:8px"><button style="height:34px;padding:0 12px;border-radius:8px;border:1px solid #D1D5DB;background:#fff;color:#374151;font:600 13px Inter,sans-serif;cursor:pointer;display:inline-flex;align-items:center;gap:6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>Export CSV</button><button style="height:34px;padding:0 14px;border-radius:8px;border:none;background:#0B3D5C;color:#fff;font:600 13px Inter,sans-serif;cursor:pointer">+ Add {{ usersOne }}</button></div></div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+    <sc-for list="{{ userStats }}" as="k" hint-placeholder-count="4">
+      <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;color:#6B7280">{{ k.label }}</span><span style="font-size:20px;font-weight:700;color:{{ k.color }};font-variant-numeric:tabular-nums">{{ k.value }}</span></div>
+    </sc-for>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <div style="width:300px;height:34px;border:1px solid #D1D5DB;border-radius:8px;display:flex;align-items:center;gap:8px;padding:0 10px;color:#9CA3AF;font-size:13px;background:#fff"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>Name, phone, tax number…</div>
+    <sc-for list="{{ userFilters }}" as="f" hint-placeholder-count="3"><span onClick="{{ f.go }}" style="height:32px;padding:0 12px;border-radius:999px;display:inline-flex;align-items:center;font-size:13px;cursor:pointer;font-weight:{{ f.weight }};background:{{ f.bg }};color:{{ f.color }};border:1px solid {{ f.border }}">{{ f.label }}</span></sc-for>
+    <span style="margin-inline-start:auto;font-size:12px;color:#6B7280;font-variant-numeric:tabular-nums">{{ usersShown }}</span>
+  </div>
+  <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;overflow:hidden">
+    <div style="display:grid;grid-template-columns:2.4fr 1.3fr 1.2fr 1fr 1fr 1fr 1fr 0.7fr;column-gap:14px;padding:10px 18px;background:#F9FAFB;border-bottom:1px solid #E5E7EB;font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.5px"><span>{{ usersOne }}</span><span>{{ usersCol2 }}</span><span>Governorate</span><span>{{ usersCol4 }}</span><span>{{ usersCol5 }}</span><span>Last active</span><span>Status</span><span></span></div>
+    <sc-for list="{{ users }}" as="u" hint-placeholder-count="8">
+      <div onClick="{{ u.open }}" style="display:grid;grid-template-columns:2.4fr 1.3fr 1.2fr 1fr 1fr 1fr 1fr 0.7fr;column-gap:14px;padding:12px 18px;border-bottom:1px solid #F3F4F6;font-size:13px;align-items:center;cursor:pointer" style-hover="background:#F9FAFB">
+        <div style="display:flex;align-items:center;gap:10px;min-width:0"><div style="width:32px;height:32px;border-radius:7px;color:#fff;display:grid;place-items:center;font-weight:700;font-size:11px;flex-shrink:0;background:{{ u.avatarBg }}">{{ u.initials }}</div><div style="min-width:0"><div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ u.name }}</div><div style="font-size:11px;color:#6B7280;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ u.contact }}</div></div></div>
+        <span style="color:#374151;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ u.c2 }}</span><span style="color:#374151">{{ u.gov }}</span>
+        <span style="font-variant-numeric:tabular-nums;color:#374151">{{ u.c4 }}</span><span style="font-variant-numeric:tabular-nums;color:#374151">{{ u.c5 }}</span>
+        <span style="color:#6B7280;font-variant-numeric:tabular-nums">{{ u.last }}</span>
+        <span><span style="display:inline-flex;height:22px;padding:0 8px;border-radius:999px;font-size:11px;font-weight:600;align-items:center;white-space:nowrap;background:{{ u.bg }};color:{{ u.fg }}">{{ u.status }}</span></span>
+        <span style="text-align:end;color:#9CA3AF">···</span>
+      </div>
+    </sc-for>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 18px;font-size:12px;color:#6B7280"><span>Showing 1–8 of {{ usersTotal }}</span><div style="display:flex;gap:4px"><span style="padding:4px 8px;border:1px solid #E5E7EB;border-radius:6px;color:#9CA3AF">‹</span><span style="padding:4px 8px;border:1px solid #0B3D5C;border-radius:6px;background:#0B3D5C;color:#fff;font-weight:600">1</span><span style="padding:4px 8px;border:1px solid #E5E7EB;border-radius:6px">2</span><span style="padding:4px 8px;border:1px solid #E5E7EB;border-radius:6px">3</span><span style="padding:4px 8px;border:1px solid #E5E7EB;border-radius:6px">›</span></div></div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ACCOUNT DETAIL -->
+<sc-if value="{{ isAccount }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Account detail" style="padding:20px 28px 28px;display:flex;flex-direction:column;gap:16px">
+  <a href="#" onClick="{{ backToUsers }}" style="font-size:13px;color:#6B7280;display:inline-flex;align-items:center;gap:4px;align-self:flex-start"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>{{ usersTitle }}</a>
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:20px">
+    <div style="display:flex;align-items:center;gap:14px"><div style="width:52px;height:52px;border-radius:12px;color:#fff;display:grid;place-items:center;font-weight:700;font-size:16px;background:{{ acc.avatarBg }}">{{ acc.initials }}</div><div><div style="display:flex;align-items:center;gap:10px"><h1 style="margin:0;font-size:22px;font-weight:700;color:#0B3D5C;letter-spacing:-0.3px">{{ acc.name }}</h1><span style="display:inline-flex;height:22px;padding:0 8px;border-radius:999px;font-size:11px;font-weight:600;align-items:center;background:{{ accBg }};color:{{ accFg }}">{{ accStatus }}</span></div><div style="font-size:13px;color:#6B7280;margin-top:3px">{{ acc.c2 }} · {{ acc.gov }} · Joined {{ acc.joined }} · ID <span style="font-variant-numeric:tabular-nums">{{ acc.id }}</span></div></div></div>
+    <div style="display:flex;gap:8px;flex-shrink:0"><button style="height:36px;padding:0 14px;border-radius:8px;border:1px solid #D1D5DB;background:#fff;color:#0B3D5C;font:600 13px Inter,sans-serif;cursor:pointer">Message</button><button style="height:36px;padding:0 14px;border-radius:8px;border:1px solid #D1D5DB;background:#fff;color:#0B3D5C;font:600 13px Inter,sans-serif;cursor:pointer">Impersonate</button><sc-if value="{{ accActive }}"><button onClick="{{ suspend }}" style="height:36px;padding:0 14px;border-radius:8px;border:1px solid #FECACA;background:#fff;color:#DC2626;font:600 13px Inter,sans-serif;cursor:pointer">Suspend</button></sc-if><sc-if value="{{ accSuspended }}"><button onClick="{{ reinstate }}" style="height:36px;padding:0 14px;border-radius:8px;border:none;background:#17A398;color:#fff;font:600 13px Inter,sans-serif;cursor:pointer">Reinstate</button></sc-if></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+    <sc-for list="{{ accStats }}" as="k" hint-placeholder-count="4">
+      <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:4px"><div style="font-size:11px;color:#6B7280;font-weight:600;text-transform:uppercase;letter-spacing:.5px">{{ k.label }}</div><div style="font-size:22px;font-weight:700;color:#0B3D5C;font-variant-numeric:tabular-nums">{{ k.value }}</div><div style="font-size:12px;color:#6B7280">{{ k.sub }}</div></div>
+    </sc-for>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 340px;gap:16px;align-items:start">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;overflow:hidden">
+        <div style="display:flex;gap:4px;border-bottom:1px solid #E5E7EB;padding:0 16px"><sc-for list="{{ accTabs }}" as="t" hint-placeholder-count="4"><span onClick="{{ t.go }}" style="padding:12px 12px;font-size:13px;cursor:pointer;margin-bottom:-1px;font-weight:{{ t.weight }};color:{{ t.color }};border-bottom:2px solid {{ t.border }}">{{ t.label }}</span></sc-for></div>
+        <div style="display:grid;grid-template-columns:2fr 1.2fr 1fr 1fr 1fr;column-gap:14px;padding:10px 16px;background:#F9FAFB;border-bottom:1px solid #E5E7EB;font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.5px"><span>{{ accActCol1 }}</span><span>Category</span><span>Date</span><span style="text-align:end">Value</span><span>Status</span></div>
+        <sc-for list="{{ accActivity }}" as="r" hint-placeholder-count="6">
+          <div style="display:grid;grid-template-columns:2fr 1.2fr 1fr 1fr 1fr;column-gap:14px;padding:11px 16px;border-bottom:1px solid #F3F4F6;font-size:13px;align-items:center" style-hover="background:#F9FAFB"><span style="font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.title }}</span><span style="color:#374151">{{ r.cat }}</span><span style="color:#6B7280;font-variant-numeric:tabular-nums">{{ r.date }}</span><span style="text-align:end;font-weight:600;font-variant-numeric:tabular-nums">{{ r.value }}</span><span><span style="display:inline-flex;height:22px;padding:0 8px;border-radius:999px;font-size:11px;font-weight:600;align-items:center;white-space:nowrap;background:{{ r.bg }};color:{{ r.fg }}">{{ r.status }}</span></span></div>
+        </sc-for>
+      </div>
+      <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:10px">
+        <div style="font-size:12px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.6px">Admin notes &amp; log</div>
+        <sc-for list="{{ accLog }}" as="a" hint-placeholder-count="3">
+          <div style="display:flex;gap:10px;font-size:12px;line-height:1.4"><span style="width:6px;height:6px;border-radius:50%;background:{{ a.dot }};margin-top:6px;flex-shrink:0"></span><span style="flex:1;color:#374151">{{ a.text }}</span><span style="color:#9CA3AF;white-space:nowrap;font-variant-numeric:tabular-nums">{{ a.time }}</span></div>
+        </sc-for>
+        <textarea placeholder="Add an internal note…" style="min-height:52px;border:1px solid #D1D5DB;border-radius:8px;padding:8px 10px;font:12px/1.5 Inter,sans-serif;outline:none;resize:vertical"></textarea>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:10px;font-size:13px">
+        <div style="font-size:12px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.6px">Account info</div>
+        <div style="display:grid;grid-template-columns:100px 1fr;gap:8px 10px;color:#374151">
+          <sc-for list="{{ accInfo }}" as="i" hint-placeholder-count="6"><span style="color:#6B7280">{{ i.k }}</span><span style="font-weight:500;font-variant-numeric:tabular-nums;overflow-wrap:anywhere">{{ i.v }}</span></sc-for>
+        </div>
+      </div>
+      <sc-if value="{{ accIsSupplier }}">
+      <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:10px;font-size:13px">
+        <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.6px">Subscription</span><a href="#" onClick="{{ goSubs }}" style="font-size:12px;font-weight:600">Payments</a></div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:16px;font-weight:700;color:#0B3D5C">{{ acc.plan }}</span><span style="font-size:12px;color:#6B7280">renews {{ acc.renews }}</span></div>
+        <div style="height:6px;border-radius:3px;background:#F3F4F6;overflow:hidden"><div style="height:100%;background:#1565A0;width:{{ acc.planPct }}"></div></div>
+        <div style="display:flex;gap:8px;margin-top:2px"><button style="flex:1;height:32px;border-radius:7px;border:1px solid #D1D5DB;background:#fff;color:#0B3D5C;font:600 12px Inter,sans-serif;cursor:pointer">Extend 30 days</button><button style="flex:1;height:32px;border-radius:7px;border:1px solid #D1D5DB;background:#fff;color:#0B3D5C;font:600 12px Inter,sans-serif;cursor:pointer">Change plan</button></div>
+      </div>
+      </sc-if>
+      <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:10px;font-size:13px">
+        <div style="font-size:12px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.6px">Trust signals</div>
+        <sc-for list="{{ accTrust }}" as="t" hint-placeholder-count="4"><div style="display:flex;justify-content:space-between"><span style="color:#374151">{{ t.k }}</span><span style="font-weight:600;color:{{ t.color }}">{{ t.v }}</span></div></sc-for>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- RFQs -->
+<sc-if value="{{ isRfqs }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="RFQs" style="padding:24px 28px;display:flex;flex-direction:column;gap:18px">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end"><div><h1 style="margin:0;font-size:24px;font-weight:700;color:#0B3D5C;letter-spacing:-0.3px">RFQs</h1><div style="font-size:14px;color:#6B7280;margin-top:2px">486 open · 6 flagged for review · 41 closing today</div></div><div style="display:flex;gap:8px"><div style="height:34px;border:1px solid #D1D5DB;border-radius:8px;padding:0 12px;display:flex;align-items:center;gap:8px;font-size:13px;background:#fff">All categories<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></div><div style="height:34px;border:1px solid #D1D5DB;border-radius:8px;padding:0 12px;display:flex;align-items:center;gap:8px;font-size:13px;background:#fff">All governorates<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></div></div></div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <sc-for list="{{ rfqFilters }}" as="f" hint-placeholder-count="5"><span onClick="{{ f.go }}" style="height:32px;padding:0 12px;border-radius:999px;display:inline-flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;font-weight:{{ f.weight }};background:{{ f.bg }};color:{{ f.color }};border:1px solid {{ f.border }}">{{ f.label }}<span style="font-variant-numeric:tabular-nums;opacity:.7">{{ f.count }}</span></span></sc-for>
+  </div>
+  <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;overflow:hidden">
+    <div style="display:grid;grid-template-columns:2.6fr 1.6fr 1.2fr 1fr 0.8fr 1fr 1fr 0.7fr;column-gap:14px;padding:10px 18px;background:#F9FAFB;border-bottom:1px solid #E5E7EB;font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.5px"><span>RFQ</span><span>Buyer</span><span>Category</span><span>Deadline</span><span style="text-align:end">Quotes</span><span>Est. value</span><span>Status</span><span></span></div>
+    <sc-for list="{{ rfqs }}" as="r" hint-placeholder-count="8">
+      <div onClick="{{ r.open }}" style="display:grid;grid-template-columns:2.6fr 1.6fr 1.2fr 1fr 0.8fr 1fr 1fr 0.7fr;column-gap:14px;padding:12px 18px;border-bottom:1px solid #F3F4F6;font-size:13px;align-items:center;cursor:pointer;background:{{ r.rowBg }}" style-hover="background:#F9FAFB">
+        <div style="min-width:0;display:flex;align-items:center;gap:8px"><sc-if value="{{ r.flag }}"><span title="Flagged" style="width:8px;height:8px;border-radius:50%;background:#DC2626;flex-shrink:0"></span></sc-if><div style="min-width:0"><div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.title }}</div><div style="font-size:11px;color:#6B7280;font-variant-numeric:tabular-nums">{{ r.id }} · {{ r.qty }} · {{ r.gov }}</div></div></div>
+        <span style="color:#374151;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.buyer }}</span><span style="color:#374151;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.cat }}</span>
+        <span style="font-variant-numeric:tabular-nums;color:{{ r.dlColor }};font-weight:{{ r.dlWeight }}">{{ r.deadline }}</span><span style="text-align:end;font-weight:600;font-variant-numeric:tabular-nums">{{ r.quotes }}</span><span style="font-variant-numeric:tabular-nums;color:#374151">{{ r.value }}</span>
+        <span><span style="display:inline-flex;height:22px;padding:0 8px;border-radius:999px;font-size:11px;font-weight:600;align-items:center;white-space:nowrap;background:{{ r.bg }};color:{{ r.fg }}">{{ r.status }}</span></span>
+        <span style="text-align:end;color:#9CA3AF">···</span>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</sc-if>
+
+<!-- RFQ DETAIL -->
+<sc-if value="{{ isRfqDetail }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="RFQ detail (admin)" style="padding:20px 28px 28px;display:flex;flex-direction:column;gap:16px">
+  <a href="#" onClick="{{ goRfqs }}" style="font-size:13px;color:#6B7280;display:inline-flex;align-items:center;gap:4px;align-self:flex-start"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>RFQs</a>
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:20px">
+    <div><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><h1 style="margin:0;font-size:22px;font-weight:700;color:#0B3D5C;letter-spacing:-0.3px">{{ rd.title }}</h1><span style="display:inline-flex;height:22px;padding:0 8px;border-radius:999px;font-size:11px;font-weight:600;align-items:center;background:{{ rd.bg }};color:{{ rd.fg }}">{{ rd.status }}</span><sc-if value="{{ rd.flag }}"><span style="display:inline-flex;height:22px;padding:0 8px;border-radius:999px;font-size:11px;font-weight:600;align-items:center;background:#FEE2E2;color:#B91C1C">Flagged · {{ rd.flagReason }}</span></sc-if></div><div style="font-size:13px;color:#6B7280;margin-top:3px"><span style="font-variant-numeric:tabular-nums">{{ rd.id }}</span> · {{ rd.buyer }} · {{ rd.cat }} · Published {{ rd.published }} · Deadline <b style="color:{{ rd.dlColor }}">{{ rd.deadline }}</b></div></div>
+    <div style="display:flex;gap:8px;flex-shrink:0"><sc-if value="{{ rdLive }}"><button onClick="{{ rdHide }}" style="height:36px;padding:0 14px;border-radius:8px;border:1px solid #D1D5DB;background:#fff;color:#0B3D5C;font:600 13px Inter,sans-serif;cursor:pointer">Hide from suppliers</button><button onClick="{{ rdClose }}" style="height:36px;padding:0 14px;border-radius:8px;border:1px solid #FECACA;background:#fff;color:#DC2626;font:600 13px Inter,sans-serif;cursor:pointer">Close RFQ</button></sc-if><sc-if value="{{ rdHidden }}"><button onClick="{{ rdRestore }}" style="height:36px;padding:0 14px;border-radius:8px;border:none;background:#17A398;color:#fff;font:600 13px Inter,sans-serif;cursor:pointer">Restore &amp; clear flag</button></sc-if><button style="height:36px;padding:0 14px;border-radius:8px;border:1px solid #D1D5DB;background:#fff;color:#0B3D5C;font:600 13px Inter,sans-serif;cursor:pointer">Message buyer</button></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 340px;gap:16px;align-items:start">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;overflow:hidden">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #E5E7EB"><span style="font-size:15px;font-weight:600">Quotes received · {{ rdQuoteCount }}</span><span style="font-size:12px;color:#6B7280">Lowest EGP {{ rd.low }} · Median EGP {{ rd.med }}</span></div>
+        <div style="display:grid;grid-template-columns:2.2fr 1fr 1fr 1fr 1fr 1fr;column-gap:14px;padding:10px 16px;background:#F9FAFB;border-bottom:1px solid #E5E7EB;font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.5px"><span>Supplier</span><span style="text-align:end">Unit price</span><span style="text-align:end">Total</span><span>Delivery</span><span>Submitted</span><span>Status</span></div>
+        <sc-for list="{{ rdQuotes }}" as="q" hint-placeholder-count="5">
+          <div style="display:grid;grid-template-columns:2.2fr 1fr 1fr 1fr 1fr 1fr;column-gap:14px;padding:11px 16px;border-bottom:1px solid #F3F4F6;font-size:13px;align-items:center;background:{{ q.rowBg }}" style-hover="background:#F9FAFB"><div style="display:flex;align-items:center;gap:8px;min-width:0"><span style="width:8px;height:8px;border-radius:50%;flex-shrink:0;background:{{ q.dot }}"></span><span style="font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ q.supplier }}</span></div><span style="text-align:end;font-variant-numeric:tabular-nums">{{ q.unit }}</span><span style="text-align:end;font-weight:600;font-variant-numeric:tabular-nums">{{ q.total }}</span><span style="color:#374151">{{ q.delivery }}</span><span style="color:#6B7280;font-variant-numeric:tabular-nums">{{ q.sent }}</span><span><span style="display:inline-flex;height:22px;padding:0 8px;border-radius:999px;font-size:11px;font-weight:600;align-items:center;white-space:nowrap;background:{{ q.bg }};color:{{ q.fg }}">{{ q.status }}</span></span></div>
+        </sc-for>
+      </div>
+      <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-size:12px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.6px">RFQ as published</div>
+        <div style="display:grid;grid-template-columns:120px 1fr;gap:8px 12px;font-size:13px;color:#374151"><span style="color:#6B7280">Item</span><span style="font-weight:500">{{ rd.title }}</span><span style="color:#6B7280">Quantity</span><span style="font-variant-numeric:tabular-nums">{{ rd.qty }}</span><span style="color:#6B7280">Specifications</span><span style="line-height:1.5">{{ rd.spec }}</span><span style="color:#6B7280">Delivery</span><span>{{ rd.delivery }}</span><span style="color:#6B7280">Payment</span><span>{{ rd.payment }}</span><span style="color:#6B7280">Attachments</span><span><a href="#">spec-sheet.pdf</a> · <a href="#">sample-photo.jpg</a></span></div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <sc-if value="{{ rd.flag }}">
+      <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:8px;font-size:13px">
+        <div style="font-size:12px;font-weight:600;color:#B91C1C;text-transform:uppercase;letter-spacing:.6px">Why flagged</div>
+        <div style="color:#7F1D1D;line-height:1.5">{{ rd.flagDetail }}</div>
+        <div style="font-size:12px;color:#991B1B">Auto-flag · rule <span style="font-family:ui-monospace,monospace">{{ rd.flagRule }}</span> · {{ rd.flagTime }}</div>
+      </div>
+      </sc-if>
+      <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:10px;font-size:13px">
+        <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.6px">Buyer</span><a href="#" onClick="{{ rdOpenBuyer }}" style="font-size:12px;font-weight:600">Open account</a></div>
+        <div style="display:flex;align-items:center;gap:10px"><div style="width:36px;height:36px;border-radius:8px;background:#1565A0;color:#fff;display:grid;place-items:center;font-weight:700;font-size:12px">{{ rd.buyerInit }}</div><div><div style="font-weight:600">{{ rd.buyer }}</div><div style="font-size:12px;color:#6B7280">{{ rd.buyerType }} · {{ rd.gov }}</div></div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center;border-top:1px solid #F3F4F6;padding-top:10px"><div><div style="font-size:16px;font-weight:700;color:#0B3D5C;font-variant-numeric:tabular-nums">{{ rd.bRfqs }}</div><div style="font-size:11px;color:#6B7280">RFQs</div></div><div><div style="font-size:16px;font-weight:700;color:#0B3D5C;font-variant-numeric:tabular-nums">{{ rd.bAward }}</div><div style="font-size:11px;color:#6B7280">award rate</div></div><div><div style="font-size:16px;font-weight:700;color:#0B3D5C;font-variant-numeric:tabular-nums">{{ rd.bRating }}</div><div style="font-size:11px;color:#6B7280">supplier rating</div></div></div>
+      </div>
+      <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:10px">
+        <div style="font-size:12px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.6px">Timeline</div>
+        <sc-for list="{{ rdLog }}" as="a" hint-placeholder-count="4">
+          <div style="display:flex;gap:10px;font-size:12px;line-height:1.4"><span style="width:6px;height:6px;border-radius:50%;background:{{ a.dot }};margin-top:6px;flex-shrink:0"></span><span style="flex:1;color:#374151">{{ a.text }}</span><span style="color:#9CA3AF;white-space:nowrap;font-variant-numeric:tabular-nums">{{ a.time }}</span></div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- QUOTES -->
+<sc-if value="{{ isQuotes }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Quotes" style="padding:24px 28px;display:flex;flex-direction:column;gap:18px">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end"><div><h1 style="margin:0;font-size:24px;font-weight:700;color:#0B3D5C;letter-spacing:-0.3px">Quotes</h1><div style="font-size:14px;color:#6B7280;margin-top:2px">212 today · avg 4.1 per RFQ · 4 flagged as suspicious pricing</div></div><div style="display:inline-flex;border:1px solid #D1D5DB;border-radius:8px;overflow:hidden;height:32px;font-size:13px;font-weight:600;background:#fff"><span style="padding:0 12px;display:flex;align-items:center;background:#0B3D5C;color:#fff">Today</span><span style="padding:0 12px;display:flex;align-items:center;color:#374151">7d</span><span style="padding:0 12px;display:flex;align-items:center;color:#374151">30d</span></div></div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+    <sc-for list="{{ quoteStats }}" as="k" hint-placeholder-count="4">
+      <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;color:#6B7280">{{ k.label }}</span><span style="font-size:20px;font-weight:700;color:{{ k.color }};font-variant-numeric:tabular-nums">{{ k.value }}</span></div>
+    </sc-for>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <sc-for list="{{ quoteFilters }}" as="f" hint-placeholder-count="5"><span onClick="{{ f.go }}" style="height:32px;padding:0 12px;border-radius:999px;display:inline-flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;font-weight:{{ f.weight }};background:{{ f.bg }};color:{{ f.color }};border:1px solid {{ f.border }}">{{ f.label }}<span style="font-variant-numeric:tabular-nums;opacity:.7">{{ f.count }}</span></span></sc-for>
+  </div>
+  <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;overflow:hidden">
+    <div style="display:grid;grid-template-columns:2fr 2.2fr 1fr 1.1fr 1fr 1fr 1.3fr;column-gap:14px;padding:10px 18px;background:#F9FAFB;border-bottom:1px solid #E5E7EB;font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.5px"><span>Supplier</span><span>RFQ</span><span style="text-align:end">Total</span><span style="text-align:end">vs. median</span><span>Submitted</span><span>Status</span><span></span></div>
+    <sc-for list="{{ quotesList }}" as="q" hint-placeholder-count="8">
+      <div style="display:grid;grid-template-columns:2fr 2.2fr 1fr 1.1fr 1fr 1fr 1.3fr;column-gap:14px;padding:12px 18px;border-bottom:1px solid #F3F4F6;font-size:13px;align-items:center" style-hover="background:#F9FAFB">
+        <div style="display:flex;align-items:center;gap:8px;min-width:0"><sc-if value="{{ q.flag }}"><span style="width:8px;height:8px;border-radius:50%;background:#DC2626;flex-shrink:0"></span></sc-if><span style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ q.supplier }}</span></div>
+        <a href="#" onClick="{{ q.openRfq }}" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#374151">{{ q.rfq }}</a>
+        <span style="text-align:end;font-weight:600;font-variant-numeric:tabular-nums">{{ q.total }}</span><span style="text-align:end;font-variant-numeric:tabular-nums;font-weight:600;color:{{ q.devColor }}">{{ q.dev }}</span><span style="color:#6B7280;font-variant-numeric:tabular-nums">{{ q.sent }}</span>
+        <span><span style="display:inline-flex;height:22px;padding:0 8px;border-radius:999px;font-size:11px;font-weight:600;align-items:center;white-space:nowrap;background:{{ q.bg }};color:{{ q.fg }}">{{ q.status }}</span></span>
+        <span style="display:flex;gap:10px;justify-content:flex-end;font-size:12px;font-weight:600"><sc-if value="{{ q.flag }}"><a href="#" onClick="{{ q.clear }}" style="color:#0F7A72">Clear</a><a href="#" onClick="{{ q.remove }}" style="color:#DC2626">Remove</a></sc-if><sc-if value="{{ q.noFlag }}"><a href="#">View</a></sc-if></span>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</sc-if>
+
+<!-- REVIEWS & REPORTS -->
+<sc-if value="{{ isReports }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Reviews & Reports" style="padding:24px 28px;display:flex;flex-direction:column;gap:18px">
+  <div><h1 style="margin:0;font-size:24px;font-weight:700;color:#0B3D5C;letter-spacing:-0.3px">Reviews &amp; reports</h1><div style="font-size:14px;color:#6B7280;margin-top:2px">3 open reports · 2 disputed reviews · SLA 24h</div></div>
+  <div style="display:flex;gap:4px;border-bottom:1px solid #E5E7EB"><sc-for list="{{ repTabs }}" as="t" hint-placeholder-count="3"><span onClick="{{ t.go }}" style="padding:10px 14px;font-size:14px;cursor:pointer;margin-bottom:-1px;font-weight:{{ t.weight }};color:{{ t.color }};border-bottom:2px solid {{ t.border }}">{{ t.label }} <span style="font-variant-numeric:tabular-nums;color:#6B7280;font-weight:500">{{ t.count }}</span></span></sc-for></div>
+  <div style="display:grid;grid-template-columns:380px 1fr;gap:16px;align-items:start">
+    <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;overflow:hidden;display:flex;flex-direction:column">
+      <sc-for list="{{ reports }}" as="r" hint-placeholder-count="5">
+        <div onClick="{{ r.pick }}" style="display:flex;flex-direction:column;gap:6px;padding:12px 16px;border-bottom:1px solid #F3F4F6;cursor:pointer;border-inline-start:3px solid {{ r.edge }};background:{{ r.bg }}"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.title }}</span><span style="display:inline-flex;height:20px;padding:0 7px;border-radius:999px;font-size:10px;font-weight:600;align-items:center;white-space:nowrap;background:{{ r.sbg }};color:{{ r.sfg }}">{{ r.status }}</span></div><div style="font-size:12px;color:#6B7280;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.by }} → {{ r.against }}</div><div style="display:flex;justify-content:space-between;font-size:11px;color:#9CA3AF"><span>{{ r.type }}</span><span style="font-variant-numeric:tabular-nums">{{ r.age }}</span></div></div>
+      </sc-for>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px"><div><div style="font-size:17px;font-weight:700;color:#0B3D5C">{{ rep.title }}</div><div style="font-size:13px;color:#6B7280;margin-top:3px">{{ rep.type }} · filed by <b style="color:#374151">{{ rep.by }}</b> against <b style="color:#374151">{{ rep.against }}</b> · {{ rep.age }} ago · linked <a href="#">{{ rep.ref }}</a></div></div><span style="display:inline-flex;height:22px;padding:0 8px;border-radius:999px;font-size:11px;font-weight:600;align-items:center;white-space:nowrap;background:{{ rep.sbg }};color:{{ rep.sfg }}">{{ rep.status }}</span></div>
+        <div style="background:#F9FAFB;border:1px solid #E5E7EB;border-radius:8px;padding:12px 14px;font-size:13px;line-height:1.55;color:#374151"><div style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Reporter's statement</div>{{ rep.statement }}</div>
+        <sc-if value="{{ rep.isReview }}"><div style="border:1px solid #E5E7EB;border-radius:8px;padding:12px 14px;font-size:13px;line-height:1.55;color:#374151"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.5px">Disputed review</span><span style="color:#F28C28;letter-spacing:1px">{{ rep.stars }}</span></div>“{{ rep.reviewText }}”</div></sc-if>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div style="border:1px solid #E5E7EB;border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;font-size:12px"><div style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.5px">Evidence</div><sc-for list="{{ rep.evidence }}" as="e" hint-placeholder-count="2"><a href="#" style="display:flex;align-items:center;gap:6px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>{{ e }}</a></sc-for></div>
+          <div style="border:1px solid #E5E7EB;border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;font-size:12px"><div style="font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.5px">Reported party history</div><div style="display:flex;justify-content:space-between"><span style="color:#6B7280">Prior reports</span><b>{{ rep.prior }}</b></div><div style="display:flex;justify-content:space-between"><span style="color:#6B7280">Account age</span><b>{{ rep.acctAge }}</b></div><div style="display:flex;justify-content:space-between"><span style="color:#6B7280">Rating</span><b>{{ rep.rating }}</b></div></div>
+        </div>
+        <sc-if value="{{ repOpen }}"><div style="display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid #E5E7EB;padding-top:14px"><sc-for list="{{ repActions }}" as="a" hint-placeholder-count="4"><button onClick="{{ a.go }}" style="height:34px;padding:0 14px;border-radius:8px;font:600 13px Inter,sans-serif;cursor:pointer;border:1px solid {{ a.border }};background:{{ a.bg }};color:{{ a.color }}">{{ a.label }}</button></sc-for></div></sc-if>
+        <sc-if value="{{ repResolved }}"><div style="display:flex;align-items:center;gap:10px;border-top:1px solid #E5E7EB;padding-top:14px;font-size:13px;color:#0F7A72"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>Resolved · {{ rep.resolution }} · both parties notified</div></sc-if>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- MESSAGES MODERATION -->
+<sc-if value="{{ isMod }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Messages moderation" style="padding:24px 28px;display:flex;flex-direction:column;gap:18px">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end"><div><h1 style="margin:0;font-size:24px;font-weight:700;color:#0B3D5C;letter-spacing:-0.3px">Messages moderation</h1><div style="font-size:14px;color:#6B7280;margin-top:2px">5 auto-flagged in 24h · rules: off-platform contact, payment redirect, abuse</div></div><div style="display:flex;gap:8px"><button style="height:34px;padding:0 12px;border-radius:8px;border:1px solid #D1D5DB;background:#fff;color:#374151;font:600 13px Inter,sans-serif;cursor:pointer">Edit rules</button></div></div>
+  <div style="display:grid;grid-template-columns:1fr 360px;gap:16px;align-items:start">
+    <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;overflow:hidden">
+      <div style="display:grid;grid-template-columns:1.6fr 3fr 1.1fr 1fr 1.2fr;column-gap:14px;padding:10px 16px;background:#F9FAFB;border-bottom:1px solid #E5E7EB;font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.5px"><span>Conversation</span><span>Flagged message</span><span>Rule</span><span>Time</span><span></span></div>
+      <sc-for list="{{ modMsgs }}" as="m" hint-placeholder-count="5">
+        <div style="display:grid;grid-template-columns:1.6fr 3fr 1.1fr 1fr 1.2fr;column-gap:14px;padding:12px 16px;border-bottom:1px solid #F3F4F6;font-size:13px;align-items:center;background:{{ m.rowBg }}"><div style="min-width:0"><div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ m.from }}</div><div style="font-size:11px;color:#6B7280;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">→ {{ m.to }} · {{ m.ref }}</div></div><div style="color:#374151;line-height:1.45;font-size:12px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">{{ m.text }}</div><span><span style="display:inline-flex;height:20px;padding:0 7px;border-radius:5px;font-size:10px;font-weight:600;align-items:center;white-space:nowrap;font-family:ui-monospace,monospace;background:#FEE2E2;color:#B91C1C">{{ m.rule }}</span></span><span style="color:#6B7280;font-variant-numeric:tabular-nums;font-size:12px">{{ m.time }}</span><span style="display:flex;gap:10px;justify-content:flex-end;font-size:12px;font-weight:600"><sc-if value="{{ m.pending }}"><a href="#" onClick="{{ m.allow }}" style="color:#0F7A72">Allow</a><a href="#" onClick="{{ m.block }}" style="color:#DC2626">Block + warn</a></sc-if><sc-if value="{{ m.done }}"><span style="color:{{ m.doneColor }};font-weight:600">{{ m.doneLabel }}</span></sc-if></span></div>
+      </sc-for>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-size:12px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.6px">Rules · last 30 days</div>
+        <sc-for list="{{ modRules }}" as="r" hint-placeholder-count="4"><div style="display:flex;flex-direction:column;gap:5px"><div style="display:flex;justify-content:space-between;font-size:13px"><span style="font-family:ui-monospace,monospace;font-size:12px">{{ r.name }}</span><span style="font-weight:600;font-variant-numeric:tabular-nums">{{ r.n }} <span style="color:#6B7280;font-weight:400">· {{ r.fp }} false-pos.</span></span></div><div style="height:6px;border-radius:3px;background:#F3F4F6;overflow:hidden"><div style="height:100%;background:#F28C28;width:{{ r.pct }}"></div></div></div></sc-for>
+      </div>
+      <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:10px;font-size:13px">
+        <div style="font-size:12px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.6px">Escalation policy</div>
+        <div style="display:flex;flex-direction:column;gap:6px;color:#374151;line-height:1.5"><div style="display:flex;gap:8px"><b style="width:52px;color:#0B3D5C">1st</b><span>Message blocked, sender warned in-app</span></div><div style="display:flex;gap:8px"><b style="width:52px;color:#0B3D5C">2nd</b><span>7-day messaging restriction</span></div><div style="display:flex;gap:8px"><b style="width:52px;color:#0B3D5C">3rd</b><span>Account suspended · review in Suppliers / Buyers</span></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- CONTENT -->
+<sc-if value="{{ isContent }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Content" style="padding:24px 28px;display:flex;flex-direction:column;gap:18px">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end"><div><h1 style="margin:0;font-size:24px;font-weight:700;color:#0B3D5C;letter-spacing:-0.3px">Content</h1><div style="font-size:14px;color:#6B7280;margin-top:2px">Landing page copy, FAQs, legal pages, announcement banners · EN / AR</div></div><button style="height:36px;padding:0 14px;border-radius:8px;border:none;background:#0B3D5C;color:#fff;font:600 13px Inter,sans-serif;cursor:pointer">+ New page</button></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
+    <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;overflow:hidden">
+      <div style="display:grid;grid-template-columns:2fr 1fr 1.1fr 1fr;column-gap:12px;padding:10px 16px;background:#F9FAFB;border-bottom:1px solid #E5E7EB;font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.5px"><span>Page</span><span>Languages</span><span>Updated</span><span>Status</span></div>
+      <sc-for list="{{ pages }}" as="p" hint-placeholder-count="8">
+        <div style="display:grid;grid-template-columns:2fr 1fr 1.1fr 1fr;column-gap:12px;padding:11px 16px;border-bottom:1px solid #F3F4F6;font-size:13px;align-items:center;cursor:pointer" style-hover="background:#F9FAFB"><div><div style="font-weight:600">{{ p.name }}</div><div style="font-size:11px;color:#6B7280;font-family:ui-monospace,monospace">{{ p.path }}</div></div><span style="display:flex;gap:4px"><span style="font-size:10px;font-weight:700;padding:2px 5px;border-radius:4px;background:#E3F0FA;color:#0B3D5C">EN</span><span style="font-size:10px;font-weight:700;padding:2px 5px;border-radius:4px;background:{{ p.arBg }};color:{{ p.arFg }}">AR</span></span><span style="color:#6B7280;font-variant-numeric:tabular-nums">{{ p.updated }}</span><span><span style="display:inline-flex;height:20px;padding:0 7px;border-radius:999px;font-size:10px;font-weight:600;align-items:center;background:{{ p.bg }};color:{{ p.fg }}">{{ p.status }}</span></span></div>
+      </sc-for>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.6px">Announcement banner</span><span onClick="{{ togBanner }}" style="width:34px;height:20px;border-radius:10px;position:relative;cursor:pointer;background:{{ bannerBg }}"><span style="position:absolute;top:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .15s;left:{{ bannerLeft }}"></span></span></div>
+        <div style="border-radius:8px;padding:10px 14px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:10px;background:{{ bannerPrevBg }};color:{{ bannerPrevFg }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path></svg>Fawry payments unavailable Fri 19 Sep 01:00–04:00 for maintenance.</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px"><div><div style="color:#6B7280;margin-bottom:4px">Audience</div><div style="height:32px;border:1px solid #D1D5DB;border-radius:7px;padding:0 10px;display:flex;align-items:center;justify-content:space-between">Suppliers only<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></div></div><div><div style="color:#6B7280;margin-bottom:4px">Schedule</div><div style="height:32px;border:1px solid #D1D5DB;border-radius:7px;padding:0 10px;display:flex;align-items:center;font-variant-numeric:tabular-nums">17 Sep → 19 Sep 04:00</div></div></div>
+      </div>
+      <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.6px">FAQ · 14 questions</span><a href="#" style="font-size:12px;font-weight:600">Manage</a></div>
+        <sc-for list="{{ faqs }}" as="f" hint-placeholder-count="4"><div style="display:flex;align-items:center;gap:10px;font-size:13px;padding:6px 0;border-bottom:1px solid #F3F4F6"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><circle cx="9" cy="6" r="1"></circle><circle cx="15" cy="6" r="1"></circle><circle cx="9" cy="12" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="9" cy="18" r="1"></circle><circle cx="15" cy="18" r="1"></circle></svg><span style="flex:1;color:#374151;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ f.q }}</span><span style="font-size:11px;color:#9CA3AF;font-variant-numeric:tabular-nums">{{ f.views }} views</span></div></sc-for>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- SETTINGS -->
+<sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Platform settings" style="padding:24px 28px;display:flex;flex-direction:column;gap:18px">
+  <div><h1 style="margin:0;font-size:24px;font-weight:700;color:#0B3D5C;letter-spacing:-0.3px">Platform settings</h1><div style="font-size:14px;color:#6B7280;margin-top:2px">Marketplace rules, payments, notifications, verification SLA</div></div>
+  <div style="display:grid;grid-template-columns:200px 1fr;gap:16px;align-items:start">
+    <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:6px;display:flex;flex-direction:column;gap:2px">
+      <sc-for list="{{ setNav }}" as="n" hint-placeholder-count="5"><span onClick="{{ n.go }}" style="padding:9px 12px;border-radius:7px;font-size:13px;cursor:pointer;font-weight:{{ n.weight }};background:{{ n.bg }};color:{{ n.color }}">{{ n.label }}</span></sc-for>
+    </div>
+    <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:18px">
+      <div style="font-size:16px;font-weight:600;color:#0B3D5C">{{ setTitle }}</div>
+      <sc-for list="{{ setRows }}" as="r" hint-placeholder-count="6">
+        <div style="display:grid;grid-template-columns:1fr 220px;gap:20px;align-items:center;padding-bottom:16px;border-bottom:1px solid #F3F4F6"><div><div style="font-size:14px;font-weight:500">{{ r.label }}</div><div style="font-size:12px;color:#6B7280;margin-top:2px;line-height:1.45">{{ r.help }}</div></div>
+          <sc-if value="{{ r.isToggle }}"><span onClick="{{ r.go }}" style="justify-self:end;width:34px;height:20px;border-radius:10px;position:relative;cursor:pointer;background:{{ r.togBg }}"><span style="position:absolute;top:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .15s;left:{{ r.togLeft }}"></span></span></sc-if>
+          <sc-if value="{{ r.isValue }}"><div style="height:34px;border:1px solid #D1D5DB;border-radius:7px;padding:0 10px;display:flex;align-items:center;justify-content:space-between;font-size:13px;font-variant-numeric:tabular-nums"><span>{{ r.value }}</span><span style="font-size:11px;color:#9CA3AF">{{ r.unit }}</span></div></sc-if>
+        </div>
+      </sc-for>
+      <div style="display:flex;justify-content:flex-end;gap:8px"><button style="height:36px;padding:0 14px;border-radius:8px;border:1px solid #D1D5DB;background:#fff;color:#374151;font:600 13px Inter,sans-serif;cursor:pointer">Discard</button><button onClick="{{ saveSettings }}" style="height:36px;padding:0 16px;border-radius:8px;border:none;background:#0B3D5C;color:#fff;font:600 13px Inter,sans-serif;cursor:pointer">Save changes</button></div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ADMIN USERS -->
+<sc-if value="{{ isAdmins }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Admin users" style="padding:24px 28px;display:flex;flex-direction:column;gap:18px">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end"><div><h1 style="margin:0;font-size:24px;font-weight:700;color:#0B3D5C;letter-spacing:-0.3px">Admin users &amp; roles</h1><div style="font-size:14px;color:#6B7280;margin-top:2px">7 admins · 4 roles · 2FA required for all</div></div><button onClick="{{ openInvite }}" style="height:36px;padding:0 14px;border-radius:8px;border:none;background:#0B3D5C;color:#fff;font:600 13px Inter,sans-serif;cursor:pointer">+ Invite admin</button></div>
+  <div style="display:grid;grid-template-columns:1fr 380px;gap:16px;align-items:start">
+    <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;overflow:hidden">
+      <div style="display:grid;grid-template-columns:2.2fr 1.4fr 1fr 1.2fr 0.8fr;column-gap:12px;padding:10px 16px;background:#F9FAFB;border-bottom:1px solid #E5E7EB;font-size:11px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.5px"><span>Admin</span><span>Role</span><span>2FA</span><span>Last login</span><span></span></div>
+      <sc-for list="{{ admins }}" as="a" hint-placeholder-count="7">
+        <div style="display:grid;grid-template-columns:2.2fr 1.4fr 1fr 1.2fr 0.8fr;column-gap:12px;padding:11px 16px;border-bottom:1px solid #F3F4F6;font-size:13px;align-items:center" style-hover="background:#F9FAFB"><div style="display:flex;align-items:center;gap:10px;min-width:0"><div style="width:30px;height:30px;border-radius:50%;color:#fff;display:grid;place-items:center;font-weight:700;font-size:11px;flex-shrink:0;background:{{ a.bg }}">{{ a.init }}</div><div style="min-width:0"><div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ a.name }}</div><div style="font-size:11px;color:#6B7280;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ a.email }}</div></div></div><span><span style="display:inline-flex;height:22px;padding:0 8px;border-radius:6px;font-size:11px;font-weight:600;align-items:center;white-space:nowrap;background:{{ a.rbg }};color:{{ a.rfg }}">{{ a.role }}</span></span><span style="font-weight:600;color:{{ a.faColor }}">{{ a.fa }}</span><span style="color:#6B7280;font-variant-numeric:tabular-nums">{{ a.last }}</span><span style="text-align:end;font-size:12px;font-weight:600"><a href="#">Edit</a></span></div>
+      </sc-for>
+    </div>
+    <div style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;overflow:hidden">
+      <div style="padding:12px 16px;border-bottom:1px solid #E5E7EB;font-size:15px;font-weight:600">Role permissions</div>
+      <div style="display:grid;grid-template-columns:1.6fr repeat(4,1fr);padding:8px 16px;background:#F9FAFB;border-bottom:1px solid #E5E7EB;font-size:10px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.4px;text-align:center"><span style="text-align:start">Permission</span><span>Super</span><span>Ops</span><span>Finance</span><span>Support</span></div>
+      <sc-for list="{{ perms }}" as="p" hint-placeholder-count="8">
+        <div style="display:grid;grid-template-columns:1.6fr repeat(4,1fr);padding:8px 16px;border-bottom:1px solid #F3F4F6;font-size:12px;align-items:center;text-align:center"><span style="text-align:start;color:#374151">{{ p.name }}</span><span style="color:{{ p.c1 }}">{{ p.v1 }}</span><span style="color:{{ p.c2 }}">{{ p.v2 }}</span><span style="color:{{ p.c3 }}">{{ p.v3 }}</span><span style="color:{{ p.c4 }}">{{ p.v4 }}</span></div>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ inviteOpen }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ closeInvite }}" style="position:absolute;inset:0;background:rgba(17,24,39,.45);z-index:30;display:grid;place-items:center">
+  <div onClick="{{ stop }}" style="width:440px;background:#fff;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px;box-shadow:0 24px 64px rgba(0,0,0,.25)">
+    <div style="font-size:18px;font-weight:700;color:#0B3D5C">Invite admin</div>
+    <div style="display:flex;flex-direction:column;gap:6px;font-size:13px"><label style="color:#374151;font-weight:500">Work email</label><input placeholder="name@tawreedhub.com" style="height:38px;border:1px solid #D1D5DB;border-radius:8px;padding:0 12px;font:14px Inter,sans-serif;outline:none"></div>
+    <div style="display:flex;flex-direction:column;gap:6px;font-size:13px"><label style="color:#374151;font-weight:500">Role</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px"><sc-for list="{{ inviteRoles }}" as="r" hint-placeholder-count="4"><label onClick="{{ r.pick }}" style="display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:8px;cursor:pointer;font-size:13px;border:1px solid {{ r.border }};background:{{ r.bg }}"><span style="width:14px;height:14px;border-radius:50%;border:2px solid {{ r.dot }};display:grid;place-items:center"><span style="width:6px;height:6px;border-radius:50%;background:{{ r.fill }}"></span></span>{{ r.label }}</label></sc-for></div></div>
+    <div style="font-size:12px;color:#6B7280">Invitee must enable 2FA on first login. Invite expires in 72h.</div>
+    <div style="display:flex;justify-content:flex-end;gap:8px"><button onClick="{{ closeInvite }}" style="height:36px;padding:0 14px;border-radius:8px;border:1px solid #D1D5DB;background:#fff;color:#0B3D5C;font:600 14px Inter,sans-serif;cursor:pointer">Cancel</button><button onClick="{{ sendInvite }}" style="height:36px;padding:0 16px;border-radius:8px;border:none;background:#0B3D5C;color:#fff;font:600 14px Inter,sans-serif;cursor:pointer">Send invite</button></div>
+  </div>
+</div>
+</sc-if>
+
+</main>
+
+<sc-if value="{{ rejectOpen }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ closeReject }}" style="position:absolute;inset:0;background:rgba(17,24,39,.45);z-index:30;display:grid;place-items:center">
+  <div onClick="{{ stop }}" style="width:460px;background:#fff;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px;box-shadow:0 24px 64px rgba(0,0,0,.25)">
+    <div style="font-size:18px;font-weight:700;color:#0B3D5C">Reject Nile Fresh Produce Co.?</div>
+    <div style="font-size:13px;color:#6B7280">The supplier sees this reason and can resubmit documents.</div>
+    <div style="display:flex;flex-direction:column;gap:6px"><sc-for list="{{ rejReasons }}" as="r" hint-placeholder-count="4"><label onClick="{{ r.pick }}" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;font-size:14px;border:1px solid {{ r.border }};background:{{ r.bg }}"><span style="width:16px;height:16px;border-radius:50%;border:2px solid {{ r.dot }};display:grid;place-items:center"><span style="width:8px;height:8px;border-radius:50%;background:{{ r.fill }}"></span></span>{{ r.label }}</label></sc-for></div>
+    <div style="display:flex;justify-content:flex-end;gap:8px"><button onClick="{{ closeReject }}" style="height:36px;padding:0 14px;border-radius:8px;border:1px solid #D1D5DB;background:#fff;color:#0B3D5C;font:600 14px Inter,sans-serif;cursor:pointer">Cancel</button><button onClick="{{ confirmReject }}" style="height:36px;padding:0 16px;border-radius:8px;border:none;background:#DC2626;color:#fff;font:600 14px Inter,sans-serif;cursor:pointer">Reject</button></div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;bottom:24px;inset-inline-start:50%;transform:translateX(-50%);display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:8px;background:#111827;color:#fff;font-size:14px;box-shadow:0 8px 24px rgba(17,24,39,.3);z-index:50;white-space:nowrap"><span style="width:22px;height:22px;border-radius:50%;background:#17A398;display:grid;place-items:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>{{ toast }}</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;lang&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;en&quot;,&quot;ar&quot;],&quot;default&quot;:&quot;en&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Preview&quot;},&quot;screen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;overview&quot;,&quot;queue&quot;,&quot;review&quot;,&quot;suppliers&quot;,&quot;buyers&quot;,&quot;account&quot;,&quot;rfqs&quot;,&quot;rfqdetail&quot;,&quot;quotes&quot;,&quot;subs&quot;,&quot;cats&quot;,&quot;reports&quot;,&quot;mod&quot;,&quot;content&quot;,&quot;settings&quot;,&quot;admins&quot;],&quot;default&quot;:&quot;overview&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Preview&quot;}}">
+class Component extends DCLogic {
+  rootRef = React.createRef();
+  componentDidMount() { this.i18n(); }
+  componentDidUpdate() { this.i18n(); }
+  uiLang() { return this.props.lang && !this._langTouched ? this.props.lang : (this.state.lang || 'en'); }
+  i18n() { if (window.TH_I18N) window.TH_I18N.apply(this.rootRef.current, this.uiLang(), window.TH_DICT_ADMIN || {}); }
+  state = { screen: 'overview', userFilter: 'All', acc: 0, accRole: 'suppliers', accTab: 0, rfqFilter: 'All', rfq: 0, rfqOverride: {}, quoteFilter: 'All', quoteOverride: {}, repTab: 'Open', rep: 0, repOverride: {}, modOverride: {}, banner: true, setSection: 0, setTog: {}, inviteOpen: false, inviteRole: 'Ops', accStatusOverride: {}, doc: 0, docState: { 0: 'ok', 1: 'ok', 2: 'pending', 3: 'pending' }, rev: 'Pending', rejectOpen: false, rejReason: 'docs', toast: '', subTab: 'All', cat: 0 };
+  flash(t) { this.setState({ toast: t }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 2600); }
+  renderVals() {
+    const s = this.state;
+    const screen = this.props.screen && !this._touched ? this.props.screen : s.screen;
+    const I = {
+      overview: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+      queue: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/>',
+      suppliers: '<path d="M16.5 9.4 7.5 4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>',
+      buyers: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+      rfqs: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>',
+      quotes: '<path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>',
+      subs: '<rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/>',
+      cats: '<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>',
+      reports: '<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/>',
+      mod: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+      content: '<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+      settings: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
+      admins: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+    };
+    const navItems = [['overview', 'Overview'], ['queue', 'Verification queue', '14', '#F28C28'], ['suppliers', 'Suppliers'], ['buyers', 'Buyers'], ['rfqs', 'RFQs'], ['quotes', 'Quotes'], ['subs', 'Subscriptions & payments', '12', '#DC2626'], ['cats', 'Categories'], ['reports', 'Reviews & reports', '3', 'rgba(255,255,255,.15)'], ['mod', 'Messages moderation'], ['content', 'Content'], ['settings', 'Settings'], ['admins', 'Admin users']];
+    const active = screen === 'review' ? 'queue' : screen === 'account' ? s.accRole : screen === 'rfqdetail' ? 'rfqs' : screen;
+    const goTo = (k) => (e) => { e && e.preventDefault && e.preventDefault(); this._touched = true; this.setState({ screen: k }); };
+    const nav = navItems.map(([k, label, badge, badgeBg]) => { const on = k === active; return { label, icon: { __html: I[k] }, badge: badge || '', badgeBg: badgeBg || '', bg: on ? 'rgba(255,255,255,.12)' : 'transparent', color: on ? '#fff' : 'rgba(255,255,255,.7)', weight: on ? 600 : 500, go: goTo(k) }; });
+    const kpis = [
+      ['Users', '3,412', '+184 this month', '#0F7A72', '#1565A0', 'suppliers'], ['Pending verifications', '14', '3 over SLA', '#B91C1C', '#F28C28', 'queue'], ['Open RFQs', '486', '+12% vs Aug', '#0F7A72', '#1565A0', 'rfqs'],
+      ['Quotes today', '212', 'avg 4.1 per RFQ', '#6B7280', '#F28C28', 'quotes'], ['Active subscriptions', '745', 'MRR EGP 186K', '#0F7A72', '#17A398', 'subs'], ['Expiring · 7d', '38', '12 failed payments', '#B91C1C', '#D97706', 'subs'],
+    ].map(([label, value, delta, deltaColor, accent, go]) => ({ label, value, delta, deltaColor, accent, go: goTo(go) }));
+    const rr = [28, 34, 31, 40, 38, 22, 18, 44, 47, 42, 51, 39, 24, 20], qq = [60, 72, 68, 85, 80, 40, 30, 92, 100, 88, 96, 84, 46, 38];
+    const bars = rr.map((r, i) => ({ r: r + '%', q: qq[i] + '%' }));
+    const revenue = [{ plan: '1 year', amount: 'EGP 112,500', count: '45 new', color: '#0B3D5C', pct: '60%' }, { plan: '1 month', amount: 'EGP 58,750', count: '235 renewals', color: '#1565A0', pct: '32%' }, { plan: '15 days', amount: 'EGP 15,000', count: '100', color: '#F28C28', pct: '8%' }];
+    const topCats = [['Food & beverage', 142], ['Construction materials', 88], ['Packaging', 64], ['Cleaning & hygiene', 51], ['Raw materials', 47]].map(([name, n]) => ({ name, n, pct: Math.round(n / 142 * 100) + '%' }));
+    const govs = [['Cairo', 168, '#0B3D5C'], ['Giza', 74, '#1565A0'], ['Alexandria', 61, '#1565A0'], ['Red Sea', 38, '#17A398'], ['South Sinai', 29, '#17A398'], ['Sharqia', 24, '#F28C28'], ['Dakahlia', 19, '#F28C28'], ['Other (20)', 73, '#9CA3AF']].map(([name, n, color]) => ({ name, n, color }));
+    const Q = { Pending: ['#F3F4F6', '#4B5563'], 'More docs': ['#FEF3C7', '#92400E'], Resubmitted: ['#E3F0FA', '#0B3D5C'], Verified: ['#17A398', '#fff'], Rejected: ['#FEE2E2', '#B91C1C'] };
+    const dc = (x) => x === 1 ? '#17A398' : x === 0 ? '#D1D5DB' : '#DC2626';
+    const queue = [
+      ['NF', 'Nile Fresh Produce Co.', 'Karim Fathy · +20 106 771 2244', 'Farm / local producer', 'Beheira', [1, 1, 0], '39h', '#B91C1C', s.rev === 'Pending' ? 'Pending' : s.rev],
+      ['SM', 'Sinai Marble & Granite', 'Hoda Nabil · +20 111 302 8871', 'Manufacturer', 'South Sinai', [1, 0, 0], '31h', '#B91C1C', 'Pending'],
+      ['AP', 'Alex Pack Industries', 'Omar Said · +20 120 555 0193', 'Manufacturer', 'Alexandria', [1, 1, 1], '18h', '#374151', 'Resubmitted'],
+      ['GC', 'Giza Chemicals Trading', 'Reem Adly · +20 100 887 2210', 'Distributor', 'Giza', [1, -1, 0], '12h', '#374151', 'More docs'],
+      ['DT', 'Delta Textiles', 'Mahmoud Ezz · +20 128 441 9987', 'Wholesaler', 'Gharbia', [1, 1, 0], '9h', '#374151', 'Pending'],
+      ['CE', 'Cairo Equipment Rental', 'Sara Lotfy · +20 101 223 6654', 'Equipment / contracting', 'Cairo', [0, 0, 0], '4h', '#374151', 'Pending'],
+      ['UM', 'Upper Egypt Medical Supplies', 'Peter Nagy · +20 122 909 1122', 'Importer', 'Assiut', [1, 1, 0], '2h', '#374151', 'Pending'],
+    ].map(([initials, name, contact, type, gov, d, wait, waitColor, status], i) => ({ initials, name, contact, type, gov, d1: dc(d[0]), d2: dc(d[1]), d3: dc(d[2]), wait, waitColor, status, bg: Q[status][0], fg: Q[status][1], rowBg: i === 0 && s.rev !== 'Pending' ? '#F9FAFB' : '#fff' }));
+    const docList = [['Commercial register', 'PDF · 2 pages · 14 Sep'], ['Tax card', 'JPG · 14 Sep'], ['Tax number certificate', 'PDF · 14 Sep'], ['Facility photos (3)', 'JPG · optional']];
+    const docs = docList.map(([name, meta], i) => { const st = s.docState[i]; return { name, meta, bg: s.doc === i ? '#E3F0FA' : 'transparent', weight: s.doc === i ? 600 : 500, dot: st === 'ok' ? '#17A398' : st === 'bad' ? '#DC2626' : '#D1D5DB', pick: () => this.setState({ doc: i }) }; });
+    const rejList = [['docs', 'Documents unreadable or incomplete'], ['mismatch', 'Company name does not match register'], ['expired', 'Tax card expired'], ['fake', 'Suspected forged documents (ban phone)']];
+    const rejReasons = rejList.map(([k, label]) => { const on = k === s.rejReason; return { label, border: on ? '#1565A0' : '#E5E7EB', bg: on ? '#E3F0FA' : '#fff', dot: on ? '#1565A0' : '#D1D5DB', fill: on ? '#1565A0' : 'transparent', pick: () => this.setState({ rejReason: k }) }; });
+    const audit = [
+      ...(s.rev === 'Verified' ? [{ text: 'Approved & verified by Youssef Kamal', time: 'now', dot: '#17A398' }] : s.rev === 'Rejected' ? [{ text: 'Rejected by Youssef Kamal · ' + rejList.find(r => r[0] === s.rejReason)[1], time: 'now', dot: '#DC2626' }] : s.rev === 'More docs' ? [{ text: 'More documents requested by Youssef Kamal', time: 'now', dot: '#D97706' }] : []),
+      { text: 'Automated checks passed (tax format, duplicates)', time: '14 Sep 19:21', dot: '#17A398' }, { text: 'Documents submitted · 1 year plan paid (Fawry)', time: '14 Sep 19:20', dot: '#1565A0' }, { text: 'Account created · phone verified via OTP', time: '14 Sep 18:55', dot: '#9CA3AF' },
+    ];
+    const P = { Paid: ['#D9F2EF', '#0F7A72'], Failed: ['#FEE2E2', '#B91C1C'], Refunded: ['#F3F4F6', '#6B7280'], Pending: ['#FEF3C7', '#92400E'] };
+    const txAll = [
+      ['16 Sep 09:41', 'El Nasr Foods Co.', '1 month', 'EGP 250', 'Visa •••• 4821', 'Paid', 'Refund', '#6B7280'], ['16 Sep 08:12', 'Cairo Poultry Group', '1 year', 'EGP 2,500', 'Bank transfer', 'Pending', 'Confirm', '#1565A0'], ['15 Sep 22:03', 'Delta Hygiene', '1 month', 'EGP 250', 'Vodafone Cash', 'Failed', 'Retry', '#1565A0'],
+      ['15 Sep 17:30', 'Nile Fresh Produce Co.', '1 year', 'EGP 2,500', 'Fawry', 'Paid', 'Refund', '#6B7280'], ['15 Sep 11:18', 'Alex Frozen Trading', '15 days', 'EGP 150', 'Meeza •••• 1190', 'Failed', 'Retry', '#1565A0'], ['14 Sep 16:02', 'Sinai Marble & Granite', '1 month', 'EGP 250', 'Visa •••• 0032', 'Paid', 'Extend', '#1565A0'], ['14 Sep 10:45', 'Nile Amenities', '1 month', 'EGP 250', 'Fawry', 'Refunded', '—', '#9CA3AF'],
+    ];
+    const txns = txAll.filter(t => s.subTab === 'All' || t[5] === s.subTab).map(([date, supplier, plan, amount, method, status, action, actionColor]) => ({ date, supplier, plan, amount, method, status, action, actionColor, bg: P[status][0], fg: P[status][1] }));
+    const subTabs = ['All', 'Paid', 'Pending', 'Failed', 'Refunded'].map(t => ({ label: t, count: { All: 1284, Paid: 1198, Pending: 9, Failed: 12, Refunded: 65 }[t], weight: t === s.subTab ? 600 : 500, color: t === s.subTab ? '#0B3D5C' : '#6B7280', border: t === s.subTab ? '#1565A0' : 'transparent', go: () => this.setState({ subTab: t }) }));
+    const mainList = [['Food & beverage', 'أغذية ومشروبات', 12, 142], ['Packaging', 'تغليف', 6, 64], ['Cleaning & hygiene', 'تنظيف ونظافة', 5, 51], ['Construction materials', 'مواد بناء', 9, 88], ['Office supplies', 'مستلزمات مكتبية', 4, 22], ['Medical supplies', 'مستلزمات طبية', 7, 31], ['Raw materials', 'مواد خام', 8, 47], ['Hotel amenities', 'مستلزمات فندقية', 5, 26]];
+    const mainCats = mainList.map(([name, ar, subs, rfqs], i) => ({ name, ar, subs, rfqs, bg: s.cat === i ? '#E3F0FA' : '#fff', weight: s.cat === i ? 600 : 500, pick: () => this.setState({ cat: i }) }));
+    const subMap = { 0: [['Frozen meat & poultry', 'لحوم ودواجن مجمدة', 38, 1], ['Chilled meat', 'لحوم مبردة', 14, 1], ['Dairy & eggs', 'ألبان وبيض', 21, 1], ['Dry goods & grains', 'بقالة وحبوب', 29, 1], ['Fresh produce', 'خضار وفاكهة', 24, 1], ['Beverages', 'مشروبات', 11, 1], ['Seafood', 'أسماك', 5, 0]] };
+    const subCats = (subMap[s.cat] || [['Sub-category A', 'فرعي أ', 12, 1], ['Sub-category B', 'فرعي ب', 8, 1], ['Sub-category C', 'فرعي ج', 3, 0]]).map(([name, ar, rfqs, on]) => ({ name, ar, rfqs, togBg: on ? '#17A398' : '#D1D5DB', togLeft: on ? '10px' : '2px' }));
+    const units = [['kg', 'Kilogram', 'كجم'], ['g', 'Gram', 'جم'], ['L', 'Litre', 'لتر'], ['pcs', 'Piece', 'قطعة'], ['box', 'Box / carton', 'كرتونة'], ['bag', 'Bag / sack', 'شيكارة'], ['m', 'Metre', 'متر'], ['m²', 'Square metre', 'م²'], ['m³', 'Cubic metre', 'م³'], ['ton', 'Tonne', 'طن'], ['pallet', 'Pallet', 'بالتة'], ['roll', 'Roll', 'رول']].map(([sym, name, ar]) => ({ sym, name, ar }));
+    // ---- Suppliers / Buyers ----
+    const isSup = (screen === 'account' ? s.accRole : screen) === 'suppliers';
+    const U = { Verified: ['#17A398', '#fff'], Active: ['#D9F2EF', '#0F7A72'], Pending: ['#F3F4F6', '#4B5563'], Expired: ['#FEF3C7', '#92400E'], Suspended: ['#FEE2E2', '#B91C1C'], Unverified: ['#F3F4F6', '#4B5563'] };
+    const supList = [
+      ['EN', 'El Nasr Foods Co.', 'Ahmed Rashad · +20 100 221 7734', 'Manufacturer', 'Cairo', '312', '68%', '2h ago', 'Verified', 'S-10482', '12 Mar 2026', '1 month', '3 Oct 2026', '55%', '4.8 · 41 reviews', '0'],
+      ['CP', 'Cairo Poultry Group', 'Dina Salah · +20 111 450 9921', 'Farm / local producer', 'Giza', '188', '54%', '5h ago', 'Verified', 'S-10391', '2 Feb 2026', '1 year', '17 Sep 2026', '95%', '4.6 · 28 reviews', '0'],
+      ['DH', 'Delta Hygiene', 'Mona Fikry · +20 128 309 1102', 'Distributor', 'Dakahlia', '96', '41%', '1d ago', 'Expired', 'S-10877', '20 May 2026', '1 month', 'expired 12 Sep', '100%', '4.2 · 9 reviews', '1'],
+      ['AP', 'Alex Pack Industries', 'Omar Said · +20 120 555 0193', 'Manufacturer', 'Alexandria', '0', '—', '3h ago', 'Pending', 'S-11204', '14 Sep 2026', '1 year', '14 Sep 2027', '1%', '— new', '0'],
+      ['SM', 'Sinai Marble & Granite', 'Hoda Nabil · +20 111 302 8871', 'Manufacturer', 'South Sinai', '44', '38%', '2d ago', 'Verified', 'S-10920', '1 Jun 2026', '1 month', '14 Oct 2026', '10%', '4.9 · 12 reviews', '0'],
+      ['NA', 'Nile Amenities', 'Tarek Wahba · +20 106 118 2290', 'Importer', 'Red Sea', '61', '47%', '6d ago', 'Suspended', 'S-10655', '9 Apr 2026', '1 month', 'paused', '30%', '3.1 · 17 reviews', '4'],
+      ['UM', 'Upper Egypt Medical Supplies', 'Peter Nagy · +20 122 909 1122', 'Importer', 'Assiut', '12', '25%', '1h ago', 'Verified', 'S-11130', '28 Aug 2026', '15 days', '20 Sep 2026', '70%', '5.0 · 2 reviews', '0'],
+      ['GC', 'Giza Chemicals Trading', 'Reem Adly · +20 100 887 2210', 'Distributor', 'Giza', '0', '—', '12h ago', 'Pending', 'S-11198', '13 Sep 2026', '1 month', '13 Oct 2026', '8%', '— new', '0'],
+    ];
+    const buyList = [
+      ['SH', 'Steigenberger Hotel El Gouna', 'Nour Hassan · +20 100 333 8811', 'Hotel / resort', 'Red Sea', '48', '31', '10m ago', 'Active', 'B-20411', '8 Jan 2026', '', '', '', '4.7 supplier rating', '0'],
+      ['KR', 'Kazoku Restaurants Group', 'Youssef Adel · +20 111 902 4410', 'Restaurant chain', 'Cairo', '112', '89', '1h ago', 'Active', 'B-20022', '3 Nov 2025', '', '', '', '4.9 supplier rating', '0'],
+      ['OC', 'Orascom Construction – Site 4', 'Eng. Hany Farid · +20 122 118 0090', 'Contractor', 'Giza', '27', '19', '3h ago', 'Active', 'B-20788', '16 Apr 2026', '', '', '', '4.4 supplier rating', '0'],
+      ['MC', 'Mansoura City Hospital', 'Dr. Laila Sami · +20 128 771 3305', 'Hospital / clinic', 'Dakahlia', '15', '9', '2d ago', 'Active', 'B-20910', '2 Jun 2026', '', '', '', '4.5 supplier rating', '0'],
+      ['GF', 'Green Field Supermarkets', 'Kareem Osman · +20 106 440 2231', 'Retail chain', 'Alexandria', '64', '40', '5h ago', 'Active', 'B-20305', '14 Dec 2025', '', '', '', '4.1 supplier rating', '2'],
+      ['AB', 'Ahmed Badawy (individual)', '+20 101 550 9902', 'Individual', 'Cairo', '3', '0', '9d ago', 'Unverified', 'B-21104', '5 Sep 2026', '', '', '', '— new', '0'],
+      ['SS', 'Sharm Sun Resort', 'Marwa Kamel · +20 120 660 1187', 'Hotel / resort', 'South Sinai', '39', '26', '1d ago', 'Active', 'B-20567', '21 Feb 2026', '', '', '', '4.8 supplier rating', '0'],
+      ['QF', 'Quick Fix Facilities', 'Sameh Adly · +20 111 208 7761', 'Facility mgmt', 'Cairo', '8', '2', '14d ago', 'Suspended', 'B-20690', '30 Mar 2026', '', '', '', '2.9 supplier rating', '3'],
+    ];
+    const avatarColors = ['#0B3D5C', '#1565A0', '#17A398', '#F28C28', '#0B3D5C', '#6B7280', '#1565A0', '#0B3D5C'];
+    const rawList = isSup ? supList : buyList;
+    const statusOf = (i, raw) => s.accStatusOverride[(isSup ? 'S' : 'B') + i] || raw;
+    const usersAll = rawList.map((r, i) => ({ i, initials: r[0], name: r[1], contact: r[2], c2: r[3], gov: r[4], c4: r[5], c5: r[6], last: r[7], status: statusOf(i, r[8]), id: r[9], joined: r[10], plan: r[11], renews: r[12], planPct: r[13], rating: r[14], reports: r[15], avatarBg: avatarColors[i] }));
+    const filtersFor = isSup ? ['All', 'Verified', 'Pending', 'Expired', 'Suspended'] : ['All', 'Active', 'Unverified', 'Suspended'];
+    const uf = filtersFor.includes(s.userFilter) ? s.userFilter : 'All';
+    const users = usersAll.filter(u => uf === 'All' || u.status === uf).map(u => ({ ...u, bg: U[u.status][0], fg: U[u.status][1], open: () => this.setState({ screen: 'account', acc: u.i, accRole: isSup ? 'suppliers' : 'buyers', accTab: 0 }) }));
+    const userFilters = filtersFor.map(f => { const on = f === uf; return { label: f, weight: on ? 600 : 500, bg: on ? '#0B3D5C' : '#fff', color: on ? '#fff' : '#374151', border: on ? '#0B3D5C' : '#D1D5DB', go: () => this.setState({ userFilter: f }) }; });
+    const acc = usersAll[Math.min(s.acc, usersAll.length - 1)] || usersAll[0];
+    const accActive = acc.status !== 'Suspended', accSuspended = acc.status === 'Suspended';
+    const A = { Awarded: ['#D9F2EF', '#0F7A72'], Open: ['#E3F0FA', '#0B3D5C'], Lost: ['#F3F4F6', '#6B7280'], Closed: ['#F3F4F6', '#6B7280'], Sent: ['#E3F0FA', '#0B3D5C'], Draft: ['#FEF3C7', '#92400E'] };
+    const actSup = [['Frozen chicken breast · 2 tons', 'Food & beverage', '15 Sep', 'EGP 312,000', 'Sent'], ['Cooking oil 20L · 120 cans', 'Food & beverage', '14 Sep', 'EGP 96,000', 'Awarded'], ['Rice 25kg · 200 bags', 'Dry goods', '12 Sep', 'EGP 158,000', 'Lost'], ['Frozen beef · 800 kg', 'Food & beverage', '10 Sep', 'EGP 264,000', 'Awarded'], ['Eggs · 500 trays / wk', 'Dairy & eggs', '8 Sep', 'EGP 42,500', 'Sent'], ['Tomato paste · 60 cartons', 'Food & beverage', '4 Sep', 'EGP 27,000', 'Closed']];
+    const actBuy = [['Bath towels 70×140 · 1,200 pcs', 'Hotel amenities', '16 Sep', '5 quotes', 'Open'], ['Frozen seafood mix · 400 kg', 'Food & beverage', '14 Sep', '7 quotes', 'Awarded'], ['Liquid soap 5L · 80 cans', 'Cleaning & hygiene', '11 Sep', '4 quotes', 'Awarded'], ['Pool chemicals · monthly', 'Raw materials', '9 Sep', '3 quotes', 'Open'], ['Bed linen set · 300', 'Hotel amenities', '2 Sep', '6 quotes', 'Closed'], ['Mineral water 1.5L · 4,000', 'Beverages', '28 Aug', '9 quotes', 'Awarded']];
+    const accActivity = (isSup ? actSup : actBuy).map(([title, cat, date, value, status]) => ({ title, cat, date, value, status, bg: A[status][0], fg: A[status][1] }));
+    const accTabList = isSup ? ['Quotes', 'Reviews', 'Documents', 'Messages'] : ['RFQs', 'Awarded', 'Reviews given', 'Messages'];
+    const accTabs = accTabList.map((t, i) => ({ label: t, weight: s.accTab === i ? 600 : 500, color: s.accTab === i ? '#0B3D5C' : '#6B7280', border: s.accTab === i ? '#1565A0' : 'transparent', go: () => this.setState({ accTab: i }) }));
+    const accStats = isSup
+      ? [{ label: 'Quotes sent', value: acc.c4, sub: 'lifetime' }, { label: 'Win rate', value: acc.c5, sub: 'awarded ÷ sent' }, { label: 'Avg response', value: '3.2h', sub: 'platform avg 6.8h' }, { label: 'Rating', value: acc.rating.split(' · ')[0], sub: acc.rating.split(' · ')[1] || 'no reviews yet' }]
+      : [{ label: 'RFQs posted', value: acc.c4, sub: 'lifetime' }, { label: 'Awarded', value: acc.c5, sub: 'RFQs with a winner' }, { label: 'Avg quotes / RFQ', value: '5.4', sub: 'platform avg 4.1' }, { label: 'Est. spend', value: 'EGP 2.1M', sub: 'awarded value · 12 mo' }];
+    const accInfo = isSup
+      ? [['Type', acc.c2], ['Contact', acc.contact], ['Email', acc.name.split(' ')[0].toLowerCase() + '@company.com.eg'], ['Tax number', '4' + acc.id.slice(2) + '-118-77'], ['Register no.', '20' + acc.id.slice(2) + ' · ' + acc.gov], ['Coverage', acc.gov + ', Cairo, Giza'], ['Language', 'Arabic']]
+      : [['Type', acc.c2], ['Contact', acc.contact], ['Email', 'procurement@' + acc.name.split(' ')[0].toLowerCase() + '.com'], ['Delivery sites', '2 · ' + acc.gov], ['Payment terms', 'Net 30 preferred'], ['Language', 'English / Arabic']];
+    const accInfoRows = accInfo.map(([k, v]) => ({ k, v }));
+    const repCount = +acc.reports;
+    const accTrust = [
+      ['Phone verified (OTP)', '✓ Yes', '#0F7A72'], [isSup ? 'Documents' : 'Company profile', isSup ? (acc.status === 'Pending' ? 'Under review' : '✓ Verified') : (acc.status === 'Unverified' ? 'Incomplete' : '✓ Complete'), acc.status === 'Pending' || acc.status === 'Unverified' ? '#92400E' : '#0F7A72'],
+      ['Reports against', repCount ? repCount + ' open' : 'None', repCount ? '#B91C1C' : '#0F7A72'], ['Disputes', repCount > 2 ? '1 active' : 'None', repCount > 2 ? '#B91C1C' : '#0F7A72'],
+    ].map(([k, v, color]) => ({ k, v, color }));
+    const accLog = [
+      ...(s.accStatusOverride[(isSup ? 'S' : 'B') + acc.i] === 'Suspended' ? [{ text: 'Suspended by Youssef Kamal · pending review of reports', time: 'now', dot: '#DC2626' }] : s.accStatusOverride[(isSup ? 'S' : 'B') + acc.i] ? [{ text: 'Reinstated by Youssef Kamal', time: 'now', dot: '#17A398' }] : []),
+      ...(repCount ? [{ text: repCount + ' report(s) filed by counterparties · see Reviews & reports', time: '11 Sep', dot: '#D97706' }] : []),
+      { text: isSup ? 'Documents verified · quoting unlocked' : 'First RFQ published', time: acc.joined, dot: '#17A398' }, { text: 'Account created · phone verified via OTP', time: acc.joined, dot: '#9CA3AF' },
+    ];
+    const setAcc = (v) => { this.setState({ accStatusOverride: { ...s.accStatusOverride, [(isSup ? 'S' : 'B') + acc.i]: v } }); };
+    const supStats = [['Total', '1,412', '#0B3D5C'], ['Verified', '1,240', '#0F7A72'], ['Pending / expired', '14 · 96', '#92400E'], ['Suspended', '9', '#B91C1C']];
+    const buyStats = [['Total', '2,000', '#0B3D5C'], ['Active · 30d', '1,318', '#0F7A72'], ['Unverified', '212', '#92400E'], ['Suspended', '6', '#B91C1C']];
+    // ---- RFQs / Quotes ----
+    const R = { Open: ['#E3F0FA', '#0B3D5C'], 'Closing soon': ['#FEF3C7', '#92400E'], Awarded: ['#D9F2EF', '#0F7A72'], Closed: ['#F3F4F6', '#6B7280'], Hidden: ['#FEE2E2', '#B91C1C'], Draft: ['#F3F4F6', '#4B5563'] };
+    const rfqRaw = [
+      ['RFQ-8841', 'Frozen chicken breast, grade A', '2,000 kg', 'Red Sea', 'Steigenberger Hotel El Gouna', 'SH', 'Hotel / resort', 'Food & beverage', '18 Sep', 'in 2d', 7, 'EGP 310K', 'Open', 0, '', '', '', '', '14 Sep', 'Boneless, skinless, IQF, halal certified, 2kg bags, max 5% ice glaze. Brazilian or local.', 'El Gouna, weekly deliveries over 4 weeks', 'Net 30', '48', '68%', '4.7', '298,000', '312,000'],
+      ['RFQ-8839', 'Portland cement 50kg · bulk', '400 tons', 'Giza', 'Orascom Construction – Site 4', 'OC', 'Contractor', 'Construction materials', '17 Sep', 'tomorrow', 4, 'EGP 1.1M', 'Closing soon', 0, '', '', '', '', '11 Sep', 'CEM I 42.5N, ES/ISO certified, palletised, mill certificate per batch.', 'Site 4, 6th of October — 4 lots', '50% advance, 50% on delivery', '27', '70%', '4.4', '1,040,000', '1,120,000'],
+      ['RFQ-8836', 'Cash payment outside platform — call me', '1 lot', 'Cairo', 'Ahmed Badawy (individual)', 'AB', 'Individual', 'Raw materials', '20 Sep', 'in 4d', 1, '—', 'Open', 1, 'Off-platform contact', 'Description contains a phone number and asks suppliers to deal in cash off-platform. Violates marketplace terms §4.2.', 'OFFPLATFORM_CONTACT', '13 Sep 21:04', '13 Sep', 'Need bulk chemicals, contact 0101 550 9902 directly, cash only, no invoices.', 'Cairo', 'Cash', '3', '0%', '—', '—', '—'],
+      ['RFQ-8830', 'Liquid hand soap 5L', '80 cans', 'Dakahlia', 'Mansoura City Hospital', 'MC', 'Hospital / clinic', 'Cleaning & hygiene', '16 Sep', 'today', 6, 'EGP 24K', 'Closing soon', 0, '', '', '', '', '9 Sep', 'Antibacterial, MoH registered, 5L refill cans, MSDS attached.', 'Mansoura, one delivery', 'Net 15', '15', '60%', '4.5', '21,600', '24,000'],
+      ['RFQ-8828', 'Bath towels 70×140 · 600 gsm', '1,200 pcs', 'South Sinai', 'Sharm Sun Resort', 'SS', 'Hotel / resort', 'Hotel amenities', '22 Sep', 'in 6d', 5, 'EGP 144K', 'Open', 0, '', '', '', '', '12 Sep', '100% cotton, white, 600 gsm, hemmed, embroidered logo optional.', 'Sharm El Sheikh', 'Net 30', '39', '67%', '4.8', '138,000', '144,000'],
+      ['RFQ-8821', 'Sushi-grade salmon fillet', '300 kg / wk', 'Cairo', 'Kazoku Restaurants Group', 'KR', 'Restaurant chain', 'Food & beverage', '15 Sep', 'closed', 9, 'EGP 210K', 'Awarded', 0, '', '', '', '', '8 Sep', 'Norwegian, fresh, vacuum packed, 3–4 kg fillets, HACCP cert.', 'Zamalek + New Cairo branches, twice weekly', 'Net 30', '112', '79%', '4.9', '198,000', '210,000'],
+      ['RFQ-8817', 'Duplicate: Frozen chicken breast, grade A', '2,000 kg', 'Red Sea', 'Steigenberger Hotel El Gouna', 'SH', 'Hotel / resort', 'Food & beverage', '18 Sep', 'in 2d', 2, 'EGP 310K', 'Open', 1, 'Duplicate RFQ', 'Same buyer published an identical RFQ (RFQ-8841) 40 minutes earlier. Likely accidental double-post; suppliers are quoting twice.', 'DUPLICATE_RFQ', '14 Sep 10:12', '14 Sep', 'Boneless, skinless, IQF, halal certified, 2kg bags.', 'El Gouna', 'Net 30', '48', '68%', '4.7', '301,000', '310,000'],
+      ['RFQ-8809', 'A4 copy paper 80gsm', '500 reams', 'Alexandria', 'Green Field Supermarkets', 'GF', 'Retail chain', 'Office supplies', '10 Sep', 'closed', 3, 'EGP 62K', 'Closed', 0, '', '', '', '', '3 Sep', '80gsm, 500 sheets, ISO brightness 100+.', 'Alexandria HQ', 'Net 30', '64', '62%', '4.1', '58,500', '62,000'],
+    ];
+    const rfqStatus = (i, raw) => s.rfqOverride[i] || raw;
+    const rfqAll = rfqRaw.map((r, i) => ({ i, id: r[0], title: r[1], qty: r[2], gov: r[3], buyer: r[4], buyerInit: r[5], buyerType: r[6], cat: r[7], deadlineDate: r[8], deadline: r[9], quotes: r[10], value: r[11], status: rfqStatus(i, r[12]), flag: !!r[13] && !s.rfqOverride[i], flagReason: r[14], flagDetail: r[15], flagRule: r[16], flagTime: r[17], published: r[18], spec: r[19], delivery: r[20], payment: r[21], bRfqs: r[22], bAward: r[23], bRating: r[24], low: r[25], med: r[26] }));
+    const rfqFilterDefs = [['All', 486], ['Flagged', 6], ['Closing today', 41], ['Open', 412], ['Awarded', 1204], ['Closed', 3318]];
+    const rfqMatch = (r) => s.rfqFilter === 'All' || (s.rfqFilter === 'Flagged' && r.flag) || (s.rfqFilter === 'Closing today' && r.deadline === 'today') || r.status === s.rfqFilter;
+    const rfqs = rfqAll.filter(rfqMatch).map(r => ({ ...r, bg: R[r.status][0], fg: R[r.status][1], rowBg: r.flag ? '#FFFBFB' : '#fff', dlColor: r.deadline === 'today' || r.deadline === 'tomorrow' ? '#B91C1C' : '#374151', dlWeight: r.deadline === 'today' || r.deadline === 'tomorrow' ? 600 : 400, open: () => this.setState({ screen: 'rfqdetail', rfq: r.i }) }));
+    const rfqFilters = rfqFilterDefs.map(([label, count]) => { const on = label === s.rfqFilter; return { label, count, weight: on ? 600 : 500, bg: on ? '#0B3D5C' : '#fff', color: on ? '#fff' : '#374151', border: on ? '#0B3D5C' : '#D1D5DB', go: () => this.setState({ rfqFilter: label }) }; });
+    const rd = rfqAll[s.rfq]; rd.bg = R[rd.status][0]; rd.fg = R[rd.status][1]; rd.dlColor = rd.deadline === 'today' || rd.deadline === 'tomorrow' ? '#B91C1C' : '#374151';
+    const QS = { Submitted: ['#E3F0FA', '#0B3D5C'], Shortlisted: ['#FEF3C7', '#92400E'], Awarded: ['#17A398', '#fff'], Declined: ['#F3F4F6', '#6B7280'], Flagged: ['#FEE2E2', '#B91C1C'], Removed: ['#F3F4F6', '#9CA3AF'] };
+    const rdQuotesRaw = rd.quotes === 0 ? [] : [['El Nasr Foods Co.', 'EGP 149', 'EGP 298,000', '3 days', '15 Sep 09:12', rd.status === 'Awarded' ? 'Awarded' : 'Shortlisted', '#17A398'], ['Cairo Poultry Group', 'EGP 156', 'EGP 312,000', '2 days', '14 Sep 18:40', 'Submitted', '#1565A0'], ['Alex Frozen Trading', 'EGP 158', 'EGP 316,000', '5 days', '15 Sep 11:05', 'Submitted', '#1565A0'], ['Delta Cold Chain', 'EGP 162', 'EGP 324,000', '2 days', '15 Sep 14:22', 'Submitted', '#1565A0'], ['Nile Fresh Produce Co.', 'EGP 171', 'EGP 342,000', '4 days', '16 Sep 08:31', 'Declined', '#9CA3AF']].slice(0, Math.min(5, rd.quotes));
+    const rdQuotes = rdQuotesRaw.map(([supplier, unit, total, delivery, sent, status, dot]) => ({ supplier, unit, total, delivery, sent, status, dot, bg: QS[status][0], fg: QS[status][1], rowBg: status === 'Awarded' ? '#F0FAF9' : '#fff' }));
+    const rdLog = [
+      ...(s.rfqOverride[rd.i] === 'Hidden' ? [{ text: 'Hidden from suppliers by Youssef Kamal · buyer notified', time: 'now', dot: '#DC2626' }] : s.rfqOverride[rd.i] === 'Closed' ? [{ text: 'Closed by Youssef Kamal · quoting stopped', time: 'now', dot: '#DC2626' }] : s.rfqOverride[rd.i] === 'Open' ? [{ text: 'Restored & flag cleared by Youssef Kamal', time: 'now', dot: '#17A398' }] : []),
+      ...(rd.flag ? [{ text: 'Auto-flagged · ' + rd.flagReason, time: rd.flagTime, dot: '#DC2626' }] : []),
+      ...(rd.quotes ? [{ text: 'First quote received', time: rd.published + ' 18:40', dot: '#1565A0' }] : []),
+      { text: 'Published · notified ' + (rd.quotes ? rd.quotes * 6 : 18) + ' suppliers in ' + rd.cat, time: rd.published, dot: '#17A398' }, { text: 'Draft created by ' + rd.buyer, time: rd.published, dot: '#9CA3AF' },
+    ];
+    const setRfq = (v) => this.setState({ rfqOverride: { ...s.rfqOverride, [rd.i]: v } });
+    const qRaw = [
+      ['Alex Frozen Trading', 'Frozen chicken breast, grade A', 0, 'EGP 316,000', '+1.3%', '10:41', 'Submitted', 0],
+      ['Fast Cement Traders', 'Portland cement 50kg · bulk', 1, 'EGP 610,000', '−45.5%', '10:22', 'Flagged', 1],
+      ['Cairo Poultry Group', 'Frozen chicken breast, grade A', 0, 'EGP 312,000', '0.0%', '09:58', 'Submitted', 0],
+      ['El Nasr Foods Co.', 'Frozen chicken breast, grade A', 0, 'EGP 298,000', '−4.5%', '09:12', 'Shortlisted', 0],
+      ['Delta Hygiene', 'Liquid hand soap 5L', 3, 'EGP 23,200', '−3.3%', '08:47', 'Submitted', 0],
+      ['Nile Amenities', 'Bath towels 70×140 · 600 gsm', 4, 'EGP 288,000', '+100%', '08:15', 'Flagged', 1],
+      ['Sinai Marble & Granite', 'Portland cement 50kg · bulk', 1, 'EGP 1,180,000', '+5.4%', '07:50', 'Submitted', 0],
+      ['Giza Chemicals Trading', 'Cash payment outside platform — call me', 2, 'EGP 1', '—', '07:02', 'Flagged', 1],
+    ];
+    const quotesAll = qRaw.map((q, i) => { const st = s.quoteOverride[i] || q[6]; return { i, supplier: q[0], rfq: q[1], rfqIdx: q[2], total: q[3], dev: q[4], sent: 'today ' + q[5], status: st, flag: st === 'Flagged', noFlag: st !== 'Flagged' }; });
+    const qMatch = (q) => s.quoteFilter === 'All' || (s.quoteFilter === 'Flagged' ? q.flag : q.status === s.quoteFilter);
+    const quotesList = quotesAll.filter(qMatch).map(q => ({ ...q, bg: QS[q.status][0], fg: QS[q.status][1], devColor: q.dev.startsWith('−') ? '#0F7A72' : q.dev.startsWith('+') ? '#B91C1C' : '#6B7280', openRfq: (e) => { e.preventDefault(); this.setState({ screen: 'rfqdetail', rfq: q.rfqIdx }); }, clear: (e) => { e.preventDefault(); this.setState({ quoteOverride: { ...s.quoteOverride, [q.i]: 'Submitted' } }); this.flash('Flag cleared — quote visible to buyer'); }, remove: (e) => { e.preventDefault(); this.setState({ quoteOverride: { ...s.quoteOverride, [q.i]: 'Removed' } }); this.flash('Quote removed — ' + q.supplier + ' warned'); } }));
+    const quoteFilters = [['All', 212], ['Flagged', quotesAll.filter(q => q.flag).length], ['Submitted', 178], ['Shortlisted', 22], ['Awarded', 8]].map(([label, count]) => { const on = label === s.quoteFilter; return { label, count, weight: on ? 600 : 500, bg: on ? '#0B3D5C' : '#fff', color: on ? '#fff' : '#374151', border: on ? '#0B3D5C' : '#D1D5DB', go: () => this.setState({ quoteFilter: label }) }; });
+    // ---- Reports ----
+    const RS = { Open: ['#FEE2E2', '#B91C1C'], 'In review': ['#FEF3C7', '#92400E'], Resolved: ['#D9F2EF', '#0F7A72'] };
+    const repRaw = [
+      ['Supplier never delivered after award', 'Non-delivery', 'Kazoku Restaurants Group', 'Nile Amenities', 'Open', '6h', 'RFQ-8790', 'Awarded 9 Sep for EGP 84,000 (bath amenities). Supplier confirmed then went silent; no delivery by agreed 13 Sep. Phone unanswered. We lost a hotel opening date.', false, '', '', ['award-confirmation.pdf', 'whatsapp-screenshots.zip'], '3', '5 months', '3.1 ★'],
+      ['Fake 1-star review from competitor', 'Review dispute', 'El Nasr Foods Co.', 'Anonymous buyer (B-21104)', 'In review', '19h', 'REV-4412', 'This review comes from an account with 0 awarded RFQs that never bought from us. The text matches a competitor\'s complaint word for word.', true, '★☆☆☆☆', 'Terrible quality, chicken arrived thawed and smelled. Never again.', ['delivery-temperature-log.pdf'], '0', '18 months', '4.8 ★'],
+      ['Buyer demanded cash discount off-platform', 'Off-platform dealing', 'Delta Hygiene', 'Quick Fix Facilities', 'Open', '1d', 'RFQ-8802', 'After awarding, buyer asked us to cancel on platform and deliver for cash at 8% less to avoid \"records\". We refused; they left a low rating.', false, '', '', ['chat-export.txt'], '3', '6 months', '2.9 ★'],
+      ['Wrong quantity delivered, refuses to fix', 'Quality / quantity', 'Sharm Sun Resort', 'Nile Amenities', 'Open', '2d', 'RFQ-8771', 'Ordered 300 linen sets, 240 arrived. Supplier invoiced full amount.', false, '', '', ['delivery-note.jpg', 'invoice.pdf'], '3', '5 months', '3.1 ★'],
+      ['Review mentions staff by name', 'Review dispute', 'Cairo Poultry Group', 'Green Field Supermarkets', 'Resolved', '4d', 'REV-4388', 'Review names our driver and calls him a thief without evidence. Please remove personal accusation.', true, '★★☆☆☆', 'Delivery late twice, driver Mahmoud is rude and I suspect items go missing.', ['none'], '1', '10 months', '4.1 ★'],
+    ];
+    const repAll = repRaw.map((r, i) => { const st = s.repOverride[i] ? 'Resolved' : r[4]; return { i, title: r[0], type: r[1], by: r[2], against: r[3], status: st, age: r[5], ref: r[6], statement: r[7], isReview: r[8], stars: r[9], reviewText: r[10], evidence: r[11], prior: r[12], acctAge: r[13], rating: r[14], resolution: s.repOverride[i] || 'Review edited to remove personal accusation', sbg: RS[st][0], sfg: RS[st][1] }; });
+    const repMatch = (r) => s.repTab === 'All' || (s.repTab === 'Open' ? r.status !== 'Resolved' : r.status === s.repTab);
+    const repShown = repAll.filter(repMatch);
+    const rep = repAll[s.rep];
+    const reports = repShown.map(r => ({ ...r, edge: r.status === 'Open' ? '#DC2626' : r.status === 'In review' ? '#F28C28' : '#17A398', bg: r.i === s.rep ? '#E3F0FA' : '#fff', pick: () => this.setState({ rep: r.i }) }));
+    const repTabs = [['Open', repAll.filter(r => r.status !== 'Resolved').length], ['Resolved', repAll.filter(r => r.status === 'Resolved').length], ['All', repAll.length]].map(([label, count]) => ({ label, count, weight: label === s.repTab ? 600 : 500, color: label === s.repTab ? '#0B3D5C' : '#6B7280', border: label === s.repTab ? '#1565A0' : 'transparent', go: () => this.setState({ repTab: label }) }));
+    const resolve = (res, msg) => () => { this.setState({ repOverride: { ...s.repOverride, [rep.i]: res } }); this.flash(msg); };
+    const repActions = rep.isReview
+      ? [{ label: 'Remove review', go: resolve('Review removed', 'Review removed — rating recalculated'), border: '#FECACA', bg: '#fff', color: '#DC2626' }, { label: 'Edit review', go: resolve('Review edited', 'Review edited — reviewer notified'), border: '#D1D5DB', bg: '#fff', color: '#0B3D5C' }, { label: 'Keep review', go: resolve('Review kept — complies with policy', 'Review kept — reporter notified'), border: '#D1D5DB', bg: '#fff', color: '#0B3D5C' }]
+      : [{ label: 'Warn ' + rep.against.split(' ')[0], go: resolve('Warning issued to ' + rep.against, 'Warning sent to ' + rep.against), border: '#D1D5DB', bg: '#fff', color: '#0B3D5C' }, { label: 'Suspend ' + rep.against.split(' ')[0], go: resolve(rep.against + ' suspended', rep.against + ' suspended — see account'), border: '#FECACA', bg: '#fff', color: '#DC2626' }, { label: 'Dismiss report', go: resolve('Dismissed — insufficient evidence', 'Report dismissed'), border: '#D1D5DB', bg: '#fff', color: '#6B7280' }, { label: 'Request more info', go: () => this.flash('Both parties asked for more information · SLA paused'), border: 'none', bg: '#0B3D5C', color: '#fff' }];
+    // ---- Messages moderation ----
+    const modRaw = [
+      ['Fast Cement Traders', 'Orascom Construction – Site 4', 'RFQ-8839', 'Boss, call me on 0122 118 xxxx we can do 5% less if you pay cash directly, forget the platform.', 'OFFPLATFORM_CONTACT', '10:24'],
+      ['Ahmed Badawy (individual)', 'Giza Chemicals Trading', 'RFQ-8836', 'Send your WhatsApp and Instapay, I don\'t want invoices.', 'PAYMENT_REDIRECT', '09:51'],
+      ['Nile Amenities', 'Sharm Sun Resort', 'RFQ-8771', 'You people are liars and thieves, I will make sure everyone knows what kind of hotel you run.', 'ABUSE', '08:30'],
+      ['Quick Fix Facilities', 'Delta Hygiene', 'RFQ-8802', 'Cancel it on the site and just deliver, I pay cash minus 8%. Nobody needs to know.', 'OFFPLATFORM_CONTACT', 'yesterday 17:12'],
+      ['Green Field Supermarkets', 'Alex Pack Industries', 'RFQ-8809', 'Our accountant\'s email is finance@greenfield.com if you need it for the invoice.', 'OFFPLATFORM_CONTACT', 'yesterday 11:05'],
+    ];
+    const modMsgs = modRaw.map((m, i) => { const st = s.modOverride[i]; return { from: m[0], to: m[1], ref: m[2], text: m[3], rule: m[4], time: m[5], pending: !st, done: !!st, doneLabel: st === 'allow' ? 'Allowed' : 'Blocked · warned', doneColor: st === 'allow' ? '#0F7A72' : '#B91C1C', rowBg: st ? '#F9FAFB' : '#fff', allow: (e) => { e.preventDefault(); this.setState({ modOverride: { ...s.modOverride, [i]: 'allow' } }); }, block: (e) => { e.preventDefault(); this.setState({ modOverride: { ...s.modOverride, [i]: 'block' } }); this.flash('Message blocked — ' + m[0] + ' warned (strike 1)'); } }; });
+    const modRules = [['OFFPLATFORM_CONTACT', 84, 11], ['PAYMENT_REDIRECT', 37, 4], ['ABUSE', 22, 2], ['SPAM_LINK', 9, 1]].map(([name, n, fp]) => ({ name, n, fp, pct: Math.round(n / 84 * 100) + '%' }));
+    // ---- Content ----
+    const CS = { Published: ['#D9F2EF', '#0F7A72'], Draft: ['#FEF3C7', '#92400E'] };
+    const pages = [['Landing page', '/', 1, '12 Sep', 'Published'], ['Pricing', '/pricing', 1, '12 Sep', 'Published'], ['How it works', '/how-it-works', 1, '2 Sep', 'Published'], ['FAQ', '/faq', 1, '15 Sep', 'Published'], ['Terms of service', '/legal/terms', 1, '1 Jul', 'Published'], ['Privacy policy', '/legal/privacy', 1, '1 Jul', 'Published'], ['Supplier verification guide', '/help/verification', 0, '16 Sep', 'Draft'], ['Refund policy', '/legal/refunds', 0, '14 Sep', 'Draft']].map(([name, path, ar, updated, status]) => ({ name, path, updated, status, bg: CS[status][0], fg: CS[status][1], arBg: ar ? '#E3F0FA' : '#F3F4F6', arFg: ar ? '#0B3D5C' : '#9CA3AF' }));
+    const faqs = [['Is TawreedHub really commission-free?', '4,812'], ['How long does supplier verification take?', '3,104'], ['Which payment methods are accepted?', '2,760'], ['Can I quote before I\'m verified?', '1,988'], ['How do I cancel my subscription?', '1,205']].map(([q, views]) => ({ q, views }));
+    // ---- Settings ----
+    const setSections = [
+      ['Marketplace rules', [['Minimum RFQ deadline', 'Buyers cannot set a quote deadline shorter than this.', 'value', '24', 'hours'], ['Max quotes per RFQ', 'RFQ closes to new quotes once reached. 0 = unlimited.', 'value', '15', 'quotes'], ['Allow individual buyers', 'Buyers without a company profile may post RFQs (phone-verified only).', 'toggle', true], ['Require buyer company docs above', 'RFQs with estimated value above this need a verified buyer.', 'value', '500,000', 'EGP'], ['Auto-close awarded RFQs', 'Stop new quotes as soon as a buyer awards.', 'toggle', true]]],
+      ['Verification', [['Verification SLA', 'Queue items turn red after this.', 'value', '48', 'hours'], ['Required documents', 'Commercial register, tax card, tax number certificate.', 'value', '3', 'docs'], ['Allow quoting before verification', 'Unverified suppliers can browse but not quote.', 'toggle', false], ['Auto-check tax number format', 'Reject malformed tax numbers at signup.', 'toggle', true]]],
+      ['Payments', [['Free trial length', 'Applies to first subscription only.', 'value', '7', 'days'], ['Grace period after expiry', 'Quotes stay visible; new quotes blocked.', 'value', '3', 'days'], ['Fawry', 'Cash at Fawry outlets.', 'toggle', true], ['Vodafone Cash / InstaPay', 'Mobile wallets.', 'toggle', true], ['Bank transfer (manual confirm)', 'Finance must confirm in Subscriptions.', 'toggle', true]]],
+      ['Notifications', [['New RFQ match → suppliers', 'Push + SMS to suppliers in matching categories & governorates.', 'toggle', true], ['SMS quota per supplier / day', 'Prevents notification fatigue.', 'value', '10', 'SMS'], ['Expiry reminders', 'Sent 7, 3 and 1 day before subscription ends.', 'toggle', true], ['Weekly digest to buyers', 'Open RFQs summary, every Sunday 09:00.', 'toggle', false]]],
+      ['Localisation', [['Default language for new users', 'Detected from device; fallback below.', 'value', 'Arabic', ''], ['Currency', 'All prices displayed in this currency.', 'value', 'EGP', ''], ['Governorates enabled', 'Out of 27.', 'value', '27', 'of 27'], ['Show English company names to Arabic UI', 'Otherwise transliterated.', 'toggle', true]]],
+    ];
+    const setNav = setSections.map(([label], i) => ({ label, weight: s.setSection === i ? 600 : 500, bg: s.setSection === i ? '#E3F0FA' : 'transparent', color: s.setSection === i ? '#0B3D5C' : '#374151', go: () => this.setState({ setSection: i }) }));
+    const setRows = setSections[s.setSection][1].map(([label, help, kind, val, unit], i) => { const key = s.setSection + '-' + i; const on = key in s.setTog ? s.setTog[key] : val; return { label, help, isToggle: kind === 'toggle', isValue: kind === 'value', value: val, unit: unit || '', togBg: on ? '#17A398' : '#D1D5DB', togLeft: on ? '16px' : '2px', go: () => this.setState({ setTog: { ...s.setTog, [key]: !on } }) }; });
+    // ---- Admins ----
+    const RB = { 'Super admin': ['#0B3D5C', '#fff'], Ops: ['#E3F0FA', '#0B3D5C'], Finance: ['#D9F2EF', '#0F7A72'], Support: ['#F3F4F6', '#4B5563'] };
+    const admins = [['YK', 'Youssef Kamal', 'youssef@tawreedhub.com', 'Super admin', true, 'now', '#F28C28'], ['MA', 'Mariam Adel', 'mariam@tawreedhub.com', 'Ops', true, '12 min ago', '#0B3D5C'], ['HS', 'Hassan Sobhy', 'hassan@tawreedhub.com', 'Ops', true, '1h ago', '#1565A0'], ['NE', 'Nadine El-Sayed', 'nadine@tawreedhub.com', 'Finance', true, '3h ago', '#17A398'], ['OT', 'Omar Tantawy', 'omar@tawreedhub.com', 'Support', true, 'yesterday', '#6B7280'], ['RM', 'Rana Mostafa', 'rana@tawreedhub.com', 'Support', false, '2d ago', '#6B7280'], ['KF', 'Khaled Fouad', 'khaled@tawreedhub.com', 'Finance', true, '5d ago', '#17A398']].map(([init, name, email, role, fa, last, bg]) => ({ init, name, email, role, last, bg, rbg: RB[role][0], rfg: RB[role][1], fa: fa ? '✓ On' : 'Pending', faColor: fa ? '#0F7A72' : '#B91C1C' }));
+    const pv = (x) => x === 1 ? ['✓', '#0F7A72'] : x === 2 ? ['view', '#6B7280'] : ['—', '#D1D5DB'];
+    const perms = [['Approve / reject verification', 1, 1, 0, 2], ['Suspend accounts', 1, 1, 0, 0], ['Hide / close RFQs', 1, 1, 0, 2], ['Refund & confirm payments', 1, 0, 1, 0], ['Edit plans & pricing', 1, 0, 1, 0], ['Moderate messages & reviews', 1, 1, 0, 1], ['Edit content & banners', 1, 1, 0, 0], ['Platform settings', 1, 0, 0, 0], ['Manage admin users', 1, 0, 0, 0], ['Impersonate users', 1, 1, 0, 1]].map(([name, a, b, c, d]) => { const [v1, c1] = pv(a), [v2, c2] = pv(b), [v3, c3] = pv(c), [v4, c4] = pv(d); return { name, v1, c1, v2, c2, v3, c3, v4, c4 }; });
+    const inviteRoles = ['Super admin', 'Ops', 'Finance', 'Support'].map(r => { const on = r === s.inviteRole; return { label: r, border: on ? '#1565A0' : '#E5E7EB', bg: on ? '#E3F0FA' : '#fff', dot: on ? '#1565A0' : '#D1D5DB', fill: on ? '#1565A0' : 'transparent', pick: () => this.setState({ inviteRole: r }) }; });
+    const ui = this.uiLang();
+    return {
+      rootRef: this.rootRef, setEn: () => { this._langTouched = true; this.setState({ lang: 'en' }); }, setAr: () => { this._langTouched = true; this.setState({ lang: 'ar' }); },
+      enBg: ui === 'en' ? '#0B3D5C' : 'transparent', enFg: ui === 'en' ? '#fff' : '#374151', arBg: ui === 'ar' ? '#0B3D5C' : 'transparent', arFg: ui === 'ar' ? '#fff' : '#374151',
+      nav, goQueue: goTo('queue'), goReview: goTo('review'), goSubs: goTo('subs'), goRfqs: goTo('rfqs'),
+      isReports: screen === 'reports', isMod: screen === 'mod', isContent: screen === 'content', isSettings: screen === 'settings', isAdmins: screen === 'admins',
+      repTabs, reports, rep, repOpen: rep.status !== 'Resolved', repResolved: rep.status === 'Resolved', repActions,
+      modMsgs, modRules,
+      pages, faqs, togBanner: () => this.setState({ banner: !s.banner }), bannerBg: s.banner ? '#17A398' : '#D1D5DB', bannerLeft: s.banner ? '16px' : '2px', bannerPrevBg: s.banner ? '#FEF3C7' : '#F3F4F6', bannerPrevFg: s.banner ? '#92400E' : '#9CA3AF',
+      setNav, setTitle: setSections[s.setSection][0], setRows, saveSettings: () => this.flash('Settings saved · change logged'),
+      admins, perms, inviteOpen: s.inviteOpen, inviteRoles, openInvite: () => this.setState({ inviteOpen: true }), closeInvite: () => this.setState({ inviteOpen: false }), sendInvite: () => { this.setState({ inviteOpen: false }); this.flash('Invite sent · ' + s.inviteRole + ' role · expires in 72h'); },
+      isRfqs: screen === 'rfqs', isRfqDetail: screen === 'rfqdetail', isQuotes: screen === 'quotes',
+      rfqFilters, rfqs, rd, rdQuoteCount: rd.quotes, rdQuotes, rdLog, rdLive: rd.status !== 'Hidden' && rd.status !== 'Closed', rdHidden: rd.status === 'Hidden',
+      rdHide: () => { setRfq('Hidden'); this.flash(rd.id + ' hidden — suppliers can no longer see or quote it'); }, rdClose: () => { setRfq('Closed'); this.flash(rd.id + ' closed'); }, rdRestore: () => { setRfq('Open'); this.flash(rd.id + ' restored'); },
+      rdOpenBuyer: (e) => { e.preventDefault(); const bi = buyList.findIndex(b => b[1] === rd.buyer); this.setState({ screen: 'account', accRole: 'buyers', acc: bi < 0 ? 0 : bi, accTab: 0 }); },
+      quoteStats: [['Quotes today', '212', '#0B3D5C'], ['Avg per RFQ', '4.1', '#0B3D5C'], ['Median response', '6.8h', '#0B3D5C'], ['Flagged', String(quotesAll.filter(q => q.flag).length), '#B91C1C']].map(([label, value, color]) => ({ label, value, color })), quoteFilters, quotesList,
+      isUsers: screen === 'suppliers' || screen === 'buyers', isAccount: screen === 'account',
+      usersTitle: isSup ? 'Suppliers' : 'Buyers', usersOne: isSup ? 'Supplier' : 'Buyer', usersSub: isSup ? '1,412 accounts · 1,240 verified · 96 expired subscriptions' : '2,000 accounts · 1,318 active this month · 486 open RFQs',
+      usersCol2: isSup ? 'Type' : 'Business type', usersCol4: isSup ? 'Quotes' : 'RFQs', usersCol5: isSup ? 'Win rate' : 'Awarded', usersTotal: isSup ? '1,412' : '2,000', usersShown: users.length + ' of ' + rawList.length + ' loaded',
+      userStats: (isSup ? supStats : buyStats).map(([label, value, color]) => ({ label, value, color })), userFilters, users,
+      acc, accStatus: acc.status, accBg: U[acc.status][0], accFg: U[acc.status][1], accActive, accSuspended, accIsSupplier: isSup, accStats, accTabs, accActCol1: isSup ? 'RFQ quoted' : 'RFQ', accActivity, accInfo: accInfoRows, accTrust, accLog,
+      backToUsers: goTo(isSup ? 'suppliers' : 'buyers'),
+      suspend: () => { setAcc('Suspended'); this.flash(acc.name + ' suspended — ' + (isSup ? 'quotes hidden, login blocked' : 'RFQs paused, login blocked')); },
+      reinstate: () => { setAcc(isSup ? 'Verified' : 'Active'); this.flash(acc.name + ' reinstated'); },
+      isOverview: screen === 'overview', isQueue: screen === 'queue', isReview: screen === 'review', isSubs: screen === 'subs', isCats: screen === 'cats',
+      kpis, bars, revenue, topCats, govs, queue,
+      docs, docName: docList[s.doc][0], docOk: () => this.setState({ docState: { ...s.docState, [s.doc]: 'ok' } }), docBad: () => this.setState({ docState: { ...s.docState, [s.doc]: 'bad' } }),
+      revStatus: s.rev, revBg: Q[s.rev][0], revFg: Q[s.rev][1], revPending: s.rev === 'Pending' || s.rev === 'More docs', revDone: s.rev === 'Verified' || s.rev === 'Rejected',
+      approve: () => { this.setState({ rev: 'Verified' }); this.flash('Nile Fresh Produce Co. verified — supplier notified, quoting unlocked'); },
+      reqDocs: () => { this.setState({ rev: 'More docs' }); this.flash('Request sent — supplier asked to re-upload tax number certificate'); },
+      openReject: () => this.setState({ rejectOpen: true }), closeReject: () => this.setState({ rejectOpen: false }), stop: (e) => e.stopPropagation(), rejectOpen: s.rejectOpen, rejReasons,
+      confirmReject: () => { this.setState({ rejectOpen: false, rev: 'Rejected' }); this.flash('Application rejected — supplier notified with reason'); },
+      audit,
+      planCards: [{ name: '15 days', sub: 'Entry plan', price: '150', active: '98', trial: '7', state: 'Active', bg: '#D9F2EF', fg: '#0F7A72' }, { name: '1 month', sub: 'Most popular', price: '250', active: '512', trial: '7', state: 'Active', bg: '#D9F2EF', fg: '#0F7A72' }, { name: '1 year', sub: 'Save 17%', price: '2,500', active: '135', trial: '7', state: 'Active', bg: '#D9F2EF', fg: '#0F7A72' }],
+      subTabs, txns, mainCats, subCats, selCat: mainList[s.cat][0], units, toast: s.toast,
+    };
+  }
+}
+</script>
+</body>
+</html>

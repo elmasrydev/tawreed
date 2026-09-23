@@ -1,0 +1,62 @@
+<?php
+
+/*
+ * Partial Arabic overrides. Laravel falls back to the English file for any key
+ * that is not listed here, so only the messages users actually meet are translated.
+ */
+return [
+    'egyptian_mobile' => 'رقم الهاتف يجب أن يكون رقم موبايل مصري صحيح.',
+    'accepted' => 'يجب قبول :attribute.',
+    'after' => 'يجب أن يكون :attribute تاريخًا بعد :date.',
+    'after_or_equal' => 'يجب أن يكون :attribute تاريخًا بعد أو يساوي :date.',
+    'array' => 'يجب أن يكون :attribute مصفوفة.',
+    'before' => 'يجب أن يكون :attribute تاريخًا قبل :date.',
+    'confirmed' => 'تأكيد :attribute غير مطابق.',
+    'date' => 'يجب أن يكون :attribute تاريخًا صحيحًا.',
+    'email' => 'يجب أن يكون :attribute بريدًا إلكترونيًا صحيحًا.',
+    'exists' => 'القيمة المختارة في :attribute غير صحيحة.',
+    'file' => 'يجب أن يكون :attribute ملفًا.',
+    'image' => 'يجب أن يكون :attribute صورة.',
+    'in' => 'القيمة المختارة في :attribute غير صحيحة.',
+    'integer' => 'يجب أن يكون :attribute رقمًا صحيحًا.',
+    'max' => [
+        'array' => 'يجب ألا يحتوي :attribute على أكثر من :max عنصر.',
+        'file' => 'يجب ألا يزيد حجم :attribute عن :max كيلوبايت.',
+        'numeric' => 'يجب ألا تزيد قيمة :attribute عن :max.',
+        'string' => 'يجب ألا يزيد :attribute عن :max حرفًا.',
+    ],
+    'mimes' => 'يجب أن يكون :attribute ملفًا من نوع: :values.',
+    'min' => [
+        'array' => 'يجب أن يحتوي :attribute على :min عنصر على الأقل.',
+        'file' => 'يجب ألا يقل حجم :attribute عن :min كيلوبايت.',
+        'numeric' => 'يجب ألا تقل قيمة :attribute عن :min.',
+        'string' => 'يجب ألا يقل :attribute عن :min حرفًا.',
+    ],
+    'numeric' => 'يجب أن يكون :attribute رقمًا.',
+    'required' => 'حقل :attribute مطلوب.',
+    'string' => 'يجب أن يكون :attribute نصًا.',
+    'unique' => ':attribute مستخدم من قبل.',
+    'attributes' => [
+        'name' => 'الاسم',
+        'email' => 'البريد الإلكتروني',
+        'phone' => 'رقم الهاتف',
+        'password' => 'كلمة المرور',
+        'company_name' => 'اسم الشركة',
+        'company_address' => 'عنوان الشركة',
+        'business_type_id' => 'نوع النشاط',
+        'governorate_id' => 'المحافظة',
+        'governorate_ids' => 'مناطق التغطية',
+        'commercial_reg_no' => 'السجل التجاري',
+        'tax_card_no' => 'البطاقة الضريبية',
+        'tax_number' => 'الرقم الضريبي',
+        'title' => 'اسم المنتج',
+        'specs' => 'المواصفات',
+        'quantity' => 'الكمية',
+        'unit_id' => 'وحدة القياس',
+        'category_id' => 'التصنيف الرئيسي',
+        'delivery_date' => 'تاريخ التسليم',
+        'quote_deadline' => 'آخر موعد للعروض',
+        'unit_price' => 'سعر الوحدة',
+        'total_price' => 'السعر الإجمالي',
+    ],
+];

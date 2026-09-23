@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'contact_details_flagged' => 'Quote by :supplier includes direct contact details in: :fields.',
+    'submitted' => "Quote sent — you'll be notified if it is selected",
+    'already_quoted' => 'You have already quoted this request.',
+    'closed' => 'This request is no longer accepting quotes.',
+    'not_verified' => 'Your account must be verified before you can submit quotes.',
+    'no_contact_details' => 'Contact details are not allowed inside a quote. Use the chat that opens once your quote is selected.',
+    'privacy_note' => 'Other suppliers never see your price or identity. The buyer sees your quote under your company name with your verification badge.',
+    'grand_total' => 'Grand total',
+    'no_quotes' => 'No quotes yet',
+    'no_quotes_body' => 'Quotes you submit will appear here with their status.',
+    'back_to_request' => 'Back to request',
+    'total_hint' => 'For the full quantity: :quantity',
+    'vat_included_hint' => 'Your prices already include VAT.',
+    'buyer_needs_by' => 'The buyer needs it by :date',
+    'validity' => 'Quote validity',
+    'days' => 'days',
+    'live_summary' => 'Live summary',
+    'subtotal' => 'Total price',
+    'delivery' => 'Delivery',
+    'summary_delivery' => 'Delivery',
+    'valid_until' => 'Valid until',
+    'sending' => 'Sending…',
+];

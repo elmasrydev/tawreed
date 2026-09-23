@@ -1,0 +1,41 @@
+<?php
+
+return [
+    'step_1' => 'Step 1 of 3 — Product & specs',
+    'step_2' => 'Step 2 of 3 — Quantity & delivery',
+    'step_3' => 'Step 3 of 3 — Attachments & deadline',
+    'publish' => 'Publish RFQ',
+    'published' => "RFQ published — you'll be notified of each new quote",
+    'governorate_note' => '✓ Governorate only — a detailed address is never requested',
+    'attach_hint' => 'Images or PDF files, up to 6 attachments',
+    'uploading' => 'Uploading attachments…',
+    'sample_product' => 'Roasted espresso beans',
+    'sample_specs' => '80% Arabica / 20% Robusta blend, medium-dark roast, whole beans, 1kg valve bags.',
+    'sample_recurrence' => 'e.g. every two weeks',
+    'notes_placeholder' => 'e.g. A sample is required before contracting…',
+    'quotes_count' => '{0} No quotes|{1} 1 quote|[2,*] :count quotes',
+    'best_price' => 'Best price so far: :price',
+    'deadline_ends' => 'Ends :date',
+    'no_requests' => 'No requests yet',
+    'no_requests_body' => 'Post your first supply request to start receiving quotes.',
+    'reference' => 'Reference',
+
+    'anon_banner' => 'You are anonymous — suppliers only see ":label"',
+
+    'received_quotes' => 'Received Quotes',
+    'verified_supplier' => 'Verified Supplier',
+    'best_offer' => 'Best offer',
+    'select_and_chat' => 'Select & open chat',
+    'shortlist' => 'Shortlist',
+    'shortlisted' => 'Shortlisted',
+    'reject' => 'Reject',
+    'reject_why' => 'Why reject this quote?',
+    'rejected_label' => 'Rejected',
+    'quote_selected' => 'Quote selected — the chat is open and contact details are shared',
+    'free' => 'Free',
+    'no_quotes_yet' => 'No quotes yet',
+    'no_quotes_yet_body' => 'You\'ll be notified as soon as the first quote arrives.',
+    'compare_quotes' => 'Compare quotes',
+
+    'awarded_deal' => 'Awarded deal',
+];
