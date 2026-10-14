@@ -85,13 +85,6 @@
                 </div>
                 <a href="{{ route('supplier.quotes.index') }}" wire:navigate class="btn btn-secondary btn-sm max-md:h-10 max-md:w-full">{{ __('supplier.view_my_quotes') }}</a>
             </div>
-        @elseif ($canQuote && ! $hasSubscription)
-            <x-alert tone="info" icon="info">
-                {{ __('supplier.quote_without_plan') }}
-                <x-slot:action>
-                    <a href="{{ route('supplier.subscription') }}" wire:navigate class="link text-[13px] whitespace-nowrap">{{ __('subscription.view_plans') }}</a>
-                </x-slot:action>
-            </x-alert>
         @endif
 
         <div class="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">

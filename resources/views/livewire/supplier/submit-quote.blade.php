@@ -53,11 +53,17 @@ new #[Layout('layouts::supplier', ['current' => 'feed'])] class extends Componen
 
     public string $warranty_policy = '';
 
+    /**
+     * Opening the form directly while quoting is locked goes back to the
+     * request, where the reason and the way to fix it are shown.
+     */
     public function mount(Rfq $rfq): void
     {
-        Gate::authorize('quote', $rfq);
-
         $this->rfq = $rfq;
+
+        if (Gate::denies('quote', $rfq)) {
+            $this->redirectRoute('supplier.rfqs.show', $rfq, navigate: true);
+        }
     }
 
     #[Computed]

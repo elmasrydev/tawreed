@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
-use App\Enums\UserStatus;
+use App\Models\User;
 use App\Support\PhoneNumber;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -36,19 +36,23 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->credentials(), $this->boolean('remember'))) {
+        if (! Auth::validate($this->credentials())) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages(['login' => __('auth.failed')]);
         }
 
-        if ($this->user()->isSuspended()) {
-            Auth::logout();
+        /** @var User $user */
+        $user = Auth::getLastAttempted();
 
+        RateLimiter::clear($this->throttleKey());
+
+        // Only someone who knows the password learns the account is suspended.
+        if ($user->isSuspended()) {
             throw ValidationException::withMessages(['login' => __('auth.suspended')]);
         }
 
-        RateLimiter::clear($this->throttleKey());
+        Auth::login($user, $this->boolean('remember'));
     }
 
     /**
@@ -62,7 +66,6 @@ class LoginRequest extends FormRequest
         return [
             $field => $field === 'phone' ? PhoneNumber::normalize($login) : $login,
             'password' => $this->string('password')->toString(),
-            'status' => UserStatus::Active->value,
         ];
     }
 

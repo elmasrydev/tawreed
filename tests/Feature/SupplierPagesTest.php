@@ -101,6 +101,7 @@ it('never shows the buyer identity on the dashboard', function (): void {
 
 it('embeds the quote drawer on the request page when the supplier can quote', function (): void {
     $rfq = Rfq::factory()->create();
+    Subscription::factory()->create(['supplier_id' => $this->supplier->id]);
 
     $this->actingAs($this->supplier)
         ->get(route('supplier.rfqs.show', $rfq))
@@ -134,6 +135,7 @@ it('shows the supplier their own quote instead of the drawer once quoted', funct
 
 it('keeps the full page quote form working as a deep link', function (): void {
     $rfq = Rfq::factory()->create();
+    Subscription::factory()->create(['supplier_id' => $this->supplier->id]);
 
     $this->actingAs($this->supplier)
         ->get(route('supplier.rfqs.quote', $rfq))

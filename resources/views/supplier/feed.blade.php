@@ -1,11 +1,7 @@
 <x-layouts.supplier current="feed" :title="__('ui.rfq_feed')">
     @php
         $activeFilters = collect([request('q'), request('category'), request('governorate')])->filter()->count();
-        $blockerHint = match ($quoteBlocker) {
-            'email' => __('supplier.gate_email'),
-            'verification' => __('supplier.gate_review'),
-            default => null,
-        };
+        $blockerHint = $quoteGate['message'] ?? null;
     @endphp
 
     <div class="shell-page">
@@ -85,11 +81,11 @@
 
             {{-- Results --}}
             <section class="flex min-w-0 flex-col gap-4 lg:col-start-2 lg:row-start-2">
-                @if ($quoteBlocker === 'email')
+                @if ($quoteGate)
                     <x-alert tone="neutral" icon="lock">
-                        {{ $blockerHint }}
+                        {{ $quoteGate['message'] }}
                         <x-slot:action>
-                            <a href="{{ route('email.verify') }}" class="link text-[13px] whitespace-nowrap">{{ __('supplier.gate_email_action') }}</a>
+                            <a href="{{ $quoteGate['url'] }}" wire:navigate class="link text-[13px] whitespace-nowrap">{{ $quoteGate['action'] }}</a>
                         </x-slot:action>
                     </x-alert>
                 @endif

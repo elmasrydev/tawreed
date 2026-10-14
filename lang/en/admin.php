@@ -46,6 +46,12 @@ return [
     'reject_done' => 'Application rejected and the supplier notified',
     'suspend_done' => 'Account suspended',
     'unsuspend_done' => 'Account reactivated',
+    'reactivate_confirm' => 'The supplier can sign in again and their account is approved.',
+    'suspend_confirm' => 'The supplier is signed out and cannot sign in until you reactivate them.',
+    'reject_confirm' => 'The supplier sees your note and can re-upload their documents.',
+    'approve_confirm' => 'The supplier gets the verified badge and can start sending offers.',
+    'reactivate_done' => 'Supplier reactivated and approved',
+    'reactivate' => 'Reactivate',
 
     'remove_content' => 'Remove content',
     'dismiss' => 'Dismiss report',

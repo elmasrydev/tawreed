@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\SupplierProfiles\Pages;
 
+use App\Filament\Resources\SupplierProfiles\Actions\VerificationActions;
 use App\Filament\Resources\SupplierProfiles\SupplierProfileResource;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
@@ -13,6 +14,7 @@ class EditSupplierProfile extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            ...VerificationActions::make(),
             ViewAction::make(),
         ];
     }

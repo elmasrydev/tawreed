@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Supplier;
 
-use App\Enums\VerificationStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Governorate;
 use App\Models\Rfq;
 use App\Models\User;
+use App\Support\QuoteEligibility;
 use App\ViewModels\AnonymousRfq;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
@@ -46,7 +46,7 @@ class FeedController extends Controller
                 ->groupBy('category_id')
                 ->pluck('total', 'category_id'),
             'governorates' => Governorate::query()->orderBy('sort')->get(),
-            'quoteBlocker' => $this->quoteBlocker($supplier),
+            'quoteGate' => QuoteEligibility::explain($supplier),
         ]);
     }
 
@@ -67,7 +67,6 @@ class FeedController extends Controller
             'attachments' => $rfq->getMedia('attachments'),
             'canQuote' => $canQuote,
             'gate' => $canQuote || $item->hasOwnQuote() ? null : $this->gateFor($supplier, $item),
-            'hasSubscription' => $supplier->hasActiveSubscription(),
         ]);
     }
 
@@ -98,20 +97,6 @@ class FeedController extends Controller
     }
 
     /**
-     * Why this supplier's account cannot quote at all, if it cannot.
-     *
-     * @return 'email'|'verification'|null
-     */
-    private function quoteBlocker(User $supplier): ?string
-    {
-        return match (true) {
-            ! $supplier->hasVerifiedEmail() => 'email',
-            ! ($supplier->supplierProfile?->canSubmitQuotes() ?? false) => 'verification',
-            default => null,
-        };
-    }
-
-    /**
      * The dark bar explaining why quoting is locked on this request, with the
      * one place that fixes it.
      *
@@ -123,16 +108,7 @@ class FeedController extends Controller
             return ['message' => __('quote.closed'), 'action' => __('supplier.browse_open_rfqs'), 'url' => route('supplier.feed')];
         }
 
-        $verification = $supplier->supplierProfile?->verification_status ?? VerificationStatus::Pending;
-
-        return match ($this->quoteBlocker($supplier)) {
-            'email' => ['message' => __('supplier.gate_email'), 'action' => __('supplier.gate_email_action'), 'url' => route('email.verify')],
-            'verification' => [
-                'message' => $verification === VerificationStatus::Pending ? __('supplier.gate_review') : $verification->hint(),
-                'action' => __('supplier.gate_verification_action'),
-                'url' => route('supplier.account', ['tab' => 'documents']),
-            ],
-            default => ['message' => __('quote.closed'), 'action' => null, 'url' => null],
-        };
+        return QuoteEligibility::explain($supplier)
+            ?? ['message' => __('quote.closed'), 'action' => null, 'url' => null];
     }
 }

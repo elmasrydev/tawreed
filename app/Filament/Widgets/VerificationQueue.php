@@ -2,12 +2,9 @@
 
 namespace App\Filament\Widgets;
 
-use App\Actions\Admin\DecideSupplierVerification;
-use App\Enums\VerificationStatus;
+use App\Filament\Resources\SupplierProfiles\Actions\VerificationActions;
 use App\Filament\Resources\SupplierProfiles\SupplierProfileResource;
 use App\Models\SupplierProfile;
-use Filament\Actions\Action;
-use Filament\Notifications\Notification;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -46,18 +43,6 @@ class VerificationQueue extends TableWidget
                 TextColumn::make('governorates.name_ar')->label(__('ui.coverage_areas'))->badge()->limitList(2),
                 TextColumn::make('created_at')->label(__('admin.applied_at'))->since(),
             ])
-            ->recordActions([
-                Action::make('approve')
-                    ->label(__('admin.approve'))
-                    ->icon(Heroicon::OutlinedCheckBadge)
-                    ->color('success')
-                    ->requiresConfirmation()
-                    ->action(function (SupplierProfile $record): void {
-                        app(DecideSupplierVerification::class)
-                            ->handle($record, VerificationStatus::Verified, auth()->user());
-
-                        Notification::make()->success()->title(__('admin.approve_done'))->send();
-                    }),
-            ]);
+            ->recordActions(VerificationActions::make());
     }
 }

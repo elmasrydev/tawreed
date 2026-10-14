@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Users;
 
+use App\Actions\Admin\DecideSupplierVerification;
 use App\Enums\UserRole;
 use App\Enums\UserStatus;
 use App\Enums\VerificationStatus;
@@ -226,9 +227,19 @@ class UserResource extends Resource
                     ->action(function (User $record): void {
                         $suspended = $record->isSuspended();
 
-                        $record->update([
-                            'status' => $suspended ? UserStatus::Active : UserStatus::Suspended,
-                        ]);
+                        // A supplier's suspension is a verification decision, so
+                        // their profile and account stay in step.
+                        if ($record->supplierProfile) {
+                            app(DecideSupplierVerification::class)->handle(
+                                $record->supplierProfile,
+                                $suspended ? VerificationStatus::Verified : VerificationStatus::Suspended,
+                                auth()->user(),
+                            );
+                        } else {
+                            $record->update([
+                                'status' => $suspended ? UserStatus::Active : UserStatus::Suspended,
+                            ]);
+                        }
 
                         Notification::make()
                             ->success()

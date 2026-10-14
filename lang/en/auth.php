@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'suspended' => 'Your account is suspended. Please contact support.',
+    'suspended' => 'Your account is currently suspended, so you can\'t sign in right now. Please contact our support team and we\'ll help you sort it out.',
 
     /*
     |--------------------------------------------------------------------------

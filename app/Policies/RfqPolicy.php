@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\Rfq;
 use App\Models\User;
+use App\Support\QuoteEligibility;
 
 class RfqPolicy
 {
@@ -56,15 +57,12 @@ class RfqPolicy
     }
 
     /**
-     * Verified suppliers may quote an open request they have not quoted before.
+     * Verified suppliers with an active subscription may quote an open
+     * request they have not quoted before.
      */
     public function quote(User $user, Rfq $rfq): bool
     {
-        if (! $user->isSupplier() || ! $user->hasVerifiedEmail()) {
-            return false;
-        }
-
-        if (! $user->supplierProfile?->canSubmitQuotes()) {
+        if (! QuoteEligibility::canQuote($user)) {
             return false;
         }
 

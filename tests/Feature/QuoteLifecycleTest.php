@@ -13,6 +13,7 @@ use App\Models\Quote;
 use App\Models\RejectionReason;
 use App\Models\Report;
 use App\Models\Rfq;
+use App\Models\Subscription;
 use App\Models\SupplierProfile;
 use App\Models\User;
 use Illuminate\Support\Facades\Gate;
@@ -23,6 +24,7 @@ beforeEach(function (): void {
 
     $this->buyer = User::factory()->buyer()->create();
     $this->supplier = User::factory()->supplier()->create();
+    Subscription::factory()->create(['supplier_id' => $this->supplier->id]);
     $this->rfq = Rfq::factory()->for($this->buyer, 'buyer')->create();
 });
 
@@ -112,14 +114,18 @@ it('flags a quote for moderation when contact details reach the database', funct
         ->and($report->reason)->toContain('warranty_policy');
 });
 
-it('stops an unverified supplier reaching the quote form', function (): void {
+it('sends an unverified supplier from the quote form back to the request', function (): void {
     $pending = User::factory()
         ->has(SupplierProfile::factory()->pending(), 'supplierProfile')
         ->create(['role' => UserRole::Supplier]);
 
     Livewire::actingAs($pending)
         ->test('supplier.submit-quote', ['rfq' => $this->rfq])
-        ->assertForbidden();
+        ->assertRedirect(route('supplier.rfqs.show', $this->rfq));
+
+    $this->actingAs($pending)
+        ->get(route('supplier.rfqs.show', $this->rfq))
+        ->assertSee(__('supplier.gate_review'));
 });
 
 it('shortlists a quote and toggles it back', function (): void {

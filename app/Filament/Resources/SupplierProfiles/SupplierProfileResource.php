@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\SupplierProfiles;
 
-use App\Actions\Admin\DecideSupplierVerification;
 use App\Enums\SupplierDocumentType;
 use App\Enums\VerificationStatus;
+use App\Filament\Resources\SupplierProfiles\Actions\VerificationActions;
 use App\Filament\Resources\SupplierProfiles\Pages\EditSupplierProfile;
 use App\Filament\Resources\SupplierProfiles\Pages\ListSupplierProfiles;
 use App\Filament\Resources\SupplierProfiles\Pages\ViewSupplierProfile;
@@ -14,14 +14,10 @@ use App\Filament\Resources\SupplierProfiles\RelationManagers\PortfolioItemsRelat
 use App\Filament\Resources\SupplierProfiles\Schemas\SupplierProfileFields;
 use App\Models\SupplierProfile;
 use BackedEnum;
-use Filament\Actions\Action;
-use Filament\Actions\ActionGroup;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Forms\Components\Textarea;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Navigation\NavigationItem;
-use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -188,43 +184,8 @@ class SupplierProfileResource extends Resource
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
-                ActionGroup::make([
-                    static::decisionAction('approve', VerificationStatus::Verified, 'success', Heroicon::OutlinedCheckBadge),
-                    static::decisionAction('reject', VerificationStatus::Rejected, 'danger', Heroicon::OutlinedXCircle, requiresNote: true),
-                    static::decisionAction('suspend', VerificationStatus::Suspended, 'gray', Heroicon::OutlinedPauseCircle, requiresNote: true),
-                ]),
+                ...VerificationActions::make(),
             ]);
-    }
-
-    /**
-     * Builds one verification decision action. Rejection and suspension ask for
-     * a note, because the supplier is shown that text in their account.
-     */
-    private static function decisionAction(
-        string $key,
-        VerificationStatus $status,
-        string $color,
-        BackedEnum $icon,
-        bool $requiresNote = false,
-    ): Action {
-        return Action::make($key)
-            ->label(__("admin.{$key}"))
-            ->icon($icon)
-            ->color($color)
-            ->requiresConfirmation()
-            ->visible(fn (SupplierProfile $record): bool => $record->verification_status !== $status)
-            ->schema($requiresNote ? [
-                Textarea::make('note')->label(__('admin.note'))->required()->maxLength(500),
-            ] : [])
-            ->action(function (SupplierProfile $record, array $data) use ($status, $key): void {
-                app(DecideSupplierVerification::class)
-                    ->handle($record, $status, auth()->user(), $data['note'] ?? null);
-
-                Notification::make()
-                    ->success()
-                    ->title(__("admin.{$key}_done"))
-                    ->send();
-            });
     }
 
     public static function getRelations(): array

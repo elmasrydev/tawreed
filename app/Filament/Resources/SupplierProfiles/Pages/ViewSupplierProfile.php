@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\SupplierProfiles\Pages;
 
+use App\Filament\Resources\SupplierProfiles\Actions\VerificationActions;
 use App\Filament\Resources\SupplierProfiles\SupplierProfileResource;
 use App\Filament\Resources\Users\UserResource;
 use Filament\Actions\Action;
@@ -16,6 +17,7 @@ class ViewSupplierProfile extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
+            ...VerificationActions::make(),
             EditAction::make(),
             Action::make('editAccount')
                 ->label(__('admin.edit_account'))

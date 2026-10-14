@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Governorate;
 use App\Models\Quote;
 use App\Models\Rfq;
+use App\Models\Subscription;
 use App\Models\SupplierProfile;
 use App\Models\User;
 use App\ViewModels\AnonymousRfq;
@@ -108,14 +109,19 @@ it('filters the feed by category and governorate', function (): void {
         ->assertDontSee('Espresso beans');
 });
 
-it('lets only a verified supplier quote an open request', function (): void {
+it('lets only a verified, subscribed supplier quote an open request', function (): void {
     $rfq = Rfq::factory()->create();
 
     $pending = User::factory()
         ->has(SupplierProfile::factory()->pending(), 'supplierProfile')
         ->create(['role' => UserRole::Supplier]);
+    Subscription::factory()->create(['supplier_id' => $pending->id]);
 
-    expect(Gate::forUser($this->supplier)->allows('quote', $rfq))->toBeTrue()
+    expect(Gate::forUser($this->supplier)->allows('quote', $rfq))->toBeFalse();
+
+    Subscription::factory()->create(['supplier_id' => $this->supplier->id]);
+
+    expect(Gate::forUser($this->supplier->fresh())->allows('quote', $rfq))->toBeTrue()
         ->and(Gate::forUser($pending)->allows('quote', $rfq))->toBeFalse();
 });
 
