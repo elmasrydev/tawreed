@@ -24,7 +24,6 @@
         ->all();
 
     $faqs = [
-        [__('landing.faq_1_q'), __('landing.faq_1_a')],
         [__('landing.faq_2_q'), __('landing.faq_2_a')],
         [__('landing.faq_3_q'), __('landing.faq_3_a')],
         [
@@ -144,7 +143,7 @@
                 </div>
                 <ul class="flex flex-col gap-3.5 text-[15px] leading-normal text-gray-700">
                     @foreach ([1, 2, 3] as $point)
-                        <x-landing.check-item :title="__('landing.buyers_point_'.$point.'_title')">{{ __('landing.buyers_point_'.$point.'_body') }}</x-landing.check-item>
+                        <x-landing.check-item>{{ __('landing.buyers_point_'.$point.'_body') }}</x-landing.check-item>
                     @endforeach
                 </ul>
                 <a href="{{ route('register.buyer') }}" class="btn btn-primary mt-auto h-[46px] self-start rounded-card px-[22px] text-[15px] whitespace-normal">
@@ -166,15 +165,9 @@
                     <h3 class="mt-2 text-[26px] leading-tight font-bold tracking-[-0.6px] text-balance sm:text-[30px]">{{ __('landing.suppliers_title') }}</h3>
                 </div>
                 <ul class="flex flex-col gap-3.5 text-[15px] leading-normal text-white/95">
-                    <x-landing.check-item tone="accent" :title="__('landing.suppliers_point_1_title')">{{ __('landing.suppliers_point_1_body') }}</x-landing.check-item>
-                    <x-landing.check-item tone="accent" :title="__('landing.suppliers_point_2_title')">
-                        @if ($cheapestPlan)
-                            {{ __('landing.suppliers_point_2_body_from', ['price' => $formatEgp($cheapestPlan->price_egp)]) }}
-                        @else
-                            {{ __('landing.suppliers_point_2_body') }}
-                        @endif
-                    </x-landing.check-item>
-                    <x-landing.check-item tone="accent" :title="__('landing.suppliers_point_3_title')">{{ __('landing.suppliers_point_3_body') }}</x-landing.check-item>
+                    @foreach ([1, 2, 3] as $point)
+                        <x-landing.check-item tone="accent">{{ __('landing.suppliers_point_'.$point.'_body') }}</x-landing.check-item>
+                    @endforeach
                 </ul>
                 <a href="{{ $supplierCtaHref }}" class="btn btn-accent mt-auto h-[46px] self-start rounded-card px-[22px] text-[15px] whitespace-normal">
                     {{ __('landing.suppliers_cta') }}
@@ -187,9 +180,10 @@
             <section class="{{ $container }} flex flex-col gap-8 pb-16 lg:pb-24" data-testid="landing-categories">
                 <x-landing.section-heading :eyebrow="__('landing.categories_eyebrow')" :title="__('landing.categories_title')" align="start" size="md" />
 
-                <div class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+                <div class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4" x-data="{ showAll: false }">
                     @foreach ($categories as $category)
                         <a href="{{ route('register.buyer') }}"
+                           @if ($loop->index >= $visibleCategories) x-show="showAll" x-cloak @endif
                            class="group flex flex-col overflow-hidden rounded-[14px] border border-gray-200 bg-white text-gray-900 transition hover:border-brand-500 hover:shadow-card-hover">
                             <div class="relative aspect-video bg-gray-100">
                                 @if ($category->image_url)
@@ -207,6 +201,14 @@
                             </div>
                         </a>
                     @endforeach
+
+                    @if ($categories->count() > $visibleCategories)
+                        <button type="button" x-on:click="showAll = ! showAll" :aria-expanded="showAll"
+                                class="btn btn-secondary col-span-full justify-self-center">
+                            <span x-text="showAll ? @js(__('landing.categories_show_less')) : @js(__('landing.categories_view_all'))">{{ __('landing.categories_view_all') }}</span>
+                            <x-lucide name="chevron-down" :size="16" ::class="showAll && 'rotate-180'" class="transition" />
+                        </button>
+                    @endif
                 </div>
             </section>
         @endif

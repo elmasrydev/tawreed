@@ -14,6 +14,11 @@ use Illuminate\View\View;
 class SplashController extends Controller
 {
     /**
+     * Categories shown before "view all"; the busiest ones come first.
+     */
+    public const VISIBLE_CATEGORIES = 8;
+
+    /**
      * The public landing page, or straight to your own area when already
      * signed in. Every number and list on it comes from the database; a
      * section with no data behind it is hidden.
@@ -35,13 +40,15 @@ class SplashController extends Controller
 
         return view('splash', [
             'plans' => $plans,
-            'cheapestPlan' => $plans->sortBy(fn (Plan $plan): float => (float) $plan->price_egp)->first(),
             'featuredRfq' => $latestRfq ? AnonymousRfq::make($latestRfq) : null,
             'featuredRfqDeadline' => $latestRfq?->quote_deadline,
             'categories' => Category::query()
                 ->main()
                 ->withCount(['rfqs as open_rfqs_count' => fn ($query) => $query->browsable()])
-                ->get(),
+                ->get()
+                ->sortByDesc('open_rfqs_count')
+                ->values(),
+            'visibleCategories' => self::VISIBLE_CATEGORIES,
             'testimonials' => Testimonial::query()->published()->limit(3)->get(),
         ]);
     }

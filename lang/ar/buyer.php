@@ -132,7 +132,7 @@ return [
     'never_shown_to_suppliers' => 'لا يُعرض أبدًا للمورّدين',
     'phone_login' => 'الهاتف (تسجيل الدخول)',
     'language_hint' => 'لغة الواجهة',
-    'log_out_hint' => 'تسجيل الخروج من توريد هب على هذا الجهاز',
+    'log_out_hint' => 'تسجيل الخروج من توريد هاب على هذا الجهاز',
     'what_suppliers_see' => 'ما يراه المورّدون',
 
     // Supplier profile

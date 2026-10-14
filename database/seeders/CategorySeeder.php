@@ -8,7 +8,8 @@ use Illuminate\Database\Seeder;
 class CategorySeeder extends Seeder
 {
     /**
-     * Main categories with the sub-categories the prototype references.
+     * Main categories, with sub-categories where the prototype references them.
+     * "Other" stays last.
      *
      * @var array<string, array{0: string, 1: string, 2: array<int, array{0: string, 1: string, 2: string}>}>
      */
@@ -35,7 +36,7 @@ class CategorySeeder extends Seeder
             ['steel', 'حديد تسليح', 'Steel rebar'],
             ['paints', 'دهانات', 'Paints'],
         ]],
-        'medical-supplies' => ['مستلزمات طبية', 'Medical supplies', [
+        'medical-supplies' => ['مستلزمات وأجهزة طبية', 'Medical supplies & devices', [
             ['gloves-ppe', 'قفازات ومستلزمات وقاية', 'Gloves & PPE'],
             ['disposables', 'مستهلكات طبية', 'Medical disposables'],
         ]],
@@ -47,6 +48,24 @@ class CategorySeeder extends Seeder
             ['bed-linen', 'مفروشات وأسرّة', 'Bed linen'],
             ['uniforms', 'يونيفورم', 'Uniforms'],
         ]],
+        'agricultural-supplies' => ['مستلزمات واسمدة زراعية وكيماوية', 'Agricultural supplies, fertilisers & chemicals', []],
+        'machines' => ['مكينات', 'Machines', []],
+        'plastic' => ['بلاستيك', 'Plastic', []],
+        'furniture' => ['اثاث وتجهيزات', 'Furniture & fittings', []],
+        'solar-energy' => ['طاقة وألواح شمسية', 'Energy & solar panels', []],
+        'devices-equipment' => ['أجهزة ومعدات', 'Devices & equipment', []],
+        'detergents-chemicals' => ['المنظفات والكيماويات', 'Detergents & chemicals', []],
+        'clothing-uniforms' => ['الملابس واليونيفورم', 'Clothing & uniforms', []],
+        'animal-feed' => ['اعلاف', 'Animal feed', []],
+        'printing-advertising' => ['الطباعة والدعاية', 'Printing & advertising', []],
+        'catering-hospitality' => ['الكاترينج والضيافة', 'Catering & hospitality', []],
+        'pharma-cosmetics' => ['أدوية وتجميل', 'Pharmaceuticals & cosmetics', []],
+        'security-safety' => ['الامن والسلامة', 'Security & safety', []],
+        'hotel-restaurant-supplies' => ['مستلزمات الفنادق والمطاعم', 'Hotel & restaurant supplies', []],
+        'transport-logistics' => ['النقل والخدمات اللوجستية', 'Transport & logistics', []],
+        'auto-parts' => ['قطع غيار سيارات', 'Auto parts', []],
+        'electronics' => ['الكترونيات', 'Electronics', []],
+        'other' => ['أخرى', 'Other', []],
     ];
 
     public function run(): void

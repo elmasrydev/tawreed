@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\RfqStatus;
+use App\Http\Controllers\SplashController;
 use App\Models\Category;
 use App\Models\Plan;
 use App\Models\Rfq;
@@ -38,8 +39,7 @@ it('lists the active plans from the database and highlights the best value', fun
         ->assertSee('data-plan="trial-15-days"', false)
         ->assertDontSee('data-plan="monthly"', false)
         ->assertSee(__('landing.best_value'))
-        ->assertSee(__('landing.plan_trial', ['days' => 7]))
-        ->assertSee(__('landing.suppliers_point_2_body_from', ['price' => '150']));
+        ->assertSee(__('landing.plan_trial', ['days' => 7]));
 
     expect(substr_count($response->getContent(), 'data-best-value'))->toBe(1);
 });
@@ -51,7 +51,6 @@ it('hides pricing and prices when there are no active plans', function (): void 
         ->assertOk()
         ->assertDontSee('id="pricing"', false)
         ->assertDontSee('href="#pricing"', false)
-        ->assertSee(__('landing.suppliers_point_2_body'))
         ->assertSee(__('landing.faq_4_a'));
 });
 
@@ -105,6 +104,38 @@ it('hides the categories section when there are no main categories', function ()
     $this->get(route('splash'))
         ->assertOk()
         ->assertDontSee('data-testid="landing-categories"', false);
+});
+
+it('shows the eight busiest categories first and the rest behind view all', function (): void {
+    $other = Category::query()->where('slug', 'other')->firstOrFail();
+    Rfq::factory()->create(['category_id' => $other->id]);
+
+    $response = $this->get(route('splash'))->assertOk();
+    $html = $response->getContent();
+
+    expect(Category::query()->main()->count())->toBeGreaterThan(SplashController::VISIBLE_CATEGORIES)
+        ->and(strpos($html, e($other->name)))->toBeLessThan(strpos($html, e(Category::query()->where('slug', 'food')->value('name_ar'))))
+        ->and(substr_count($html, 'x-show="showAll"'))->toBe(Category::query()->main()->count() - SplashController::VISIBLE_CATEGORIES);
+
+    $response->assertSee(__('landing.categories_view_all'));
+});
+
+it('no longer markets anonymity or vat comparison', function (): void {
+    $this->get(route('splash'))
+        ->assertOk()
+        ->assertDontSee('مجهول')
+        ->assertDontSee('الضريبة')
+        ->assertSee(__('landing.trust_verified'))
+        ->assertSee(__('landing.step_1_title'));
+
+    $this->get(route('login'))->assertOk()->assertDontSee('مجهول');
+});
+
+it('shows the buyer tagline on the buyer registration panel', function (): void {
+    $this->get(route('register.buyer'))
+        ->assertOk()
+        ->assertSee(__('auth_ui.panel_buyer_tagline'))
+        ->assertDontSee('هويتك');
 });
 
 it('shows the latest open request without revealing who posted it', function (): void {

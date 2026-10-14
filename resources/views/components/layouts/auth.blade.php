@@ -15,6 +15,7 @@
             __("auth_ui.panel_{$context}_point_2"),
             __("auth_ui.panel_{$context}_point_3"),
         ],
+        'tagline' => Lang::has("auth_ui.panel_{$context}_tagline") ? __("auth_ui.panel_{$context}_tagline") : null,
     ];
     $isGuest = auth()->guest();
     $switchTo ??= $context === 'login' ? 'register' : 'login';
@@ -43,6 +44,9 @@
                         </li>
                     @endforeach
                 </ul>
+                @if ($panel['tagline'])
+                    <p class="text-base font-bold text-accent-500">{{ $panel['tagline'] }}</p>
+                @endif
             </div>
         </aside>
 
