@@ -62,7 +62,7 @@ class RegisterSupplier
             return $user;
         });
 
-        $this->otp->issue($user);
+        $this->otp->startVerification($user);
 
         return $user;
     }

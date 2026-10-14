@@ -5,15 +5,18 @@ namespace App\Filament\Resources\SupplierProfiles;
 use App\Actions\Admin\DecideSupplierVerification;
 use App\Enums\SupplierDocumentType;
 use App\Enums\VerificationStatus;
+use App\Filament\Resources\SupplierProfiles\Pages\EditSupplierProfile;
 use App\Filament\Resources\SupplierProfiles\Pages\ListSupplierProfiles;
 use App\Filament\Resources\SupplierProfiles\Pages\ViewSupplierProfile;
 use App\Filament\Resources\SupplierProfiles\RelationManagers\AwardedRfqsRelationManager;
 use App\Filament\Resources\SupplierProfiles\RelationManagers\DocumentsRelationManager;
 use App\Filament\Resources\SupplierProfiles\RelationManagers\PortfolioItemsRelationManager;
+use App\Filament\Resources\SupplierProfiles\Schemas\SupplierProfileFields;
 use App\Models\SupplierProfile;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
+use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Textarea;
 use Filament\Infolists\Components\TextEntry;
@@ -105,6 +108,17 @@ class SupplierProfileResource extends Resource
         ];
     }
 
+    /**
+     * Company details only; verification goes through the decision actions so
+     * every approval keeps its deciding admin and date.
+     */
+    public static function form(Schema $schema): Schema
+    {
+        return $schema->components([
+            Section::make(__('admin.company'))->columns(2)->schema(SupplierProfileFields::make(usesRelationships: true)),
+        ]);
+    }
+
     public static function infolist(Schema $schema): Schema
     {
         return $schema->components([
@@ -173,6 +187,7 @@ class SupplierProfileResource extends Resource
             ])
             ->recordActions([
                 ViewAction::make(),
+                EditAction::make(),
                 ActionGroup::make([
                     static::decisionAction('approve', VerificationStatus::Verified, 'success', Heroicon::OutlinedCheckBadge),
                     static::decisionAction('reject', VerificationStatus::Rejected, 'danger', Heroicon::OutlinedXCircle, requiresNote: true),
@@ -231,6 +246,7 @@ class SupplierProfileResource extends Resource
         return [
             'index' => ListSupplierProfiles::route('/'),
             'view' => ViewSupplierProfile::route('/{record}'),
+            'edit' => EditSupplierProfile::route('/{record}/edit'),
         ];
     }
 }

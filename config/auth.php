@@ -114,4 +114,19 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Email One-Time Codes
+    |--------------------------------------------------------------------------
+    |
+    | New accounts confirm their email address with an emailed code. When
+    | this is off, accounts are treated as verified as soon as they sign up
+    | or sign in, and no code is sent.
+    |
+    */
+
+    'otp' => [
+        'enabled' => (bool) env('OTP_ENABLED', true),
+    ],
+
 ];

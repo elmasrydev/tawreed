@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Governorate;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 
 beforeEach(function (): void {
@@ -250,4 +251,41 @@ it('rejects an unsupported language', function (): void {
     $this->actingAs(User::factory()->buyer()->create())
         ->patch(route('locale.update', 'fr'))
         ->assertNotFound();
+});
+
+it('skips the emailed code when otp is switched off', function (): void {
+    config(['auth.otp.enabled' => false]);
+    Notification::fake();
+
+    $this->post(route('register.buyer'), [
+        'name' => 'Ahmed Samy',
+        'phone' => '010 2345 6789',
+        'email' => 'ahmed@cafecity.eg',
+        'password' => 'Password!234',
+        'password_confirmation' => 'Password!234',
+        'company_name' => 'Cafe City',
+        'business_type_id' => BusinessType::where('slug', 'restaurant-cafe')->value('id'),
+        'governorate_id' => Governorate::where('slug', 'cairo')->value('id'),
+    ])->assertRedirect(route('buyer.home'));
+
+    $user = User::where('email', 'ahmed@cafecity.eg')->firstOrFail();
+
+    expect($user->hasVerifiedEmail())->toBeTrue()
+        ->and($user->otpCodes()->count())->toBe(0);
+
+    Notification::assertNothingSent();
+});
+
+it('verifies a pending account on sign in when otp is switched off', function (): void {
+    config(['auth.otp.enabled' => false]);
+    $user = User::factory()->buyer()->unverified()->create(['email' => 'new@cafecity.eg']);
+
+    $this->post(route('login'), ['login' => 'new@cafecity.eg', 'password' => 'password'])
+        ->assertRedirect(route('email.verify'));
+
+    $this->get(route('email.verify'))->assertRedirect(route('buyer.home'));
+    $this->post(route('email.resend'))->assertRedirect(route('email.verify'));
+
+    expect($user->fresh()->hasVerifiedEmail())->toBeTrue()
+        ->and($user->otpCodes()->count())->toBe(0);
 });

@@ -12,8 +12,16 @@ class EmailVerificationController extends Controller
 {
     public function __construct(private OtpService $otp) {}
 
+    /**
+     * With codes switched off, an unverified account is verified on arrival
+     * and sent on to its home page.
+     */
     public function show(Request $request): View|RedirectResponse
     {
+        if (! $this->otp->isEnabled()) {
+            $this->otp->startVerification($request->user());
+        }
+
         if ($request->user()->hasVerifiedEmail()) {
             return redirect()->route($request->user()->role->homeRoute());
         }
@@ -38,6 +46,10 @@ class EmailVerificationController extends Controller
 
     public function resend(Request $request): RedirectResponse
     {
+        if (! $this->otp->isEnabled()) {
+            return redirect()->route('email.verify');
+        }
+
         $this->otp->issue($request->user());
 
         return back()->with('status', __('otp.sent'));

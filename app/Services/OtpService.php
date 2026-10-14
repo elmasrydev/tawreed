@@ -21,6 +21,31 @@ class OtpService
     public const MAX_ATTEMPTS = 5;
 
     /**
+     * Whether new accounts must confirm their email with a code (OTP_ENABLED).
+     */
+    public function isEnabled(): bool
+    {
+        return (bool) config('auth.otp.enabled');
+    }
+
+    /**
+     * Starts email verification for an account: sends a code, or marks the
+     * email verified straight away when codes are switched off.
+     */
+    public function startVerification(User $user): void
+    {
+        if ($this->isEnabled()) {
+            $this->issue($user);
+
+            return;
+        }
+
+        if (! $user->hasVerifiedEmail()) {
+            $user->forceFill(['email_verified_at' => now()])->save();
+        }
+    }
+
+    /**
      * Invalidates any outstanding code and emails a fresh one. The email goes
      * out after the transaction commits, so a code is never sent that was
      * rolled back. A mail outage is reported rather than thrown, so sign-up

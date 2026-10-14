@@ -3,11 +3,14 @@
 namespace App\Filament\Resources\SupplierProfiles\RelationManagers;
 
 use App\Actions\Admin\DecideSupplierDocument;
+use App\Actions\Supplier\UploadSupplierDocument;
 use App\Enums\DocumentStatus;
 use App\Enums\SupplierDocumentType;
 use App\Models\SupplierDocument;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -19,6 +22,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * The supplier's legal documents. Admins open each file from the private
  * disk and accept or reject it; a rejection note is shown to the supplier.
+ * Admins may also upload a document on the supplier's behalf.
  */
 class DocumentsRelationManager extends RelationManager
 {
@@ -51,6 +55,34 @@ class DocumentsRelationManager extends RelationManager
                     ->color(fn (DocumentStatus $state): string => $state->color()),
                 TextColumn::make('note')->label(__('admin.note'))->placeholder('—')->wrap(),
                 TextColumn::make('updated_at')->label(__('admin.uploaded_at'))->since()->sortable(),
+            ])
+            ->headerActions([
+                Action::make('upload')
+                    ->label(__('admin.upload_document'))
+                    ->icon(Heroicon::OutlinedArrowUpTray)
+                    ->schema([
+                        Select::make('type')
+                            ->label(__('admin.document_type'))
+                            ->options(collect(SupplierDocumentType::required())
+                                ->mapWithKeys(fn (SupplierDocumentType $type): array => [$type->value => $type->label()])
+                                ->all())
+                            ->required(),
+                        FileUpload::make('file')
+                            ->label(__('admin.file'))
+                            ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png'])
+                            ->maxSize(5120)
+                            ->storeFiles(false)
+                            ->required(),
+                    ])
+                    ->action(function (array $data): void {
+                        app(UploadSupplierDocument::class)->handle(
+                            $this->getOwnerRecord(),
+                            SupplierDocumentType::from($data['type']),
+                            $data['file'],
+                        );
+
+                        Notification::make()->success()->title(__('admin.document_uploaded'))->send();
+                    }),
             ])
             ->recordActions([
                 Action::make('open')
