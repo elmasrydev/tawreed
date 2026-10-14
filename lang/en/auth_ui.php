@@ -74,8 +74,8 @@ return [
     'documents_reselect' => 'For your security, files are not kept after an error — please choose them again.',
     'submit_supplier' => 'Submit for review',
 
-    'verify_title' => 'Verify your phone',
-    'verify_sub' => 'Enter the 6-digit code we sent to :phone',
+    'verify_title' => 'Verify your email',
+    'verify_sub' => 'Enter the 6-digit code we sent to :email',
     'verify_button' => 'Verify and continue',
     'no_code' => "Didn't get a code?",
     'resend' => 'Resend code',

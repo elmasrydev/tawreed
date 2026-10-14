@@ -92,7 +92,7 @@ it('sends a signed in user straight to their own area', function (): void {
         ->assertRedirect(route('supplier.dashboard'));
 });
 
-it('registers a buyer, stores the profile and asks for phone verification', function (): void {
+it('registers a buyer, stores the profile and asks for email verification', function (): void {
     $response = $this->post(route('register.buyer'), [
         'name' => 'Ahmed Samy',
         'job_title' => 'Purchasing Manager',
@@ -106,13 +106,13 @@ it('registers a buyer, stores the profile and asks for phone verification', func
         'governorate_id' => Governorate::where('slug', 'cairo')->value('id'),
     ]);
 
-    $response->assertRedirect(route('phone.verify'));
+    $response->assertRedirect(route('email.verify'));
 
     $user = User::where('email', 'ahmed@cafecity.eg')->firstOrFail();
 
     expect($user->role)->toBe(UserRole::Buyer)
         ->and($user->phone)->toBe('01023456789')
-        ->and($user->hasVerifiedPhone())->toBeFalse()
+        ->and($user->hasVerifiedEmail())->toBeFalse()
         ->and($user->buyerProfile->company_name)->toBe('Cafe City')
         ->and($user->otpCodes()->whereNull('consumed_at')->count())->toBe(1);
 
@@ -155,7 +155,7 @@ it('registers a supplier into the verification queue with their documents', func
         ],
     ]);
 
-    $response->assertRedirect(route('phone.verify'));
+    $response->assertRedirect(route('email.verify'));
 
     $profile = User::where('email', 'sales@deltaroasters.eg')->firstOrFail()->supplierProfile;
 
@@ -206,13 +206,13 @@ it('refuses to sign in a suspended account', function (): void {
     $this->assertGuest();
 });
 
-it('sends an unverified phone to the verification screen after signing in', function (): void {
+it('sends an unverified account to the email verification screen after signing in', function (): void {
     $user = User::factory()->buyer()->unverified()->create(['email' => 'new@cafecity.eg']);
 
     $this->post(route('login'), ['login' => 'new@cafecity.eg', 'password' => 'password'])
-        ->assertRedirect(route('phone.verify'));
+        ->assertRedirect(route('email.verify'));
 
-    expect($user->fresh()->hasVerifiedPhone())->toBeFalse();
+    expect($user->fresh()->hasVerifiedEmail())->toBeFalse();
 });
 
 it('keeps a buyer out of the supplier area and vice versa', function (): void {

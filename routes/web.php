@@ -2,11 +2,12 @@
 
 use App\Enums\UserRole;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\Auth\PhoneVerificationController;
+use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\RegisteredBuyerController;
 use App\Http\Controllers\Auth\RegisteredSupplierController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\SplashController;
+use App\Http\Controllers\SupplierDocumentFileController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
@@ -30,11 +31,14 @@ Route::middleware('guest')->group(function (): void {
 Route::middleware('auth')->group(function (): void {
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
-    Route::get('verify-phone', [PhoneVerificationController::class, 'show'])->name('phone.verify');
-    Route::post('verify-phone', [PhoneVerificationController::class, 'store']);
-    Route::post('verify-phone/resend', [PhoneVerificationController::class, 'resend'])
+    Route::get('verify-email', [EmailVerificationController::class, 'show'])->name('email.verify');
+    Route::post('verify-email', [EmailVerificationController::class, 'store']);
+    Route::post('verify-email/resend', [EmailVerificationController::class, 'resend'])
         ->middleware('throttle:3,1')
-        ->name('phone.resend');
+        ->name('email.resend');
+
+    Route::get('supplier-documents/{supplierDocument}', SupplierDocumentFileController::class)
+        ->name('supplier-documents.show');
 });
 
 Route::middleware(['auth', 'role:'.UserRole::Buyer->value])

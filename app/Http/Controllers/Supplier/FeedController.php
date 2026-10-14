@@ -100,12 +100,12 @@ class FeedController extends Controller
     /**
      * Why this supplier's account cannot quote at all, if it cannot.
      *
-     * @return 'phone'|'verification'|null
+     * @return 'email'|'verification'|null
      */
     private function quoteBlocker(User $supplier): ?string
     {
         return match (true) {
-            ! $supplier->hasVerifiedPhone() => 'phone',
+            ! $supplier->hasVerifiedEmail() => 'email',
             ! ($supplier->supplierProfile?->canSubmitQuotes() ?? false) => 'verification',
             default => null,
         };
@@ -126,7 +126,7 @@ class FeedController extends Controller
         $verification = $supplier->supplierProfile?->verification_status ?? VerificationStatus::Pending;
 
         return match ($this->quoteBlocker($supplier)) {
-            'phone' => ['message' => __('supplier.gate_phone'), 'action' => __('supplier.gate_phone_action'), 'url' => route('phone.verify')],
+            'email' => ['message' => __('supplier.gate_email'), 'action' => __('supplier.gate_email_action'), 'url' => route('email.verify')],
             'verification' => [
                 'message' => $verification === VerificationStatus::Pending ? __('supplier.gate_review') : $verification->hint(),
                 'action' => __('supplier.gate_verification_action'),

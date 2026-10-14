@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\QuoteStatus;
+use App\Enums\RfqStatus;
 use App\Enums\VerificationStatus;
 use Database\Factories\SupplierProfileFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -12,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -63,6 +66,23 @@ class SupplierProfile extends Model implements HasMedia
         return $this->hasMany(SupplierDocument::class);
     }
 
+    public function portfolioItems(): HasMany
+    {
+        return $this->hasMany(PortfolioItem::class)->latest();
+    }
+
+    /**
+     * Requests this supplier won, newest first: the "successful deals" shown
+     * on the profile. Removed requests are left out.
+     */
+    public function awardedRfqs(): HasManyThrough
+    {
+        return $this->hasManyThrough(Rfq::class, Quote::class, 'supplier_id', 'awarded_quote_id', 'user_id', 'id')
+            ->where('quotes.status', QuoteStatus::Selected)
+            ->where('rfqs.status', RfqStatus::Awarded)
+            ->latest('rfqs.awarded_at');
+    }
+
     public function isVerified(): bool
     {
         return $this->verification_status === VerificationStatus::Verified;
@@ -76,7 +96,6 @@ class SupplierProfile extends Model implements HasMedia
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('logo')->singleFile();
-        $this->addMediaCollection('portfolio');
     }
 
     public function registerMediaConversions(?Media $media = null): void

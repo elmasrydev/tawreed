@@ -11,7 +11,7 @@ class AccountController extends Controller
     /**
      * @var list<string>
      */
-    private const TABS = ['company', 'coverage', 'documents'];
+    private const TABS = ['company', 'coverage', 'documents', 'portfolio'];
 
     public function __invoke(Request $request): View
     {
@@ -19,7 +19,7 @@ class AccountController extends Controller
 
         return view('supplier.account', [
             'supplier' => $supplier,
-            'profile' => $supplier->supplierProfile->load(['governorates', 'categories.parent', 'documents']),
+            'profile' => $supplier->supplierProfile->load(['governorates', 'categories.parent', 'documents.media', 'portfolioItems.media']),
             'tab' => in_array($request->query('tab'), self::TABS, true) ? $request->query('tab') : 'company',
         ]);
     }

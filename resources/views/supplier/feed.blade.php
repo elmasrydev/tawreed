@@ -2,7 +2,7 @@
     @php
         $activeFilters = collect([request('q'), request('category'), request('governorate')])->filter()->count();
         $blockerHint = match ($quoteBlocker) {
-            'phone' => __('supplier.gate_phone'),
+            'email' => __('supplier.gate_email'),
             'verification' => __('supplier.gate_review'),
             default => null,
         };
@@ -85,11 +85,11 @@
 
             {{-- Results --}}
             <section class="flex min-w-0 flex-col gap-4 lg:col-start-2 lg:row-start-2">
-                @if ($quoteBlocker === 'phone')
+                @if ($quoteBlocker === 'email')
                     <x-alert tone="neutral" icon="lock">
                         {{ $blockerHint }}
                         <x-slot:action>
-                            <a href="{{ route('phone.verify') }}" class="link text-[13px] whitespace-nowrap">{{ __('supplier.gate_phone_action') }}</a>
+                            <a href="{{ route('email.verify') }}" class="link text-[13px] whitespace-nowrap">{{ __('supplier.gate_email_action') }}</a>
                         </x-slot:action>
                     </x-alert>
                 @endif

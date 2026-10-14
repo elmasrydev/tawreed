@@ -31,7 +31,7 @@ class RfqPolicy
 
     public function create(User $user): bool
     {
-        return $user->isBuyer() && $user->hasVerifiedPhone();
+        return $user->isBuyer() && $user->hasVerifiedEmail();
     }
 
     public function update(User $user, Rfq $rfq): bool
@@ -60,7 +60,7 @@ class RfqPolicy
      */
     public function quote(User $user, Rfq $rfq): bool
     {
-        if (! $user->isSupplier() || ! $user->hasVerifiedPhone()) {
+        if (! $user->isSupplier() || ! $user->hasVerifiedEmail()) {
             return false;
         }
 

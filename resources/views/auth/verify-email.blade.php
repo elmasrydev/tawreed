@@ -7,17 +7,17 @@
 <x-layouts.auth :title="__('auth_ui.verify_title')" :context="$context">
     <div class="flex flex-col items-center gap-5 text-center">
         <span class="flex size-16 items-center justify-center rounded-2xl bg-brand-100 text-brand-700">
-            <x-lucide name="phone" :size="28" />
+            <x-lucide name="mail" :size="28" />
         </span>
         <div>
             <h1 class="text-[28px] font-bold tracking-[-0.5px] text-brand-700">{{ __('auth_ui.verify_title') }}</h1>
             <p class="mt-1.5 text-[15px] text-gray-500">
-                {{ __('auth_ui.verify_sub', ['phone' => '']) }}<span dir="ltr" class="font-semibold text-gray-900 tabular">{{ $user->phone }}</span>
+                {{ __('auth_ui.verify_sub', ['email' => '']) }}<span dir="ltr" class="font-semibold break-all text-gray-900">{{ $user->email }}</span>
             </p>
         </div>
     </div>
 
-    <form method="POST" action="{{ route('phone.verify') }}" class="mx-auto flex w-full max-w-[400px] flex-col gap-4">
+    <form method="POST" action="{{ route('email.verify') }}" class="mx-auto flex w-full max-w-[400px] flex-col gap-4">
         @csrf
 
         <div>
@@ -41,7 +41,7 @@
     </form>
 
     <div class="flex flex-col items-center gap-3 text-[13px] text-gray-500">
-        <form method="POST" action="{{ route('phone.resend') }}" class="flex flex-wrap items-center justify-center gap-1.5">
+        <form method="POST" action="{{ route('email.resend') }}" class="flex flex-wrap items-center justify-center gap-1.5">
             @csrf
             {{ __('auth_ui.no_code') }}
             <button type="submit" class="link cursor-pointer">{{ __('auth_ui.resend') }}</button>

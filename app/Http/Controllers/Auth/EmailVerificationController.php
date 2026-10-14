@@ -8,17 +8,17 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
-class PhoneVerificationController extends Controller
+class EmailVerificationController extends Controller
 {
     public function __construct(private OtpService $otp) {}
 
     public function show(Request $request): View|RedirectResponse
     {
-        if ($request->user()->hasVerifiedPhone()) {
+        if ($request->user()->hasVerifiedEmail()) {
             return redirect()->route($request->user()->role->homeRoute());
         }
 
-        return view('auth.verify-phone');
+        return view('auth.verify-email');
     }
 
     public function store(Request $request): RedirectResponse

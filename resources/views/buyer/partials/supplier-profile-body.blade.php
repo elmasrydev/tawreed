@@ -32,22 +32,84 @@
             @endif
         </section>
 
-        @if ($portfolio->isNotEmpty())
-            <section class="card flex flex-col gap-3 p-4 sm:p-5">
+        @if ($profile->portfolioItems->isNotEmpty())
+            <section class="card flex flex-col gap-3.5 p-4 sm:p-5">
                 <h2 class="card-title">
                     <x-lucide name="image" :size="16" class="text-brand-500" />
                     {{ __('buyer.previous_work') }}
                 </h2>
-                <ul class="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-                    @foreach ($portfolio as $media)
-                        <li>
-                            <a href="{{ $media->getUrl() }}" target="_blank" rel="noopener" class="block aspect-[4/3] overflow-hidden rounded-lg bg-gray-100">
-                                <img src="{{ $media->hasGeneratedConversion('thumb') ? $media->getUrl('thumb') : $media->getUrl() }}"
-                                     alt="{{ $media->name }}" class="size-full object-cover" loading="lazy">
-                            </a>
-                        </li>
-                    @endforeach
-                </ul>
+                @foreach ($profile->portfolioItems as $item)
+                    @php($images = $item->getMedia('images'))
+                    <article class="flex flex-col gap-2.5 border-t border-gray-100 pt-3.5 first-of-type:border-t-0 first-of-type:pt-0">
+                        <div>
+                            <h3 class="text-sm font-semibold break-words text-gray-900">{{ $item->title }}</h3>
+                            @if ($item->client_type || $item->year)
+                                <p class="text-xs text-gray-500">{{ collect([$item->client_type, $item->year])->filter()->implode(' · ') }}</p>
+                            @endif
+                        </div>
+                        @if ($item->description)
+                            <p class="text-[13px] leading-relaxed whitespace-pre-line text-gray-700">{{ $item->description }}</p>
+                        @endif
+                        @if ($images->isNotEmpty())
+                            <ul class="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+                                @foreach ($images as $media)
+                                    <li>
+                                        <a href="{{ $media->getUrl() }}" target="_blank" rel="noopener" class="block aspect-[4/3] overflow-hidden rounded-lg bg-gray-100">
+                                            <img src="{{ $media->hasGeneratedConversion('thumb') ? $media->getUrl('thumb') : $media->getUrl() }}"
+                                                 alt="{{ $item->title }}" class="size-full object-cover" loading="lazy">
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @endif
+                    </article>
+                @endforeach
+            </section>
+        @endif
+
+        @if ($deals->isNotEmpty())
+            <section class="card flex flex-col gap-3.5 p-4 sm:p-5">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <h2 class="card-title">
+                        <x-lucide name="award" :size="16" class="text-success-500" />
+                        {{ __('buyer.successful_deals') }}
+                    </h2>
+                    <span class="text-[13px] text-gray-500">{{ trans_choice('buyer.deals_count', $profile->completed_deals_count, ['count' => number_format($profile->completed_deals_count)]) }}</span>
+                </div>
+
+                @foreach ($deals as $deal)
+                    @php($review = $dealReviews->get($deal->id))
+                    <article class="flex flex-col gap-1.5 border-t border-gray-100 pt-3.5">
+                        <div class="flex flex-wrap items-start justify-between gap-2">
+                            <div class="min-w-0">
+                                @if ($deal->categoryPath())
+                                    <p class="eyebrow">{{ $deal->categoryPath() }}</p>
+                                @endif
+                                <h3 class="text-sm font-semibold break-words text-gray-900">{{ $deal->title }}</h3>
+                            </div>
+                            <x-badge tone="success" size="sm">{{ __('buyer.deal_awarded') }}</x-badge>
+                        </div>
+                        <p class="flex flex-wrap items-center gap-x-1.5 text-xs text-gray-500">
+                            @if ($deal->formattedQuantity())
+                                <span class="tabular">{{ $deal->formattedQuantity() }} {{ $deal->unit?->name }}</span>
+                                <span aria-hidden="true">·</span>
+                            @endif
+                            <span>{{ $deal->anonymousBuyerLabel() }}</span>
+                            @if ($deal->awarded_at)
+                                <span aria-hidden="true">·</span>
+                                <span class="tabular">{{ $deal->awarded_at->translatedFormat('M Y') }}</span>
+                            @endif
+                        </p>
+                        @if ($review)
+                            <div class="flex flex-col gap-1 rounded-md bg-gray-50 px-3 py-2">
+                                <x-buyer.stars :rating="$review->rating" :size="13" />
+                                @if ($review->body)
+                                    <p class="text-[13px] leading-relaxed text-gray-700">{{ $review->body }}</p>
+                                @endif
+                            </div>
+                        @endif
+                    </article>
+                @endforeach
             </section>
         @endif
 

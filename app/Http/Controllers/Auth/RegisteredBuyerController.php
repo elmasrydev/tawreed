@@ -27,6 +27,6 @@ class RegisteredBuyerController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('phone.verify')->with('status', __('otp.sent'));
+        return redirect()->route('email.verify')->with('status', __('otp.sent'));
     }
 }

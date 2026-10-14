@@ -34,6 +34,7 @@ return [
     'nav_dashboard' => 'Dashboard',
     'nav_my_rfqs' => 'My RFQs',
     'nav_quotes' => 'Quotes',
+    'nav_orders' => 'Order history',
     'nav_messages' => 'Messages',
     'nav_settings' => 'Settings',
     'nav_browse_rfqs' => 'Browse RFQs',

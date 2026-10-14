@@ -23,8 +23,8 @@ class AuthenticatedSessionController extends Controller
 
         $user = $request->user();
 
-        if (! $user->hasVerifiedPhone()) {
-            return redirect()->route('phone.verify');
+        if (! $user->hasVerifiedEmail()) {
+            return redirect()->route('email.verify');
         }
 
         return redirect()->intended(route($user->role->homeRoute()));

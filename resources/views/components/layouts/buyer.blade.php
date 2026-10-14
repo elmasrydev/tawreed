@@ -10,13 +10,17 @@
          'badge' => $badges['rfqs'] ?: null, 'badgeTone' => 'muted'],
         ['key' => 'quotes', 'url' => route('buyer.quotes.index'), 'label' => __('common.nav_quotes'), 'icon' => 'tag',
          'badge' => $badges['quotes'] ?: null],
+        ['key' => 'orders', 'url' => route('buyer.orders.index'), 'label' => __('common.nav_orders'), 'icon' => 'package'],
         ['key' => 'chats', 'url' => route('buyer.chats.index'), 'label' => __('common.nav_messages'), 'icon' => 'message-square',
          'badge' => $badges['messages'] ?: null],
         ['key' => 'account', 'url' => route('buyer.account'), 'label' => __('common.nav_settings'), 'icon' => 'settings'],
     ];
+
+    // The phone tab bar has room for five items; orders stay in the drawer.
+    $tabs = array_values(array_filter($nav, fn (array $item): bool => $item['key'] !== 'orders'));
 @endphp
 
-<x-layouts.dashboard :title="$title" :nav="$nav" :current="$current" :tabs="$nav"
+<x-layouts.dashboard :title="$title" :nav="$nav" :current="$current" :tabs="$tabs"
                      :primary-action="['url' => route('buyer.rfqs.create'), 'label' => __('common.new_rfq')]"
                      :user-subtitle="$profile?->company_name">
     {{ $slot }}

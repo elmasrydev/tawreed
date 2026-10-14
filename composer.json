@@ -11,6 +11,8 @@
         "filament/filament": "^5.7",
         "laravel/framework": "^13.17",
         "laravel/tinker": "^3.0",
+        "league/flysystem-aws-s3-v3": "^3.35",
+        "resend/resend-php": "^1.16",
         "spatie/laravel-medialibrary": "^11.23"
     },
     "require-dev": {

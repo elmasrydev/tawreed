@@ -34,8 +34,14 @@ class SupplierDocument extends Model implements HasMedia
         return $this->belongsTo(SupplierProfile::class);
     }
 
+    /**
+     * Legal documents sit on a private disk and are only ever streamed through
+     * the app to their owner and to admins.
+     */
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection('file')->singleFile();
+        $this->addMediaCollection('file')
+            ->singleFile()
+            ->useDisk(config('filesystems.documents_disk'));
     }
 }

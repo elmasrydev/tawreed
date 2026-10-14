@@ -7,6 +7,9 @@ use App\Enums\SupplierDocumentType;
 use App\Enums\VerificationStatus;
 use App\Filament\Resources\SupplierProfiles\Pages\ListSupplierProfiles;
 use App\Filament\Resources\SupplierProfiles\Pages\ViewSupplierProfile;
+use App\Filament\Resources\SupplierProfiles\RelationManagers\AwardedRfqsRelationManager;
+use App\Filament\Resources\SupplierProfiles\RelationManagers\DocumentsRelationManager;
+use App\Filament\Resources\SupplierProfiles\RelationManagers\PortfolioItemsRelationManager;
 use App\Models\SupplierProfile;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -207,6 +210,15 @@ class SupplierProfileResource extends Resource
                     ->title(__("admin.{$key}_done"))
                     ->send();
             });
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            DocumentsRelationManager::class,
+            PortfolioItemsRelationManager::class,
+            AwardedRfqsRelationManager::class,
+        ];
     }
 
     public static function canCreate(): bool

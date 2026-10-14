@@ -111,9 +111,13 @@ class User extends Authenticatable implements FilamentUser
         return $this->status === UserStatus::Suspended;
     }
 
-    public function hasVerifiedPhone(): bool
+    /**
+     * Confirmed through the emailed one-time code. Creating requests and
+     * quoting both wait on it.
+     */
+    public function hasVerifiedEmail(): bool
     {
-        return $this->phone_verified_at !== null;
+        return $this->email_verified_at !== null;
     }
 
     /**

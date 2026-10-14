@@ -34,6 +34,7 @@ return [
     'nav_dashboard' => 'لوحة التحكم',
     'nav_my_rfqs' => 'طلباتي',
     'nav_quotes' => 'العروض',
+    'nav_orders' => 'سجل الطلبات',
     'nav_messages' => 'الرسائل',
     'nav_settings' => 'الإعدادات',
     'nav_browse_rfqs' => 'تصفّح الطلبات',

@@ -150,4 +150,11 @@ return [
     'stat_years_active' => 'Years active',
     'stat_member_since' => 'Member since',
     'profile_privacy_note' => 'Contact details are shared only after you select one of their quotes. This keeps every deal on-platform and your identity private until then.',
+    'successful_deals' => 'Successful deals',
+    'deals_count' => '{0} No deals yet|{1} 1 deal won|[2,*] :count deals won',
+    'deal_awarded' => 'Awarded',
+    'orders_count' => '{1} 1 order|[2,*] :count orders',
+    'no_orders' => 'No orders yet',
+    'no_orders_body' => 'When you select a quote on one of your requests, the deal appears here.',
+    'col_awarded_on' => 'Awarded on',
 ];

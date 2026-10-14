@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\Quote;
+use App\Models\Rfq;
+use App\Models\User;
 use Database\Seeders\BusinessTypeSeeder;
 use Database\Seeders\CategorySeeder;
 use Database\Seeders\GovernorateSeeder;
@@ -64,4 +67,20 @@ function seedReferenceData(): void
         RejectionReasonSeeder::class,
         PlanSeeder::class,
     ]);
+}
+
+/**
+ * A request the buyer awarded to the supplier, with the selected quote linked
+ * the way SelectQuote leaves it.
+ *
+ * @param  array<string, mixed>  $rfqAttributes
+ */
+function awardedDeal(User $buyer, User $supplier, array $rfqAttributes = []): Rfq
+{
+    $rfq = Rfq::factory()->awarded()->create(['buyer_id' => $buyer->id, ...$rfqAttributes]);
+    $quote = Quote::factory()->selected()->create(['rfq_id' => $rfq->id, 'supplier_id' => $supplier->id]);
+
+    $rfq->forceFill(['awarded_quote_id' => $quote->id])->save();
+
+    return $rfq;
 }

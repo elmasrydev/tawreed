@@ -5,7 +5,9 @@
             ['key' => 'company', 'label' => __('supplier.tab_company'), 'url' => route('supplier.account')],
             ['key' => 'coverage', 'label' => __('supplier.tab_coverage'), 'url' => route('supplier.account', ['tab' => 'coverage'])],
             ['key' => 'documents', 'label' => __('ui.documents'), 'count' => $profile->documents->count(), 'url' => route('supplier.account', ['tab' => 'documents'])],
+            ['key' => 'portfolio', 'label' => __('supplier.tab_portfolio'), 'count' => $profile->portfolioItems->count(), 'url' => route('supplier.account', ['tab' => 'portfolio'])],
         ];
+        $documentsByType = $profile->documents->keyBy(fn ($document) => $document->type->value);
     @endphp
 
     <div class="shell-page">
@@ -93,7 +95,7 @@
                         </h2>
                         <p class="text-sm text-gray-900">{{ filled($profile->payment_method) ? $profile->payment_method : '—' }}</p>
                     </section>
-                @else
+                @elseif ($tab === 'documents')
                     <section class="card flex flex-col gap-3 p-5 sm:p-6">
                         <h2 class="card-title">
                             <x-lucide name="shield-check" :size="16" class="text-success-500" />
@@ -109,24 +111,104 @@
                             </x-alert>
                         @endif
 
-                        @forelse ($profile->documents as $document)
+                        <p class="text-[13px] text-gray-500">{{ __('supplier.documents_hint') }}</p>
+
+                        @foreach (App\Enums\SupplierDocumentType::required() as $type)
+                            @php($document = $documentsByType->get($type->value))
                             <div class="flex flex-wrap items-center gap-3 rounded-lg border border-gray-200 px-3.5 py-3">
                                 <span class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-brand-100 text-brand-700">
                                     <x-lucide name="file-text" :size="18" />
                                 </span>
                                 <div class="min-w-0 flex-1">
-                                    <p class="text-sm font-semibold text-gray-900">{{ $document->type->label() }}</p>
-                                    <p class="text-xs text-gray-500 tabular">{{ __('supplier.uploaded_on', ['date' => $document->created_at->translatedFormat('j M Y')]) }}</p>
+                                    <p class="text-sm font-semibold text-gray-900">{{ $type->label() }}</p>
+                                    <p class="text-xs text-gray-500 tabular">
+                                        {{ $document ? __('supplier.uploaded_on', ['date' => $document->updated_at->translatedFormat('j M Y')]) : __('supplier.document_missing') }}
+                                    </p>
                                 </div>
-                                <x-status-badge :status="$document->status" size="sm" />
-                                @if ($document->status === App\Enums\DocumentStatus::Rejected && $document->note)
+                                @if ($document)
+                                    <x-status-badge :status="$document->status" size="sm" />
+                                    @if ($document->hasMedia('file'))
+                                        <a href="{{ route('supplier-documents.show', $document) }}" target="_blank" rel="noopener" class="btn btn-ghost btn-sm">
+                                            <x-lucide name="eye" :size="14" />
+                                            {{ __('common.view') }}
+                                        </a>
+                                    @endif
+                                @endif
+                                <form method="POST" action="{{ route('supplier.documents.store') }}" enctype="multipart/form-data">
+                                    @csrf
+                                    <input type="hidden" name="type" value="{{ $type->value }}">
+                                    <label class="btn btn-secondary btn-sm cursor-pointer">
+                                        <x-lucide name="upload" :size="14" />
+                                        {{ $document ? __('supplier.document_replace') : __('supplier.document_upload') }}
+                                        <input type="file" name="file" accept=".pdf,.jpg,.jpeg,.png" class="sr-only" x-data x-on:change="$el.form.submit()">
+                                    </label>
+                                </form>
+                                @if ($document?->status === App\Enums\DocumentStatus::Rejected && $document->note)
                                     <p class="basis-full text-xs text-danger-700">{{ $document->note }}</p>
                                 @endif
                             </div>
+                        @endforeach
+                    </section>
+                @else
+                    <section class="card flex flex-col gap-4 p-5 sm:p-6">
+                        <div class="flex flex-wrap items-center justify-between gap-3">
+                            <div>
+                                <h2 class="card-title">
+                                    <x-lucide name="image" :size="16" class="text-brand-500" />
+                                    {{ __('supplier.portfolio_heading') }}
+                                </h2>
+                                <p class="mt-1 text-[13px] text-gray-500">{{ __('supplier.portfolio_hint') }}</p>
+                            </div>
+                            <button type="button" x-data x-on:click="$dispatch('open-modal', 'portfolio-new')" class="btn btn-primary btn-sm">
+                                <x-lucide name="plus" :size="14" />
+                                {{ __('supplier.portfolio_add') }}
+                            </button>
+                        </div>
+
+                        @forelse ($profile->portfolioItems as $item)
+                            @php($images = $item->getMedia('images'))
+                            <article class="flex flex-col gap-3 rounded-lg border border-gray-200 p-3.5 sm:flex-row">
+                                @if ($images->isNotEmpty())
+                                    <img src="{{ $images->first()->hasGeneratedConversion('thumb') ? $images->first()->getUrl('thumb') : $images->first()->getUrl() }}"
+                                         alt="" class="aspect-[4/3] w-full shrink-0 rounded-md bg-gray-100 object-cover sm:w-40" loading="lazy">
+                                @endif
+                                <div class="flex min-w-0 flex-1 flex-col gap-1">
+                                    <p class="text-sm font-semibold break-words text-gray-900">{{ $item->title }}</p>
+                                    @if ($item->client_type || $item->year)
+                                        <p class="text-xs text-gray-500">{{ collect([$item->client_type, $item->year])->filter()->implode(' · ') }}</p>
+                                    @endif
+                                    @if ($item->description)
+                                        <p class="line-clamp-3 text-[13px] leading-relaxed whitespace-pre-line text-gray-700">{{ $item->description }}</p>
+                                    @endif
+                                    <p class="text-xs text-gray-400">{{ trans_choice('supplier.portfolio_images_count', $images->count(), ['count' => $images->count()]) }}</p>
+                                </div>
+                                <div class="flex shrink-0 items-start gap-2">
+                                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'portfolio-{{ $item->id }}')" class="btn btn-secondary btn-sm">
+                                        <x-lucide name="edit" :size="14" />
+                                        {{ __('supplier.portfolio_edit_short') }}
+                                    </button>
+                                    <form method="POST" action="{{ route('supplier.portfolio.destroy', $item) }}"
+                                          x-data x-on:submit="confirm(@js(__('supplier.portfolio_delete_confirm'))) || $event.preventDefault()">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger-outline btn-sm" aria-label="{{ __('supplier.portfolio_delete') }}">
+                                            <x-lucide name="trash" :size="14" />
+                                        </button>
+                                    </form>
+                                </div>
+                            </article>
+
+                            <x-modal name="portfolio-{{ $item->id }}" max-width="lg" :show="old('portfolio_form') === (string) $item->id">
+                                @include('supplier.partials.portfolio-form', ['item' => $item])
+                            </x-modal>
                         @empty
-                            <p class="text-sm text-gray-500">{{ __('supplier.no_documents') }}</p>
+                            <p class="text-sm text-gray-500">{{ __('supplier.portfolio_empty') }}</p>
                         @endforelse
                     </section>
+
+                    <x-modal name="portfolio-new" max-width="lg" :show="old('portfolio_form') === 'new'">
+                        @include('supplier.partials.portfolio-form', ['item' => null])
+                    </x-modal>
                 @endif
             </div>
 

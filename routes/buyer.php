@@ -3,6 +3,7 @@
 use App\Http\Controllers\Buyer\AccountController;
 use App\Http\Controllers\Buyer\ChatController;
 use App\Http\Controllers\Buyer\HomeController;
+use App\Http\Controllers\Buyer\OrderController;
 use App\Http\Controllers\Buyer\QuoteController;
 use App\Http\Controllers\Buyer\RfqController;
 use App\Http\Controllers\Buyer\SupplierProfileController;
@@ -22,6 +23,7 @@ Route::delete('rfqs/{rfq}', [RfqController::class, 'destroy'])->name('rfqs.destr
 Route::livewire('rfqs/{rfq}/quotes', 'buyer.rfq-quotes')->name('rfqs.quotes');
 
 Route::get('quotes', [QuoteController::class, 'index'])->name('quotes.index');
+Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
 Route::get('suppliers/{supplierProfile}', SupplierProfileController::class)->name('suppliers.show');
 Route::get('account', AccountController::class)->name('account');
 

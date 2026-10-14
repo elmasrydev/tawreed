@@ -3,7 +3,9 @@
 use App\Http\Controllers\Supplier\AccountController;
 use App\Http\Controllers\Supplier\ChatController;
 use App\Http\Controllers\Supplier\DashboardController;
+use App\Http\Controllers\Supplier\DocumentController;
 use App\Http\Controllers\Supplier\FeedController;
+use App\Http\Controllers\Supplier\PortfolioController;
 use App\Http\Controllers\Supplier\QuoteController;
 use App\Http\Controllers\Supplier\SubscriptionController;
 use Illuminate\Support\Facades\Route;
@@ -20,6 +22,10 @@ Route::livewire('rfqs/{rfq}/quote', 'supplier.submit-quote')->name('rfqs.quote')
 
 Route::get('quotes', [QuoteController::class, 'index'])->name('quotes.index');
 Route::get('account', AccountController::class)->name('account');
+Route::post('account/documents', [DocumentController::class, 'store'])->name('documents.store');
+Route::post('account/portfolio', [PortfolioController::class, 'store'])->name('portfolio.store');
+Route::put('account/portfolio/{portfolioItem}', [PortfolioController::class, 'update'])->name('portfolio.update');
+Route::delete('account/portfolio/{portfolioItem}', [PortfolioController::class, 'destroy'])->name('portfolio.destroy');
 
 Route::get('subscription', [SubscriptionController::class, 'show'])->name('subscription');
 Route::post('subscription/plans/{plan}', [SubscriptionController::class, 'store'])->name('subscription.subscribe');

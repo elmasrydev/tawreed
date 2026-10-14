@@ -1,7 +1,6 @@
 @php
     $logo = $profile->getFirstMediaUrl('logo') ?: null;
-    $portfolio = $profile->getMedia('portfolio')->filter(fn ($media) => str_starts_with((string) $media->mime_type, 'image/'));
-    $cover = $portfolio->first()?->getUrl();
+    $cover = $profile->portfolioItems->first()?->getFirstMediaUrl('images') ?: null;
     $meta = collect([
         $profile->categories->take(3)->pluck('name')->implode(app()->isLocale('ar') ? '، ' : ', '),
         $profile->facility_address,
