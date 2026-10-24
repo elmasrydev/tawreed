@@ -32,6 +32,24 @@ class SubscriptionController extends Controller
         ]);
     }
 
+    /**
+     * Order summary for a plan before it is paid. Cash on delivery is the only payment method for now.
+     */
+    public function checkout(Request $request, Plan $plan): View
+    {
+        abort_unless($plan->is_active, 404);
+
+        $vat = round((float) $plan->price_egp * SubscribeToPlan::VAT_RATE, 2);
+
+        return view('supplier.checkout', [
+            'plan' => $plan,
+            'vat' => $vat,
+            'total' => (float) $plan->price_egp + $vat,
+            'account' => ShellState::supplierAccount($request->user()),
+            'isFirstSubscription' => ! $request->user()->subscriptions()->exists(),
+        ]);
+    }
+
     public function store(Request $request, Plan $plan, SubscribeToPlan $subscribeToPlan): RedirectResponse
     {
         abort_unless($plan->is_active, 404);

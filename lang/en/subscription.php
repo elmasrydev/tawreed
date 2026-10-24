@@ -40,4 +40,12 @@ return [
     'per_day' => ':amount EGP / day',
     'invoices_vat_note' => 'Tax invoices · 14% VAT included',
     'paid' => 'Paid',
+    'checkout_title' => 'Checkout',
+    'back_to_plans' => 'Back to plans',
+    'order_summary' => 'Order summary',
+    'payment_method' => 'Payment method',
+    'cash_on_delivery' => 'Cash on delivery',
+    'cash_on_delivery_body' => 'Pay in cash when our representative visits you to collect the subscription fee.',
+    'confirm_order' => 'Confirm order',
+    'checkout_note' => 'Your electronic invoice is issued as soon as the order is confirmed.',
 ];

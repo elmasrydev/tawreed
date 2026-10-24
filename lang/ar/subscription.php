@@ -40,4 +40,12 @@ return [
     'per_day' => ':amount ج.م / يوم',
     'invoices_vat_note' => 'فواتير ضريبية · شاملة 14% ضريبة',
     'paid' => 'مدفوعة',
+    'checkout_title' => 'إتمام الطلب',
+    'back_to_plans' => 'العودة إلى الخطط',
+    'order_summary' => 'ملخص الطلب',
+    'payment_method' => 'طريقة الدفع',
+    'cash_on_delivery' => 'الدفع عند الاستلام',
+    'cash_on_delivery_body' => 'ادفع نقدًا عند زيارة مندوبنا لتحصيل رسوم الاشتراك.',
+    'confirm_order' => 'تأكيد الطلب',
+    'checkout_note' => 'تصدر فاتورتك الإلكترونية فور تأكيد الطلب.',
 ];

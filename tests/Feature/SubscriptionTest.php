@@ -134,3 +134,21 @@ it('shows the plans with the best value marked', function (): void {
         ->assertSee(__('subscription.best_value'))
         ->assertSee('2,500');
 });
+
+it('shows the checkout with cash on delivery and the vat-inclusive total', function (): void {
+    $this->actingAs($this->supplier)
+        ->get(route('supplier.subscription.checkout', $this->monthly))
+        ->assertOk()
+        ->assertSee($this->monthly->name)
+        ->assertSee(__('subscription.cash_on_delivery'))
+        ->assertSee(number_format((float) $this->monthly->price_egp * 1.14, 2))
+        ->assertSee(route('supplier.subscription.subscribe', $this->monthly));
+});
+
+it('hides the checkout for an inactive plan', function (): void {
+    $this->monthly->update(['is_active' => false]);
+
+    $this->actingAs($this->supplier)
+        ->get(route('supplier.subscription.checkout', $this->monthly))
+        ->assertNotFound();
+});

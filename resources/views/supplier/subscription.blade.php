@@ -49,10 +49,7 @@
                             </form>
                         </div>
 
-                        <form method="POST" action="{{ route('supplier.subscription.subscribe', $subscription->plan) }}" class="mt-1">
-                            @csrf
-                            <button type="submit" class="btn btn-accent h-10 w-full">{{ __('subscription.renew_now') }}</button>
-                        </form>
+                        <a href="{{ route('supplier.subscription.checkout', $subscription->plan) }}" wire:navigate class="btn btn-accent mt-1 h-10 w-full">{{ __('subscription.renew_now') }}</a>
                         <p class="text-xs opacity-70">{{ __('subscription.renew_extends_note') }}</p>
                     </div>
                 @else
@@ -102,12 +99,11 @@
                                 @if ($plan->trial_days > 0 && $isFirstSubscription)
                                     <p class="text-xs font-medium text-success-700">{{ __('subscription.trial_included', ['days' => $plan->trial_days]) }}</p>
                                 @endif
-                                <form method="POST" action="{{ route('supplier.subscription.subscribe', $plan) }}" class="mt-auto pt-2">
-                                    @csrf
-                                    <button type="submit" @class(['btn btn-sm w-full max-md:h-10', 'btn-primary' => $plan->is_best_value && ! $isCurrent, 'btn-secondary' => ! $plan->is_best_value || $isCurrent])>
+                                <div class="mt-auto pt-2">
+                                    <a href="{{ route('supplier.subscription.checkout', $plan) }}" wire:navigate @class(['btn btn-sm w-full max-md:h-10', 'btn-primary' => $plan->is_best_value && ! $isCurrent, 'btn-secondary' => ! $plan->is_best_value || $isCurrent])>
                                         {{ $isCurrent ? __('subscription.renew') : __('subscription.subscribe') }}
-                                    </button>
-                                </form>
+                                    </a>
+                                </div>
                             </div>
                         @endforeach
                     </div>
