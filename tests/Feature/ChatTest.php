@@ -8,6 +8,7 @@ use App\Models\Quote;
 use App\Models\Rfq;
 use App\Models\Subscription;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Livewire;
 
@@ -104,6 +105,28 @@ it('marks the other side messages as read on open', function (): void {
     expect($this->conversation->unreadCountFor($this->buyer))->toBe(1);
 
     Livewire::actingAs($this->buyer)->test('chat.thread', ['conversation' => $this->conversation]);
+
+    expect($this->conversation->fresh()->unreadCountFor($this->buyer))->toBe(0);
+});
+
+it('skips the re-render and read receipt on a poll with no new message', function (): void {
+    $thread = Livewire::actingAs($this->buyer)->test('chat.thread', ['conversation' => $this->conversation]);
+
+    DB::enableQueryLog();
+    $thread->call('refresh');
+
+    $writes = collect(DB::getQueryLog())->filter(fn (array $query): bool => str_starts_with(strtolower($query['query']), 'update'));
+
+    expect($writes)->toBeEmpty();
+    expect($thread->effects['html'] ?? null)->toBeNull();
+});
+
+it('picks up a new message from the other side on the next poll', function (): void {
+    $thread = Livewire::actingAs($this->buyer)->test('chat.thread', ['conversation' => $this->conversation]);
+
+    app(SendMessage::class)->handle($this->conversation, $this->supplier, 'Shipment leaves tomorrow');
+
+    $thread->call('refresh')->assertSee('Shipment leaves tomorrow');
 
     expect($this->conversation->fresh()->unreadCountFor($this->buyer))->toBe(0);
 });
