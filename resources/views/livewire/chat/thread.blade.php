@@ -102,8 +102,20 @@ new class extends Component
         $this->syncMessages(force: true);
     }
 
+    /**
+     * Runs on every poll, so it checks for a newer message with one cheap
+     * query and skips the re-render and the read receipt when nothing arrived.
+     */
     public function refresh(SendMessage $sendMessage): void
     {
+        $latestId = $this->conversation->messages()->where('is_removed', false)->max('id');
+
+        if ((int) $latestId === (int) $this->lastMessageId) {
+            $this->skipRender();
+
+            return;
+        }
+
         $this->syncMessages();
 
         $sendMessage->markRead($this->conversation, auth()->user());
@@ -140,7 +152,7 @@ new class extends Component
     $total = number_format($quote->grandTotal());
 @endphp
 
-<div class="flex min-h-0 flex-1 flex-col" wire:poll.5s="refresh">
+<div class="flex min-h-0 flex-1 flex-col" wire:poll.10s="refresh">
     {{-- Thread header --}}
     <header class="border-b border-gray-200 bg-white">
         <div class="flex items-center gap-3 px-3 py-2.5 sm:px-5 sm:py-3">

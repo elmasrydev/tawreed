@@ -47,4 +47,5 @@ return [
     'plan' => 'Plan',
     'days_left' => '{0} Expires today|{1} :count day left|[2,*] :count days left',
     'no_plan' => 'No active plan',
+    'connection_retrying' => 'Connection to the server was interrupted. Retrying…',
 ];

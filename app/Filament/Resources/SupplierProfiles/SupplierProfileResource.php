@@ -16,6 +16,7 @@ use App\Models\SupplierProfile;
 use BackedEnum;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Navigation\NavigationItem;
 use Filament\Resources\Resource;
@@ -119,6 +120,12 @@ class SupplierProfileResource extends Resource
     {
         return $schema->components([
             Section::make(__('admin.company'))->columns(2)->schema([
+                ImageEntry::make('logo')
+                    ->label(SupplierDocumentType::Logo->label())
+                    ->state(fn (SupplierProfile $record): ?string => $record->getFirstMedia('logo')?->getFullUrl())
+                    ->circular()
+                    ->placeholder('—')
+                    ->columnSpanFull(),
                 TextEntry::make('company_name')->label(__('ui.company_name')),
                 TextEntry::make('user.name')->label(__('ui.responsible_person')),
                 TextEntry::make('user.phone')->label(__('ui.phone')),

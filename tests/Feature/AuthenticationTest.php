@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\SupplierDocumentType;
 use App\Enums\UserRole;
 use App\Enums\UserStatus;
 use App\Enums\VerificationStatus;
@@ -165,6 +166,34 @@ it('registers a supplier into the verification queue with their documents', func
         ->and($profile->governorates)->toHaveCount(2)
         ->and($profile->categories)->toHaveCount(1)
         ->and($profile->documents)->toHaveCount(2);
+});
+
+it('puts the registration logo on the public profile instead of the legal documents', function (): void {
+    Storage::fake('public');
+    Storage::fake(config('filesystems.documents_disk'));
+
+    $this->post(route('register.supplier'), [
+        'name' => 'Mahmoud El-Deltawy',
+        'phone' => '011 8765 4321',
+        'email' => 'sales@deltaroasters.eg',
+        'password' => 'Password!234',
+        'password_confirmation' => 'Password!234',
+        'company_name' => 'Delta Coffee Roasters',
+        'commercial_reg_no' => '445210',
+        'tax_number' => '204-881-337',
+        'governorate_ids' => Governorate::whereIn('slug', ['cairo'])->pluck('id')->all(),
+        'documents' => [
+            'commercial_registration' => UploadedFile::fake()->create('cr.pdf', 100, 'application/pdf'),
+            'tax_card' => UploadedFile::fake()->create('tax.pdf', 100, 'application/pdf'),
+            'logo' => UploadedFile::fake()->image('logo.png'),
+        ],
+    ])->assertRedirect(route('email.verify'));
+
+    $profile = User::where('email', 'sales@deltaroasters.eg')->firstOrFail()->supplierProfile;
+
+    expect($profile->hasMedia('logo'))->toBeTrue()
+        ->and($profile->documents->pluck('type')->all())
+        ->toEqualCanonicalizing([SupplierDocumentType::CommercialRegistration, SupplierDocumentType::TaxCard]);
 });
 
 it('requires both statutory documents from a supplier', function (): void {

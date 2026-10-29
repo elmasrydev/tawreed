@@ -19,5 +19,26 @@
 
     <x-toast />
     @livewireScripts
+    <script>
+        {{-- A busy or unreachable server (502/503/504) would otherwise replace the page with its raw error screen; show a toast and let the next request retry. --}}
+        document.addEventListener('livewire:init', () => {
+            let lastNoticeAt = 0;
+
+            Livewire.interceptRequest(({ onError }) => {
+                onError(({ response, preventDefault }) => {
+                    if (! [502, 503, 504].includes(response.status)) {
+                        return;
+                    }
+
+                    preventDefault();
+
+                    if (Date.now() - lastNoticeAt > 30000) {
+                        lastNoticeAt = Date.now();
+                        window.dispatchEvent(new CustomEvent('toast', { detail: { message: @js(__('common.connection_retrying')), error: true } }));
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>

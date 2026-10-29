@@ -50,13 +50,13 @@
                         <div class="flex flex-col gap-0.5 text-[13px]">
                             @foreach ([null => __('ui.all_categories')] + $categories->pluck('name', 'id')->all() as $id => $name)
                                 @php($checked = (string) request('category') === (string) $id)
-                                <label class="flex min-h-9 cursor-pointer items-center gap-2 rounded-md px-1.5 hover:bg-gray-100 lg:min-h-8">
+                                <label class="flex min-h-9 cursor-pointer items-start gap-2 rounded-md px-1.5 py-2 hover:bg-gray-100 lg:min-h-8 lg:py-1.5">
                                     <input type="radio" name="category" value="{{ $id }}" @checked($checked)
                                            x-on:change="$el.form.requestSubmit()"
-                                           class="size-4 shrink-0 accent-brand-500">
-                                    <span @class(['min-w-0 flex-1 truncate', 'font-semibold text-brand-700' => $checked, 'text-gray-700' => ! $checked])>{{ $name }}</span>
+                                           class="mt-px size-4 shrink-0 accent-brand-500">
+                                    <span @class(['min-w-0 flex-1 leading-snug break-words', 'font-semibold text-brand-700' => $checked, 'text-gray-700' => ! $checked])>{{ $name }}</span>
                                     @if ($id)
-                                        <span class="text-gray-400 tabular">{{ $categoryCounts[$id] ?? 0 }}</span>
+                                        <span class="ms-auto min-w-6 shrink-0 text-end leading-snug text-gray-400 tabular">{{ $categoryCounts[$id] ?? 0 }}</span>
                                     @endif
                                 </label>
                             @endforeach

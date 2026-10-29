@@ -16,11 +16,13 @@ class AccountController extends Controller
     public function __invoke(Request $request): View
     {
         $supplier = $request->user();
+        $tab = in_array($request->query('tab'), self::TABS, true) ? $request->query('tab') : 'company';
 
         return view('supplier.account', [
             'supplier' => $supplier,
             'profile' => $supplier->supplierProfile->load(['governorates', 'categories.parent', 'documents.media', 'portfolioItems.media']),
-            'tab' => in_array($request->query('tab'), self::TABS, true) ? $request->query('tab') : 'company',
+            'tab' => $tab,
+            'isEditingCompany' => $tab === 'company' && $request->boolean('edit'),
         ]);
     }
 }

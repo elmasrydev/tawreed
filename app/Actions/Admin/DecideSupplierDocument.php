@@ -16,6 +16,7 @@ class DecideSupplierDocument
         $document->forceFill([
             'status' => $status,
             'note' => $status === DocumentStatus::Rejected ? $note : null,
+            'reviewed_at' => now(),
         ])->save();
 
         return $document;

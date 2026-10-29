@@ -16,7 +16,7 @@
                 <x-empty-state icon="tag" :title="__('supplier.no_quotes_in_tab')" />
             @else
                 <div class="card overflow-hidden">
-                    <div class="table-head gap-3.5 md:grid-cols-[2.2fr_1.4fr_0.8fr_1.1fr_1.1fr_1.4fr_1fr]">
+                    <div class="table-head gap-3.5 md:grid-cols-[minmax(0,2fr)_minmax(0,1.6fr)_minmax(0,0.9fr)_minmax(0,1fr)_minmax(0,1.1fr)_minmax(0,1.2fr)_minmax(0,1.2fr)]">
                         <span>{{ __('supplier.col_rfq') }}</span>
                         <span>{{ __('supplier.col_buyer') }}</span>
                         <span class="text-end">{{ __('supplier.col_unit') }}</span>
@@ -39,17 +39,18 @@
                                 default => [trans_choice('supplier.valid_days', $daysLeft, ['count' => $daysLeft]), 'text-gray-700'],
                             };
                             $conversation = $quote->conversation;
+                            $buyerLabel = $rfq->buyerLabel() !== '' ? $rfq->buyerLabel() : __('supplier.anonymous_buyer');
                         @endphp
 
-                        <div class="grid gap-2.5 border-b border-gray-100 px-4 py-3.5 text-sm transition-colors last:border-b-0 hover:bg-gray-50 md:items-center md:gap-3.5 md:py-3 md:grid-cols-[2.2fr_1.4fr_0.8fr_1.1fr_1.1fr_1.4fr_1fr]">
+                        <div class="grid gap-2.5 border-b border-gray-100 px-4 py-3.5 text-sm transition-colors last:border-b-0 hover:bg-gray-50 md:items-center md:gap-3.5 md:py-3 md:grid-cols-[minmax(0,2fr)_minmax(0,1.6fr)_minmax(0,0.9fr)_minmax(0,1fr)_minmax(0,1.1fr)_minmax(0,1.2fr)_minmax(0,1.2fr)]">
                             <div class="min-w-0">
-                                <p class="font-medium text-gray-900 md:truncate">{{ $rfq->title }}</p>
+                                <p class="font-medium break-words text-gray-900 md:line-clamp-2" title="{{ $rfq->title }}">{{ $rfq->title }}</p>
                                 <p class="text-xs text-gray-500 tabular">{{ $rfq->quantityWithUnit() }}</p>
                             </div>
 
-                            <p class="flex min-w-0 items-center gap-1.5 text-[13px] text-gray-500">
-                                <x-lucide name="lock" :size="12" class="shrink-0" />
-                                <span class="truncate">{{ $rfq->buyerLabel() !== '' ? $rfq->buyerLabel() : __('supplier.anonymous_buyer') }}</span>
+                            <p class="flex min-w-0 items-start gap-1.5 text-[13px] text-gray-500" title="{{ $buyerLabel }}">
+                                <x-lucide name="lock" :size="12" class="mt-1 shrink-0" />
+                                <span class="line-clamp-2 break-words">{{ $buyerLabel }}</span>
                             </p>
 
                             <div class="grid grid-cols-3 gap-3 md:contents">

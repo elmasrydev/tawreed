@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Services\OtpService;
 use App\Support\PhoneNumber;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
 class RegisterSupplier
@@ -19,7 +20,8 @@ class RegisterSupplier
 
     /**
      * Suppliers land in the verification queue; they may browse requests but
-     * cannot quote until an admin approves their documents.
+     * cannot quote until an admin approves their documents. The logo is not a
+     * legal document, so it goes straight onto the public profile.
      *
      * @param  array{name: string, phone: string, email: string, password: string, company_name: string, commercial_reg_no: string, tax_number: string, facility_address: ?string, activity_description: ?string, payment_method: ?string, governorate_ids: array<int, int>, category_ids?: array<int, int>, locale?: string}  $data
      * @param  array<string, UploadedFile>  $documents  keyed by SupplierDocumentType value
@@ -50,10 +52,15 @@ class RegisterSupplier
             $profile->governorates()->sync($data['governorate_ids']);
             $profile->categories()->sync($data['category_ids'] ?? []);
 
-            foreach ($documents as $type => $file) {
+            if (isset($documents[SupplierDocumentType::Logo->value])) {
+                $profile->addMedia($documents[SupplierDocumentType::Logo->value])->toMediaCollection('logo');
+            }
+
+            foreach (Arr::except($documents, SupplierDocumentType::Logo->value) as $type => $file) {
                 $document = SupplierDocument::create([
                     'supplier_profile_id' => $profile->id,
                     'type' => SupplierDocumentType::from($type),
+                    'uploaded_at' => now(),
                 ]);
 
                 $document->addMedia($file)->toMediaCollection('file');

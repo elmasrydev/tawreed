@@ -90,6 +90,16 @@ it('holds the buyer on step one until the product details are valid', function (
     expect(Rfq::count())->toBe(0);
 });
 
+it('labels the first field as the RFQ title and names it in errors', function (): void {
+    Livewire::actingAs($this->buyer)
+        ->test('buyer.create-rfq')
+        ->assertSee(__('buyer.rfq_title'))
+        ->set('title', '')
+        ->call('next')
+        ->assertHasErrors(['title' => 'required'])
+        ->assertSee(__('validation.required', ['attribute' => __('buyer.rfq_title')]));
+});
+
 it('rejects a sub-category that does not belong to the chosen category', function (): void {
     $unrelated = Category::where('slug', 'cement')->firstOrFail();
 

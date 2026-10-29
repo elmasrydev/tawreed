@@ -1,6 +1,6 @@
 <section class="card grid gap-x-6 gap-y-5 p-4 sm:grid-cols-2 sm:p-7">
     <div class="sm:col-span-2">
-        <label for="title" class="label">{{ __('ui.product_name') }}</label>
+        <label for="title" class="label">{{ __('buyer.rfq_title') }}</label>
         <input id="title" type="text" wire:model="title" @class(['input', 'input-error' => $errors->has('title')])
                placeholder="{{ __('rfq.sample_product') }}">
         <p class="helper">{{ __('buyer.product_name_hint') }}</p>

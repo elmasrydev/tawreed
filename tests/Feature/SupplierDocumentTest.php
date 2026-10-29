@@ -143,3 +143,67 @@ it('lets an admin accept a document', function (): void {
     expect($document->fresh()->status)->toBe(DocumentStatus::Accepted)
         ->and($document->fresh()->note)->toBeNull();
 });
+
+it('keeps the original upload time when an admin reviews the document', function (): void {
+    $this->travelTo(now()->subDay());
+    uploadDocument($this->supplier);
+    $this->travelBack();
+
+    $document = $this->profile->documents()->sole();
+    $uploadedAt = $document->uploaded_at;
+
+    Livewire::actingAs(User::factory()->admin()->create())
+        ->test(DocumentsRelationManager::class, ['ownerRecord' => $this->profile, 'pageClass' => ViewSupplierProfile::class])
+        ->callAction(TestAction::make('accept_document')->table($document));
+
+    $document->refresh();
+
+    expect($document->uploaded_at->equalTo($uploadedAt))->toBeTrue()
+        ->and($document->reviewed_at->isToday())->toBeTrue();
+});
+
+it('restarts the upload time and clears the review when the supplier replaces a file', function (): void {
+    $document = SupplierDocument::factory()->create([
+        'supplier_profile_id' => $this->profile->id,
+        'status' => DocumentStatus::Rejected,
+        'uploaded_at' => now()->subWeek(),
+        'reviewed_at' => now()->subDays(6),
+    ]);
+
+    uploadDocument($this->supplier);
+
+    $document->refresh();
+
+    expect($document->uploaded_at->isToday())->toBeTrue()
+        ->and($document->reviewed_at)->toBeNull();
+});
+
+it('counts only the verification documents listed on the documents tab', function (): void {
+    SupplierDocument::factory()->create(['supplier_profile_id' => $this->profile->id, 'type' => SupplierDocumentType::CommercialRegistration]);
+    SupplierDocument::factory()->create(['supplier_profile_id' => $this->profile->id, 'type' => SupplierDocumentType::Logo]);
+
+    $this->actingAs($this->supplier)
+        ->get(route('supplier.account', ['tab' => 'documents']))
+        ->assertOk()
+        ->assertSeeInOrder([__('ui.documents'), '<span class="font-medium text-gray-500 tabular">1</span>'], false)
+        ->assertDontSee(SupplierDocumentType::Logo->label());
+});
+
+it('moves legacy logo documents onto the supplier profile', function (): void {
+    $document = SupplierDocument::factory()->create(['supplier_profile_id' => $this->profile->id, 'type' => SupplierDocumentType::Logo]);
+    $document->addMedia(UploadedFile::fake()->image('logo.png'))->toMediaCollection('file');
+
+    (require database_path('migrations/2026_10_29_085613_move_supplier_logo_documents_to_profile_media.php'))->up();
+
+    expect(SupplierDocument::find($document->id))->toBeNull()
+        ->and($this->profile->fresh()->hasMedia('logo'))->toBeTrue();
+});
+
+it('shows the profile logo to admins on the supplier page', function (): void {
+    $this->profile->addMedia(UploadedFile::fake()->image('logo.png'))->toMediaCollection('logo');
+
+    $this->actingAs(User::factory()->admin()->create())
+        ->get(ViewSupplierProfile::getUrl(['record' => $this->profile]))
+        ->assertOk()
+        ->assertSee($this->profile->getFirstMedia('logo')->getFullUrl(), false);
+});

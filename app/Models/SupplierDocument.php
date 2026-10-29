@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
-#[Fillable(['supplier_profile_id', 'type', 'status', 'note'])]
+#[Fillable(['supplier_profile_id', 'type', 'status', 'note', 'uploaded_at'])]
 class SupplierDocument extends Model implements HasMedia
 {
     /** @use HasFactory<SupplierDocumentFactory> */
@@ -26,6 +26,8 @@ class SupplierDocument extends Model implements HasMedia
         return [
             'type' => SupplierDocumentType::class,
             'status' => DocumentStatus::class,
+            'uploaded_at' => 'datetime',
+            'reviewed_at' => 'datetime',
         ];
     }
 
