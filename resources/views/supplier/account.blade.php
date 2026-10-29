@@ -122,7 +122,7 @@
                                 <div class="min-w-0 flex-1">
                                     <p class="text-sm font-semibold text-gray-900">{{ $type->label() }}</p>
                                     <p class="text-xs text-gray-500 tabular">
-                                        {{ $document ? __('supplier.uploaded_on', ['date' => $document->updated_at->translatedFormat('j M Y')]) : __('supplier.document_missing') }}
+                                        {{ $document ? __('supplier.uploaded_on', ['date' => ($document->uploaded_at ?? $document->created_at)->translatedFormat('j M Y')]) : __('supplier.document_missing') }}
                                     </p>
                                 </div>
                                 @if ($document)

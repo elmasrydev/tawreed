@@ -54,6 +54,7 @@ class RegisterSupplier
                 $document = SupplierDocument::create([
                     'supplier_profile_id' => $profile->id,
                     'type' => SupplierDocumentType::from($type),
+                    'uploaded_at' => now(),
                 ]);
 
                 $document->addMedia($file)->toMediaCollection('file');

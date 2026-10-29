@@ -143,3 +143,37 @@ it('lets an admin accept a document', function (): void {
     expect($document->fresh()->status)->toBe(DocumentStatus::Accepted)
         ->and($document->fresh()->note)->toBeNull();
 });
+
+it('keeps the original upload time when an admin reviews the document', function (): void {
+    $this->travelTo(now()->subDay());
+    uploadDocument($this->supplier);
+    $this->travelBack();
+
+    $document = $this->profile->documents()->sole();
+    $uploadedAt = $document->uploaded_at;
+
+    Livewire::actingAs(User::factory()->admin()->create())
+        ->test(DocumentsRelationManager::class, ['ownerRecord' => $this->profile, 'pageClass' => ViewSupplierProfile::class])
+        ->callAction(TestAction::make('accept_document')->table($document));
+
+    $document->refresh();
+
+    expect($document->uploaded_at->equalTo($uploadedAt))->toBeTrue()
+        ->and($document->reviewed_at->isToday())->toBeTrue();
+});
+
+it('restarts the upload time and clears the review when the supplier replaces a file', function (): void {
+    $document = SupplierDocument::factory()->create([
+        'supplier_profile_id' => $this->profile->id,
+        'status' => DocumentStatus::Rejected,
+        'uploaded_at' => now()->subWeek(),
+        'reviewed_at' => now()->subDays(6),
+    ]);
+
+    uploadDocument($this->supplier);
+
+    $document->refresh();
+
+    expect($document->uploaded_at->isToday())->toBeTrue()
+        ->and($document->reviewed_at)->toBeNull();
+});

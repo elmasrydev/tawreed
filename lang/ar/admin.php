@@ -96,6 +96,7 @@ return [
     'failed_or_expiring' => 'منتهية أو تنتهي قريبًا',
     'document_type' => 'المستند',
     'uploaded_at' => 'تاريخ الرفع',
+    'reviewed_at' => 'تاريخ المراجعة',
     'open_file' => 'فتح الملف',
     'accept_document' => 'قبول',
     'accept_document_done' => 'تم قبول المستند',

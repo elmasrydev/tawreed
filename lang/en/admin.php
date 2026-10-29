@@ -96,6 +96,7 @@ return [
     'failed_or_expiring' => 'Expired or expiring soon',
     'document_type' => 'Document',
     'uploaded_at' => 'Uploaded',
+    'reviewed_at' => 'Reviewed',
     'open_file' => 'Open file',
     'accept_document' => 'Accept',
     'accept_document_done' => 'Document accepted',

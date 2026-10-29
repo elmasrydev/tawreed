@@ -22,6 +22,7 @@ class SupplierDocumentFactory extends Factory
             'supplier_profile_id' => SupplierProfile::factory(),
             'type' => SupplierDocumentType::CommercialRegistration,
             'status' => DocumentStatus::Pending,
+            'uploaded_at' => now(),
         ];
     }
 }

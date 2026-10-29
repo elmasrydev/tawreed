@@ -25,6 +25,8 @@ class UploadSupplierDocument
             $document->forceFill([
                 'status' => DocumentStatus::Pending,
                 'note' => null,
+                'uploaded_at' => now(),
+                'reviewed_at' => null,
             ])->save();
 
             $document->addMedia($file)->toMediaCollection('file');

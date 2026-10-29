@@ -42,7 +42,7 @@ class DocumentsRelationManager extends RelationManager
     {
         return $table
             ->modifyQueryUsing(fn ($query) => $query->with('media'))
-            ->defaultSort('updated_at', 'desc')
+            ->defaultSort('uploaded_at', 'desc')
             ->columns([
                 TextColumn::make('type')
                     ->label(__('admin.document_type'))
@@ -54,7 +54,8 @@ class DocumentsRelationManager extends RelationManager
                     ->formatStateUsing(fn (DocumentStatus $state): string => $state->label())
                     ->color(fn (DocumentStatus $state): string => $state->color()),
                 TextColumn::make('note')->label(__('admin.note'))->placeholder('—')->wrap(),
-                TextColumn::make('updated_at')->label(__('admin.uploaded_at'))->since()->sortable(),
+                TextColumn::make('uploaded_at')->label(__('admin.uploaded_at'))->since()->sortable(),
+                TextColumn::make('reviewed_at')->label(__('admin.reviewed_at'))->since()->placeholder('—')->sortable(),
             ])
             ->headerActions([
                 Action::make('upload')
