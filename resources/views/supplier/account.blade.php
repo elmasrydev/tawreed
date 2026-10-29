@@ -33,12 +33,58 @@
 
         <div class="grid items-start gap-5 lg:grid-cols-[minmax(0,820px)_minmax(0,1fr)]">
             <div class="flex min-w-0 flex-col gap-4">
-                @if ($tab === 'company')
+                @if ($tab === 'company' && $isEditingCompany)
                     <section class="card p-5 sm:p-6">
                         <h2 class="card-title mb-4">
                             <x-lucide name="building" :size="16" class="text-brand-500" />
-                            {{ __('supplier.company_information') }}
+                            {{ __('supplier.edit_company') }}
                         </h2>
+                        <form method="POST" action="{{ route('supplier.company.update') }}" class="flex flex-col gap-4">
+                            @csrf
+                            @method('PUT')
+
+                            <div class="grid gap-4 sm:grid-cols-2">
+                                <x-field name="company_name" :label="__('ui.factory_name')" :value="$profile->company_name" required maxlength="180" />
+                                <x-field name="name" :label="__('ui.responsible_person')" :value="$supplier->name" required maxlength="120" />
+                                <x-field name="phone" type="tel" :label="__('ui.phone')" :value="$supplier->phone" required dir="ltr" inputmode="tel" autocomplete="tel" />
+                                <x-field name="email" type="email" :label="__('ui.email')" :value="$supplier->email" required maxlength="180" dir="ltr"
+                                         autocomplete="email" :hint="__('supplier.email_change_hint')" />
+                                <x-field name="commercial_reg_no" id="commercial_reg_no" :label="__('ui.commercial_reg')" :value="$profile->commercial_reg_no"
+                                         required readonly disabled dir="ltr" :hint="__('supplier.locked_field_hint')" />
+                                <x-field name="tax_number" id="tax_number" :label="__('ui.tax_number')" :value="$profile->tax_number"
+                                         required readonly disabled dir="ltr" :hint="__('supplier.locked_field_hint')" />
+                                <div class="sm:col-span-2">
+                                    <x-field name="facility_address" :label="__('ui.facility_address')" :value="$profile->facility_address" maxlength="255" />
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <label for="activity_description" class="label">
+                                        {{ __('ui.activity_desc') }}
+                                        <span class="font-normal text-gray-400">{{ __('ui.optional') }}</span>
+                                    </label>
+                                    <textarea id="activity_description" name="activity_description" rows="4" maxlength="1000"
+                                              @class(['input', 'input-error' => $errors->has('activity_description')])>{{ old('activity_description', $profile->activity_description) }}</textarea>
+                                    @error('activity_description') <p class="error-text">{{ $message }}</p> @enderror
+                                </div>
+                            </div>
+
+                            <div class="flex flex-wrap justify-end gap-2">
+                                <a href="{{ route('supplier.account') }}" class="btn btn-secondary">{{ __('ui.cancel') }}</a>
+                                <button type="submit" class="btn btn-primary">{{ __('ui.save') }}</button>
+                            </div>
+                        </form>
+                    </section>
+                @elseif ($tab === 'company')
+                    <section class="card p-5 sm:p-6">
+                        <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+                            <h2 class="card-title">
+                                <x-lucide name="building" :size="16" class="text-brand-500" />
+                                {{ __('supplier.company_information') }}
+                            </h2>
+                            <a href="{{ route('supplier.account', ['edit' => 1]) }}" class="btn btn-secondary btn-sm">
+                                <x-lucide name="edit" :size="14" />
+                                {{ __('supplier.edit_company') }}
+                            </a>
+                        </div>
                         <dl class="grid gap-x-5 gap-y-4 sm:grid-cols-2">
                             @foreach ([
                                 [__('ui.factory_name'), $profile->company_name, false, false],
