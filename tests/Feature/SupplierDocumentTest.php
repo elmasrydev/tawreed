@@ -177,3 +177,33 @@ it('restarts the upload time and clears the review when the supplier replaces a 
     expect($document->uploaded_at->isToday())->toBeTrue()
         ->and($document->reviewed_at)->toBeNull();
 });
+
+it('counts only the verification documents listed on the documents tab', function (): void {
+    SupplierDocument::factory()->create(['supplier_profile_id' => $this->profile->id, 'type' => SupplierDocumentType::CommercialRegistration]);
+    SupplierDocument::factory()->create(['supplier_profile_id' => $this->profile->id, 'type' => SupplierDocumentType::Logo]);
+
+    $this->actingAs($this->supplier)
+        ->get(route('supplier.account', ['tab' => 'documents']))
+        ->assertOk()
+        ->assertSeeInOrder([__('ui.documents'), '<span class="font-medium text-gray-500 tabular">1</span>'], false)
+        ->assertDontSee(SupplierDocumentType::Logo->label());
+});
+
+it('moves legacy logo documents onto the supplier profile', function (): void {
+    $document = SupplierDocument::factory()->create(['supplier_profile_id' => $this->profile->id, 'type' => SupplierDocumentType::Logo]);
+    $document->addMedia(UploadedFile::fake()->image('logo.png'))->toMediaCollection('file');
+
+    (require database_path('migrations/2026_10_29_085613_move_supplier_logo_documents_to_profile_media.php'))->up();
+
+    expect(SupplierDocument::find($document->id))->toBeNull()
+        ->and($this->profile->fresh()->hasMedia('logo'))->toBeTrue();
+});
+
+it('shows the profile logo to admins on the supplier page', function (): void {
+    $this->profile->addMedia(UploadedFile::fake()->image('logo.png'))->toMediaCollection('logo');
+
+    $this->actingAs(User::factory()->admin()->create())
+        ->get(ViewSupplierProfile::getUrl(['record' => $this->profile]))
+        ->assertOk()
+        ->assertSee($this->profile->getFirstMedia('logo')->getFullUrl(), false);
+});

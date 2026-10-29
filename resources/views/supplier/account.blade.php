@@ -4,7 +4,7 @@
         $tabs = [
             ['key' => 'company', 'label' => __('supplier.tab_company'), 'url' => route('supplier.account')],
             ['key' => 'coverage', 'label' => __('supplier.tab_coverage'), 'url' => route('supplier.account', ['tab' => 'coverage'])],
-            ['key' => 'documents', 'label' => __('ui.documents'), 'count' => $profile->documents->count(), 'url' => route('supplier.account', ['tab' => 'documents'])],
+            ['key' => 'documents', 'label' => __('ui.documents'), 'count' => $profile->documents->whereIn('type', App\Enums\SupplierDocumentType::required())->count(), 'url' => route('supplier.account', ['tab' => 'documents'])],
             ['key' => 'portfolio', 'label' => __('supplier.tab_portfolio'), 'count' => $profile->portfolioItems->count(), 'url' => route('supplier.account', ['tab' => 'portfolio'])],
         ];
         $documentsByType = $profile->documents->keyBy(fn ($document) => $document->type->value);
