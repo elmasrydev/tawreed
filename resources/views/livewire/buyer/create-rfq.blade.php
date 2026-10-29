@@ -337,7 +337,7 @@ new #[Layout('layouts::buyer', ['current' => 'requests'])] class extends Compone
     public function validationAttributes(): array
     {
         return [
-            'title' => __('ui.product_name'),
+            'title' => __('buyer.rfq_title'),
             'category_id' => __('ui.main_category'),
             'subcategory_id' => __('ui.sub_category'),
             'specs' => __('ui.specs'),
