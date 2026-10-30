@@ -5,13 +5,17 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\RegisteredBuyerController;
 use App\Http\Controllers\Auth\RegisteredSupplierController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\LocaleController;
+use App\Http\Controllers\PublicRfqController;
 use App\Http\Controllers\SplashController;
 use App\Http\Controllers\SupplierDocumentFileController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', SplashController::class)->name('splash');
+Route::get('rfqs', PublicRfqController::class)->name('rfqs.index');
+Route::get('categories', CategoryController::class)->name('categories.index');
 
 Route::patch('locale/{locale}', [LocaleController::class, 'update'])->name('locale.update');
 

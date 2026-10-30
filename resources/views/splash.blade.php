@@ -41,9 +41,23 @@
 @endphp
 
 <x-layouts.marketing :title="__('landing.page_title')">
-    <x-landing.nav :links="$navLinks" />
+    <x-landing.nav :links="$navLinks" :categories="$menuCategories" />
 
     <main class="overflow-x-clip">
+        {{-- RFQ search --}}
+        <section class="bg-brand-700">
+            <form method="GET" action="{{ route('rfqs.index') }}" role="search" data-testid="landing-search"
+                  class="{{ $container }} flex flex-col gap-2.5 py-4 sm:flex-row sm:items-center sm:gap-3 sm:py-5">
+                <label for="landing-q" class="sr-only">{{ __('landing.search_label') }}</label>
+                <div class="relative min-w-0 flex-1">
+                    <x-lucide name="search" :size="18" class="pointer-events-none absolute start-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <input id="landing-q" type="search" name="q" placeholder="{{ __('landing.search_placeholder') }}" maxlength="100"
+                           class="input h-12 w-full rounded-card border-white bg-white ps-11 text-[15px]">
+                </div>
+                <button type="submit" class="btn btn-accent h-12 rounded-card px-7 text-[15px]">{{ __('landing.search_button') }}</button>
+            </form>
+        </section>
+
         {{-- Hero --}}
         <section class="{{ $container }} grid items-center gap-12 pt-10 pb-16 sm:pt-14 lg:grid-cols-[1.05fr_1fr] lg:gap-14 lg:pt-20 lg:pb-[72px]">
             <div class="flex flex-col gap-6 lg:gap-7">
@@ -108,6 +122,25 @@
                 @endif
             </div>
         </section>
+
+        {{-- Recent open requests --}}
+        @if ($recentRfqs->isNotEmpty())
+            <section id="recent-rfqs" class="{{ $container }} flex scroll-mt-20 flex-col gap-6 pb-16 lg:pb-20" data-testid="recent-rfqs">
+                <div class="flex flex-wrap items-end justify-between gap-3">
+                    <x-landing.section-heading :eyebrow="__('landing.recent_eyebrow')" :title="__('landing.recent_title')" align="start" size="md" />
+                    <a href="{{ route('rfqs.index') }}" class="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-700 hover:text-brand-500">
+                        {{ __('landing.recent_view_all') }}
+                        <x-lucide name="arrow-right" :size="15" />
+                    </a>
+                </div>
+
+                <div class="grid gap-3 lg:grid-cols-2">
+                    @foreach ($recentRfqs as $item)
+                        <x-landing.rfq-row :item="$item" />
+                    @endforeach
+                </div>
+            </section>
+        @endif
 
         {{-- How it works --}}
         <section id="how" class="{{ $container }} flex scroll-mt-20 flex-col gap-10 py-16 lg:gap-12 lg:pt-24 lg:pb-20">

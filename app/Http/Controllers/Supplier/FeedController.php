@@ -30,9 +30,7 @@ class FeedController extends Controller
             ->with([...AnonymousRfq::RELATIONS, 'quotes' => $this->ownQuotesOnly($supplier)])
             ->when($request->integer('category'), fn ($query, int $id) => $query->where('category_id', $id))
             ->when($request->integer('governorate'), fn ($query, int $id) => $query->where('governorate_id', $id))
-            ->when($request->string('q')->trim()->toString(), fn ($query, string $term) => $query->where(
-                fn ($inner) => $inner->where('title', 'like', "%{$term}%")->orWhere('specs', 'like', "%{$term}%")
-            ))
+            ->when($request->string('q')->trim()->toString(), fn ($query, string $term) => $query->search($term))
             ->orderBy('quote_deadline')
             ->paginate(12)
             ->withQueryString();
