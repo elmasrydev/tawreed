@@ -12,7 +12,7 @@ return [
     'get_started' => 'Get started',
 
     'hero_badge' => 'B2B RFQ marketplace for Egypt',
-    'hero_title' => 'Buy in bulk. Get real quotes.',
+    'hero_title' => 'Request your supplies and compare competitive supplier quotes directly —',
     'hero_title_highlight' => 'No commissions or middlemen.',
     'hero_body' => 'Post what your business needs. Verified Egyptian suppliers compete with real quotes. Pick the best one and open a chat.',
     'hero_cta_buyer' => "I'm a Buyer — Post an RFQ",
