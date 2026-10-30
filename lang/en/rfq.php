@@ -9,6 +9,7 @@ return [
     'governorate_note' => '✓ Governorate only — a detailed address is never requested',
     'attach_hint' => 'Images or PDF files, up to 6 attachments',
     'uploading' => 'Uploading attachments…',
+    'sample_title' => 'Monthly coffee supply for 3 branches',
     'sample_product' => 'Roasted espresso beans',
     'sample_specs' => '80% Arabica / 20% Robusta blend, medium-dark roast, whole beans, 1kg valve bags.',
     'sample_recurrence' => 'e.g. every two weeks',

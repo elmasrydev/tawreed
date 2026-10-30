@@ -11,8 +11,11 @@
         <h2 class="card-title">{{ __('buyer.review') }}</h2>
 
         <dl class="grid gap-x-4 gap-y-3 text-gray-700 sm:grid-cols-[160px_minmax(0,1fr)]">
-            <dt class="text-gray-500">{{ __('buyer.step_product') }}</dt>
+            <dt class="text-gray-500">{{ __('buyer.rfq_title') }}</dt>
             <dd class="font-medium break-words text-gray-900">{{ $title }}</dd>
+
+            <dt class="text-gray-500">{{ __('ui.product_name') }}</dt>
+            <dd class="break-words">{{ $product_name ?: '—' }}</dd>
 
             <dt class="text-gray-500">{{ __('buyer.col_category') }}</dt>
             <dd>{{ $review['category'] ?? '—' }}</dd>

@@ -85,6 +85,9 @@
 
                 <section class="card flex flex-col gap-2 p-4 sm:p-5">
                     <h2 class="card-title">{{ __('ui.specs') }}</h2>
+                    @if ($rfq->product_name)
+                        <p class="text-sm text-gray-500">{{ __('ui.product_name') }}: <span class="font-medium text-gray-900">{{ $rfq->product_name }}</span></p>
+                    @endif
                     @if ($rfq->specs)
                         <p class="text-sm leading-relaxed whitespace-pre-line text-gray-700">{{ $rfq->specs }}</p>
                     @else

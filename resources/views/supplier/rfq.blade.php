@@ -113,8 +113,11 @@
                     </p>
                 @endif
 
-                <div class="text-[13px] text-gray-500">
-                    {{ __('supplier.category_label') }}: <span class="font-medium text-gray-700">{{ $item->categoryPath() }}</span>
+                <div class="flex flex-col gap-1 text-[13px] text-gray-500">
+                    @if ($item->productName)
+                        <p>{{ __('ui.product_name') }}: <span class="font-medium text-gray-700">{{ $item->productName }}</span></p>
+                    @endif
+                    <p>{{ __('supplier.category_label') }}: <span class="font-medium text-gray-700">{{ $item->categoryPath() }}</span></p>
                 </div>
 
                 <section>

@@ -10,6 +10,7 @@ use App\Models\Rfq;
 use App\Models\Unit;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 /**
  * Supply requests across every buyer, category and lifecycle state: open,
@@ -33,6 +34,7 @@ class DemoRfqSeeder extends Seeder
                     'subcategory_id' => Category::where('slug', $spec['subcategory'])->value('id'),
                     'unit_id' => Unit::where('slug', $spec['unit'])->value('id'),
                     'governorate_id' => Governorate::where('slug', $spec['governorate'])->value('id'),
+                    'product_name' => Str::before($spec['title'], ' — '),
                     'specs' => $spec['specs'],
                     'quantity' => $spec['quantity'],
                     'delivery_date' => now()->addDays($spec['deliver_in']),

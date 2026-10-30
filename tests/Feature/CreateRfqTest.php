@@ -30,7 +30,8 @@ beforeEach(function (): void {
 function completeWizard(array $overrides = []): Testable
 {
     $data = array_merge([
-        'title' => 'Roasted espresso beans',
+        'title' => 'Coffee for our three branches',
+        'product_name' => 'Roasted espresso beans',
         'category_id' => test()->beverages->id,
         'subcategory_id' => test()->coffee->id,
         'specs' => '80% Arabica / 20% Robusta blend, medium-dark roast, 1kg valve bags.',
@@ -62,7 +63,8 @@ it('publishes a request from the review step and lands on my requests', function
 
     expect($rfq->status)->toBe(RfqStatus::Open)
         ->and($rfq->buyer_id)->toBe($this->buyer->id)
-        ->and($rfq->title)->toBe('Roasted espresso beans')
+        ->and($rfq->title)->toBe('Coffee for our three branches')
+        ->and($rfq->product_name)->toBe('Roasted espresso beans')
         ->and((float) $rfq->quantity)->toBe(500.0)
         ->and($rfq->reference)->toStartWith('RFQ-'.now()->year.'-')
         ->and($rfq->published_at)->not->toBeNull();
@@ -84,20 +86,40 @@ it('holds the buyer on step one until the product details are valid', function (
         ->set('title', '')
         ->set('specs', 'too short')
         ->call('next')
-        ->assertHasErrors(['title', 'category_id', 'specs'])
+        ->assertHasErrors(['title', 'product_name', 'category_id', 'specs'])
         ->assertSet('step', 1);
 
     expect(Rfq::count())->toBe(0);
 });
 
-it('labels the first field as the RFQ title and names it in errors', function (): void {
+it('asks for an RFQ title and a product name as separate fields', function (): void {
     Livewire::actingAs($this->buyer)
         ->test('buyer.create-rfq')
-        ->assertSee(__('buyer.rfq_title'))
-        ->set('title', '')
+        ->assertSeeHtml('id="title"')
+        ->assertSeeHtml('id="product_name"')
         ->call('next')
-        ->assertHasErrors(['title' => 'required'])
-        ->assertSee(__('validation.required', ['attribute' => __('buyer.rfq_title')]));
+        ->assertHasErrors(['title' => 'required', 'product_name' => 'required'])
+        ->assertSee(__('validation.required', ['attribute' => __('buyer.rfq_title')]))
+        ->assertSee(__('validation.required', ['attribute' => __('ui.product_name')]));
+});
+
+it('shows the product name on the request detail pages', function (): void {
+    $rfq = Rfq::factory()->for($this->buyer, 'buyer')->create([
+        'title' => 'Coffee for our three branches',
+        'product_name' => 'Roasted espresso beans',
+    ]);
+
+    $this->actingAs($this->buyer)
+        ->get(route('buyer.rfqs.show', $rfq))
+        ->assertOk()
+        ->assertSee('Coffee for our three branches')
+        ->assertSee('Roasted espresso beans');
+
+    $this->actingAs(User::factory()->supplier()->create())
+        ->get(route('supplier.rfqs.show', $rfq->id))
+        ->assertOk()
+        ->assertSee('Coffee for our three branches')
+        ->assertSee('Roasted espresso beans');
 });
 
 it('rejects a sub-category that does not belong to the chosen category', function (): void {
@@ -127,6 +149,7 @@ it('refuses a quote deadline that falls after the delivery date', function (): v
         ->test('buyer.create-rfq')
         ->set([
             'title' => 'Roasted espresso beans',
+            'product_name' => 'Roasted espresso beans',
             'category_id' => $this->beverages->id,
             'specs' => 'A specification long enough to pass validation.',
             'quantity' => '500',
@@ -147,6 +170,7 @@ it('refuses a delivery date in the past', function (): void {
         ->test('buyer.create-rfq')
         ->set([
             'title' => 'Roasted espresso beans',
+            'product_name' => 'Roasted espresso beans',
             'category_id' => $this->beverages->id,
             'specs' => 'A specification long enough to pass validation.',
             'quantity' => '500',

@@ -52,7 +52,7 @@ class RfqResource extends Resource
             ->columns([
                 TextColumn::make('title')
                     ->label(__('admin.rfq'))
-                    ->searchable(['title', 'reference'])
+                    ->searchable(['title', 'product_name', 'reference'])
                     ->weight('bold')
                     ->wrap()
                     ->placeholder('—')

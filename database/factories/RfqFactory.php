@@ -30,6 +30,7 @@ class RfqFactory extends Factory
             'governorate_id' => Governorate::query()->inRandomOrder()->value('id')
                 ?? Governorate::factory(),
             'title' => fake()->words(4, true),
+            'product_name' => fake()->words(3, true),
             'specs' => fake()->paragraph(),
             'quantity' => fake()->numberBetween(50, 5000),
             'delivery_date' => now()->addWeeks(3),
