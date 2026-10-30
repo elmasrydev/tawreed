@@ -11,13 +11,7 @@ class CompanyProfileController extends Controller
 {
     public function update(UpdateCompanyProfileRequest $request, UpdateSupplierCompany $updateCompany): RedirectResponse
     {
-        $awaitsEmailVerification = $updateCompany->handle($request->user(), $request->validated());
-
-        if ($awaitsEmailVerification) {
-            return redirect()
-                ->route('email.verify')
-                ->with('status', __('supplier.company_saved_verify_email'));
-        }
+        $updateCompany->handle($request->user(), $request->validated());
 
         return redirect()
             ->route('supplier.account')

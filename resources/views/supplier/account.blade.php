@@ -46,9 +46,10 @@
                             <div class="grid gap-4 sm:grid-cols-2">
                                 <x-field name="company_name" :label="__('ui.factory_name')" :value="$profile->company_name" required maxlength="180" />
                                 <x-field name="name" :label="__('ui.responsible_person')" :value="$supplier->name" required maxlength="120" />
-                                <x-field name="phone" type="tel" :label="__('ui.phone')" :value="$supplier->phone" required dir="ltr" inputmode="tel" autocomplete="tel" />
-                                <x-field name="email" type="email" :label="__('ui.email')" :value="$supplier->email" required maxlength="180" dir="ltr"
-                                         autocomplete="email" :hint="__('supplier.email_change_hint')" />
+                                <x-field name="phone" id="phone" type="tel" :label="__('ui.phone')" :value="$supplier->phone"
+                                         required readonly disabled dir="ltr" :hint="__('supplier.contact_locked_hint')" />
+                                <x-field name="email" id="email" type="email" :label="__('ui.email')" :value="$supplier->email"
+                                         required readonly disabled dir="ltr" :hint="__('supplier.contact_locked_hint')" />
                                 <x-field name="commercial_reg_no" id="commercial_reg_no" :label="__('ui.commercial_reg')" :value="$profile->commercial_reg_no"
                                          required readonly disabled dir="ltr" :hint="__('supplier.locked_field_hint')" />
                                 <x-field name="tax_number" id="tax_number" :label="__('ui.tax_number')" :value="$profile->tax_number"
