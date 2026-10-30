@@ -40,6 +40,8 @@ new #[Layout('layouts::buyer', ['current' => 'requests'])] class extends Compone
     // Step 1 — product and specifications.
     public string $title = '';
 
+    public string $product_name = '';
+
     public ?int $category_id = null;
 
     public ?int $subcategory_id = null;
@@ -212,6 +214,7 @@ new #[Layout('layouts::buyer', ['current' => 'requests'])] class extends Compone
             'unit_id' => $this->unit_id,
             'governorate_id' => $this->governorate_id,
             'title' => $this->title,
+            'product_name' => $this->nullIfBlank($this->product_name),
             'specs' => $this->nullIfBlank($this->specs),
             'quantity' => $this->nullIfBlank($this->quantity),
             'delivery_date' => $this->nullIfBlank($this->delivery_date),
@@ -247,6 +250,7 @@ new #[Layout('layouts::buyer', ['current' => 'requests'])] class extends Compone
     {
         $this->draftId = $rfq->id;
         $this->title = $rfq->title;
+        $this->product_name = (string) $rfq->product_name;
         $this->category_id = $rfq->category_id;
         $this->subcategory_id = $rfq->subcategory_id;
         $this->specs = (string) $rfq->specs;
@@ -273,6 +277,7 @@ new #[Layout('layouts::buyer', ['current' => 'requests'])] class extends Compone
         return match ($step) {
             1 => [
                 'title' => ['required', 'string', 'max:180'],
+                'product_name' => ['required', 'string', 'max:180'],
                 'category_id' => ['required', Rule::exists('categories', 'id')->whereNull('parent_id')],
                 'subcategory_id' => ['nullable', Rule::exists('categories', 'id')->where('parent_id', $this->category_id)],
                 'specs' => ['required', 'string', 'min:20', 'max:4000'],
@@ -302,6 +307,7 @@ new #[Layout('layouts::buyer', ['current' => 'requests'])] class extends Compone
     {
         return [
             'title' => ['required', 'string', 'max:180'],
+            'product_name' => ['nullable', 'string', 'max:180'],
             'category_id' => ['nullable', Rule::exists('categories', 'id')->whereNull('parent_id')],
             'subcategory_id' => ['nullable', Rule::exists('categories', 'id')->where('parent_id', $this->category_id)],
             'specs' => ['nullable', 'string', 'max:4000'],
@@ -338,6 +344,7 @@ new #[Layout('layouts::buyer', ['current' => 'requests'])] class extends Compone
     {
         return [
             'title' => __('buyer.rfq_title'),
+            'product_name' => __('ui.product_name'),
             'category_id' => __('ui.main_category'),
             'subcategory_id' => __('ui.sub_category'),
             'specs' => __('ui.specs'),

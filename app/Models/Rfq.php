@@ -20,7 +20,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 #[Fillable([
     'buyer_id', 'category_id', 'subcategory_id', 'unit_id', 'governorate_id',
-    'title', 'specs', 'quantity', 'delivery_date', 'supply_type', 'recurrence_note',
+    'title', 'product_name', 'specs', 'quantity', 'delivery_date', 'supply_type', 'recurrence_note',
     'quote_deadline', 'notes', 'status',
 ])]
 class Rfq extends Model implements HasMedia

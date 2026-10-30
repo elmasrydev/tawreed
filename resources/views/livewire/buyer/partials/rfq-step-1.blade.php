@@ -1,10 +1,18 @@
 <section class="card grid gap-x-6 gap-y-5 p-4 sm:grid-cols-2 sm:p-7">
     <div class="sm:col-span-2">
         <label for="title" class="label">{{ __('buyer.rfq_title') }}</label>
-        <input id="title" type="text" wire:model="title" @class(['input', 'input-error' => $errors->has('title')])
+        <input id="title" type="text" wire:model="title" maxlength="180" @class(['input', 'input-error' => $errors->has('title')])
+               placeholder="{{ __('rfq.sample_title') }}">
+        <p class="helper">{{ __('buyer.rfq_title_hint') }}</p>
+        @error('title') <p class="error-text">{{ $message }}</p> @enderror
+    </div>
+
+    <div class="sm:col-span-2">
+        <label for="product_name" class="label">{{ __('ui.product_name') }}</label>
+        <input id="product_name" type="text" wire:model="product_name" maxlength="180" @class(['input', 'input-error' => $errors->has('product_name')])
                placeholder="{{ __('rfq.sample_product') }}">
         <p class="helper">{{ __('buyer.product_name_hint') }}</p>
-        @error('title') <p class="error-text">{{ $message }}</p> @enderror
+        @error('product_name') <p class="error-text">{{ $message }}</p> @enderror
     </div>
 
     <div>
