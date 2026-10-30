@@ -174,5 +174,5 @@ it('renders in english when the guest picks it', function (): void {
         ->assertOk()
         ->assertSee('lang="en"', false)
         ->assertSee('dir="ltr">', false)
-        ->assertSee('Buy in bulk. Get real quotes.');
+        ->assertSee('Request your supplies and compare competitive supplier quotes directly');
 });
