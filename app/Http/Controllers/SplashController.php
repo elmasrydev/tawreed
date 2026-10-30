@@ -19,6 +19,16 @@ class SplashController extends Controller
     public const VISIBLE_CATEGORIES = 8;
 
     /**
+     * Categories listed in the nav menu before "All categories".
+     */
+    public const MENU_CATEGORIES = 5;
+
+    /**
+     * Open requests listed under the hero; fills six rows of two.
+     */
+    public const RECENT_RFQS = 12;
+
+    /**
      * The public landing page, or straight to your own area when already
      * signed in. Every number and list on it comes from the database; a
      * section with no data behind it is hidden.
@@ -31,23 +41,25 @@ class SplashController extends Controller
 
         $plans = Plan::query()->active()->get();
 
-        $latestRfq = Rfq::query()
+        $recentRfqs = Rfq::query()
             ->browsable()
-            ->with(['buyer.buyerProfile.businessType', 'buyer.buyerProfile.governorate', 'unit', 'governorate', 'category'])
+            ->with(AnonymousRfq::RELATIONS)
             ->latest('published_at')
             ->latest('id')
-            ->first();
+            ->limit(self::RECENT_RFQS)
+            ->get();
+
+        $latestRfq = $recentRfqs->first();
+
+        $categories = Category::query()->main()->busiestFirst()->get();
 
         return view('splash', [
             'plans' => $plans,
             'featuredRfq' => $latestRfq ? AnonymousRfq::make($latestRfq) : null,
             'featuredRfqDeadline' => $latestRfq?->quote_deadline,
-            'categories' => Category::query()
-                ->main()
-                ->withCount(['rfqs as open_rfqs_count' => fn ($query) => $query->browsable()])
-                ->get()
-                ->sortByDesc('open_rfqs_count')
-                ->values(),
+            'categories' => $categories,
+            'menuCategories' => $categories->take(self::MENU_CATEGORIES),
+            'recentRfqs' => $recentRfqs->map(fn (Rfq $rfq): AnonymousRfq => AnonymousRfq::make($rfq)),
             'visibleCategories' => self::VISIBLE_CATEGORIES,
             'testimonials' => Testimonial::query()->published()->limit(3)->get(),
         ]);

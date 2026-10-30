@@ -11,6 +11,29 @@ return [
     'log_in' => 'Log in',
     'get_started' => 'Get started',
 
+    'nav_categories' => 'Categories',
+    'nav_all_categories' => 'All categories',
+
+    'search_label' => 'Search open RFQs',
+    'search_placeholder' => 'Search open RFQs — e.g. coffee, cement, paper cups',
+    'search_button' => 'Search',
+
+    'recent_eyebrow' => 'Live requests',
+    'recent_title' => 'Latest open RFQs',
+    'recent_view_all' => 'View all open RFQs',
+
+    'rfqs_title' => 'Open RFQs',
+    'rfqs_count' => '{0} No open requests|{1} 1 open request|[2,*] :count open requests',
+    'rfqs_clear' => 'Clear',
+    'rfqs_empty_title' => 'No open RFQs match your search',
+    'rfqs_empty_body' => 'Try a different word or category. New requests are posted every day.',
+    'rfqs_supplier_title' => 'Are you a supplier?',
+    'rfqs_supplier_body' => 'Register for free to see the full specifications and send your quote directly to the buyer — no commissions.',
+
+    'categories_page_title' => 'All categories',
+    'categories_page_body' => 'Pick a category to see the open requests buyers have posted in it.',
+    'categories_empty' => 'No categories yet',
+
     'hero_badge' => 'B2B RFQ marketplace for Egypt',
     'hero_title' => 'Request your supplies and compare competitive supplier quotes directly —',
     'hero_title_highlight' => 'No commissions or middlemen.',

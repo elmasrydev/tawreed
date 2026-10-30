@@ -198,6 +198,28 @@ class Rfq extends Model implements HasMedia
             ->whereDate('quote_deadline', '>=', now()->toDateString());
     }
 
+    /**
+     * Matches the term against the title, the product name and the specs.
+     */
+    #[Scope]
+    protected function search(Builder $query, string $term): void
+    {
+        $query->where(fn (Builder $inner) => $inner
+            ->where('title', 'like', "%{$term}%")
+            ->orWhere('product_name', 'like', "%{$term}%")
+            ->orWhere('specs', 'like', "%{$term}%"));
+    }
+
+    /**
+     * Requests filed under the category, whether it is a main category or
+     * one of its sub-categories.
+     */
+    #[Scope]
+    protected function inCategory(Builder $query, Category $category): void
+    {
+        $query->where($category->isMain() ? 'category_id' : 'subcategory_id', $category->id);
+    }
+
     #[Scope]
     protected function forBuyer(Builder $query, User $buyer): void
     {

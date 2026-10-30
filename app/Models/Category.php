@@ -68,4 +68,17 @@ class Category extends Model
     {
         $query->whereNull('parent_id')->where('is_active', true)->orderBy('sort');
     }
+
+    /**
+     * Counts each category's open requests and puts the busiest first, so
+     * the landing page and the menu lead with where the demand is.
+     */
+    #[Scope]
+    protected function busiestFirst(Builder $query): void
+    {
+        $query->withCount(['rfqs as open_rfqs_count' => fn (Builder $rfqs) => $rfqs->browsable()])
+            ->reorder()
+            ->orderByDesc('open_rfqs_count')
+            ->orderBy('sort');
+    }
 }

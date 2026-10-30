@@ -176,3 +176,51 @@ it('renders in english when the guest picks it', function (): void {
         ->assertSee('dir="ltr">', false)
         ->assertSee('Request your supplies and compare competitive supplier quotes directly');
 });
+
+it('lists the five busiest categories in the nav menu, then all categories', function (): void {
+    $other = Category::query()->where('slug', 'other')->firstOrFail();
+    Rfq::factory()->count(2)->create(['category_id' => $other->id]);
+
+    $html = $this->get(route('splash'))
+        ->assertOk()
+        ->assertSee('data-testid="nav-categories"', false)
+        ->assertSee(route('categories.index'), false)
+        ->getContent();
+
+    $menu = str($html)->after('id="landing-categories-menu"')->before('</div>')->toString();
+
+    expect(substr_count($menu, route('rfqs.index').'?category='))->toBe(SplashController::MENU_CATEGORIES)
+        ->and($menu)->toContain(route('rfqs.index', ['category' => 'other']))
+        ->and(strpos($menu, 'category=other'))->toBeLessThan(strpos($menu, 'category=food'));
+});
+
+it('puts a search bar for open requests above the hero', function (): void {
+    $html = $this->get(route('splash'))
+        ->assertOk()
+        ->assertSee('data-testid="landing-search"', false)
+        ->assertSee('action="'.route('rfqs.index').'"', false)
+        ->getContent();
+
+    expect(strpos($html, 'data-testid="landing-search"'))->toBeLessThan(strpos($html, __('landing.hero_title')));
+});
+
+it('lists the most recent open requests under the hero', function (): void {
+    Rfq::factory()->create(['title' => 'Oldest open request', 'published_at' => now()->subDays(20)]);
+    Rfq::factory()->count(SplashController::RECENT_RFQS)->create(['published_at' => now()->subDay()]);
+    Rfq::factory()->expired()->create(['title' => 'Expired request']);
+
+    $response = $this->get(route('splash'))
+        ->assertOk()
+        ->assertSee('data-testid="recent-rfqs"', false)
+        ->assertSee(route('rfqs.index'), false)
+        ->assertDontSee('Oldest open request')
+        ->assertDontSee('Expired request');
+
+    expect(substr_count($response->getContent(), 'data-testid="public-rfq"'))->toBe(SplashController::RECENT_RFQS);
+});
+
+it('hides the recent requests section when none is open', function (): void {
+    $this->get(route('splash'))
+        ->assertOk()
+        ->assertDontSee('data-testid="recent-rfqs"', false);
+});
