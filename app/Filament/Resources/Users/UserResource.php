@@ -143,10 +143,15 @@ class UserResource extends Resource
                     && self::roleOf($get, null) === UserRole::Supplier)
                 ->schema([
                     ...SupplierProfileFields::make(),
+                    // A new supplier has no accepted documents yet, so they are
+                    // verified later from the supplier page.
                     Select::make('verification_status')
                         ->label(__('admin.verification'))
-                        ->options(fn (): array => self::enumOptions(VerificationStatus::cases()))
-                        ->default(VerificationStatus::Verified->value)
+                        ->options(fn (): array => self::enumOptions(array_filter(
+                            VerificationStatus::cases(),
+                            fn (VerificationStatus $case): bool => $case !== VerificationStatus::Verified,
+                        )))
+                        ->default(VerificationStatus::Pending->value)
                         ->required(),
                 ]),
         ]);
@@ -232,7 +237,7 @@ class UserResource extends Resource
                         if ($record->supplierProfile) {
                             app(DecideSupplierVerification::class)->handle(
                                 $record->supplierProfile,
-                                $suspended ? VerificationStatus::Verified : VerificationStatus::Suspended,
+                                $suspended ? $record->supplierProfile->statusAfterReactivation() : VerificationStatus::Suspended,
                                 auth()->user(),
                             );
                         } else {

@@ -1,7 +1,10 @@
 <?php
 
+use App\Enums\SupplierDocumentType;
 use App\Models\Quote;
 use App\Models\Rfq;
+use App\Models\SupplierDocument;
+use App\Models\SupplierProfile;
 use App\Models\User;
 use Database\Seeders\BusinessTypeSeeder;
 use Database\Seeders\CategorySeeder;
@@ -83,4 +86,14 @@ function awardedDeal(User $buyer, User $supplier, array $rfqAttributes = []): Rf
     $rfq->forceFill(['awarded_quote_id' => $quote->id])->save();
 
     return $rfq;
+}
+
+/**
+ * Accept every document the verification team needs before approving.
+ */
+function acceptRequiredDocuments(SupplierProfile $profile): void
+{
+    foreach (SupplierDocumentType::required() as $type) {
+        SupplierDocument::factory()->accepted()->for($profile)->create(['type' => $type]);
+    }
 }

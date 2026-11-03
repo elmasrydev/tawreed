@@ -58,7 +58,8 @@ class RfqPolicy
 
     /**
      * Verified suppliers with an active subscription may quote an open
-     * request they have not quoted before.
+     * request in their categories and coverage that they have not quoted
+     * before.
      */
     public function quote(User $user, Rfq $rfq): bool
     {
@@ -66,7 +67,7 @@ class RfqPolicy
             return false;
         }
 
-        if (! $rfq->acceptsQuotes()) {
+        if (! $rfq->acceptsQuotes() || ! $rfq->matchesSupplier($user->supplierProfile)) {
             return false;
         }
 

@@ -21,7 +21,8 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * The supplier's legal documents. Admins open each file from the private
- * disk and accept or reject it; a rejection note is shown to the supplier.
+ * disk and accept or reject it; a rejection note is shown to the supplier,
+ * and an optional acceptance note records the context of the approval.
  * Admins may also upload a document on the supplier's behalf.
  */
 class DocumentsRelationManager extends RelationManager
@@ -110,9 +111,9 @@ class DocumentsRelationManager extends RelationManager
             ->color($color)
             ->requiresConfirmation()
             ->visible(fn (SupplierDocument $record): bool => $record->status !== $status)
-            ->schema($requiresNote ? [
-                Textarea::make('note')->label(__('admin.note'))->required()->maxLength(500),
-            ] : [])
+            ->schema([
+                Textarea::make('note')->label(__('admin.note'))->required($requiresNote)->maxLength(500),
+            ])
             ->action(function (SupplierDocument $record, array $data) use ($status, $key): void {
                 app(DecideSupplierDocument::class)->handle($record, $status, $data['note'] ?? null);
 

@@ -220,6 +220,38 @@ class Rfq extends Model implements HasMedia
         $query->where($category->isMain() ? 'category_id' : 'subcategory_id', $category->id);
     }
 
+    /**
+     * Requests in the supplier's categories and coverage governorates: the
+     * only ones they see in the feed and may quote. A supplier with no
+     * categories on file is matched on coverage alone.
+     */
+    #[Scope]
+    protected function matchingSupplier(Builder $query, ?SupplierProfile $profile): void
+    {
+        if ($profile === null) {
+            $query->whereRaw('1 = 0');
+
+            return;
+        }
+
+        $categoryIds = $profile->categories()->pluck('categories.id')->all();
+        $governorateIds = $profile->governorates()->pluck('governorates.id')->all();
+
+        $query
+            ->when($categoryIds !== [], fn (Builder $query) => $query->where(
+                fn (Builder $inner) => $inner->whereIn('category_id', $categoryIds)->orWhereIn('subcategory_id', $categoryIds)
+            ))
+            ->when($governorateIds !== [], fn (Builder $query) => $query->whereIn('governorate_id', $governorateIds));
+    }
+
+    /**
+     * Whether the request falls inside the supplier's categories and coverage.
+     */
+    public function matchesSupplier(?SupplierProfile $profile): bool
+    {
+        return self::query()->whereKey($this->getKey())->matchingSupplier($profile)->exists();
+    }
+
     #[Scope]
     protected function forBuyer(Builder $query, User $buyer): void
     {

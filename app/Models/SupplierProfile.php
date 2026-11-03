@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Enums\DocumentStatus;
 use App\Enums\QuoteStatus;
 use App\Enums\RfqStatus;
+use App\Enums\SupplierDocumentType;
 use App\Enums\VerificationStatus;
 use Database\Factories\SupplierProfileFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -91,6 +93,30 @@ class SupplierProfile extends Model implements HasMedia
     public function canSubmitQuotes(): bool
     {
         return $this->verification_status->allowsQuoting();
+    }
+
+    /**
+     * A supplier may only be verified once every required legal document has
+     * been reviewed and accepted.
+     */
+    public function hasAcceptedRequiredDocuments(): bool
+    {
+        $required = SupplierDocumentType::required();
+
+        return $this->documents()
+            ->whereIn('type', $required)
+            ->where('status', DocumentStatus::Accepted)
+            ->distinct()
+            ->count('type') === count($required);
+    }
+
+    /**
+     * Lifting a suspension restores the verified badge only when the documents
+     * still back it; otherwise the supplier goes back into the review queue.
+     */
+    public function statusAfterReactivation(): VerificationStatus
+    {
+        return $this->hasAcceptedRequiredDocuments() ? VerificationStatus::Verified : VerificationStatus::Pending;
     }
 
     public function registerMediaCollections(): void

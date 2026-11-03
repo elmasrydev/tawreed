@@ -9,13 +9,14 @@ class DecideSupplierDocument
 {
     /**
      * Records the review of one legal document. A rejection note is shown to
-     * the supplier next to the document so they know what to re-upload.
+     * the supplier next to the document so they know what to re-upload; an
+     * optional acceptance note stays on the admin's review trail.
      */
     public function handle(SupplierDocument $document, DocumentStatus $status, ?string $note = null): SupplierDocument
     {
         $document->forceFill([
             'status' => $status,
-            'note' => $status === DocumentStatus::Rejected ? $note : null,
+            'note' => filled($note) ? $note : null,
             'reviewed_at' => now(),
         ])->save();
 

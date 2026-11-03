@@ -25,4 +25,12 @@ class SupplierDocumentFactory extends Factory
             'uploaded_at' => now(),
         ];
     }
+
+    public function accepted(): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'status' => DocumentStatus::Accepted,
+            'reviewed_at' => now(),
+        ]);
+    }
 }
