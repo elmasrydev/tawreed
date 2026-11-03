@@ -6,6 +6,7 @@ use App\Actions\Admin\DecideSupplierVerification;
 use App\Enums\VerificationStatus;
 use App\Models\SupplierProfile;
 use BackedEnum;
+use Closure;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
@@ -16,6 +17,7 @@ use Filament\Support\Icons\Heroicon;
  * reviewed: the dashboard queue, the suppliers table and the supplier pages.
  * Approve and reject apply to accounts under review; suspend applies to any
  * account that is not already suspended, and reactivate brings one back.
+ * Approval stays disabled until every required document has been accepted.
  */
 class VerificationActions
 {
@@ -31,7 +33,7 @@ class VerificationActions
                 visibleWhen: [VerificationStatus::Pending], requiresNote: true),
             self::decision('suspend', VerificationStatus::Suspended, 'gray', Heroicon::OutlinedPauseCircle,
                 visibleWhen: [VerificationStatus::Pending, VerificationStatus::Verified, VerificationStatus::Rejected], requiresNote: true),
-            self::decision('reactivate', VerificationStatus::Verified, 'success', Heroicon::OutlinedPlayCircle,
+            self::decision('reactivate', fn (SupplierProfile $record): VerificationStatus => $record->statusAfterReactivation(), 'success', Heroicon::OutlinedPlayCircle,
                 visibleWhen: [VerificationStatus::Suspended]),
         ];
     }
@@ -40,16 +42,20 @@ class VerificationActions
      * Rejection and suspension ask for a note, because the supplier is shown
      * that text in their account.
      *
+     * @param  VerificationStatus|Closure(SupplierProfile): VerificationStatus  $status
      * @param  array<int, VerificationStatus>  $visibleWhen
      */
     private static function decision(
         string $key,
-        VerificationStatus $status,
+        VerificationStatus|Closure $status,
         string $color,
         BackedEnum $icon,
         array $visibleWhen,
         bool $requiresNote = false,
     ): Action {
+        $isBlocked = fn (SupplierProfile $record): bool => $status === VerificationStatus::Verified
+            && ! $record->hasAcceptedRequiredDocuments();
+
         return Action::make($key)
             ->label(__("admin.{$key}"))
             ->icon($icon)
@@ -59,12 +65,18 @@ class VerificationActions
             ->requiresConfirmation()
             ->modalDescription(__("admin.{$key}_confirm"))
             ->visible(fn (SupplierProfile $record): bool => in_array($record->verification_status, $visibleWhen, true))
+            ->disabled($isBlocked)
+            ->tooltip(fn (SupplierProfile $record): ?string => $isBlocked($record) ? __('admin.verify_requires_documents') : null)
             ->schema($requiresNote ? [
                 Textarea::make('note')->label(__('admin.note'))->required()->maxLength(500),
             ] : [])
             ->action(function (SupplierProfile $record, array $data) use ($status, $key): void {
-                app(DecideSupplierVerification::class)
-                    ->handle($record, $status, auth()->user(), $data['note'] ?? null);
+                app(DecideSupplierVerification::class)->handle(
+                    $record,
+                    $status instanceof Closure ? $status($record) : $status,
+                    auth()->user(),
+                    $data['note'] ?? null,
+                );
 
                 Notification::make()
                     ->success()

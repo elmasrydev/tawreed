@@ -51,6 +51,8 @@ return [
     'gate_rejected' => 'Your account wasn\'t approved yet. Check the reviewer\'s note and re-upload your documents, and we\'ll review it again.',
     'gate_email' => 'Verify your email address to start quoting.',
     'gate_email_action' => 'Verify email',
+    'gate_out_of_scope' => 'This request is outside your registered categories or coverage areas, so you can\'t send an offer on it.',
+    'gate_out_of_scope_action' => 'View coverage',
     'browse_open_rfqs' => 'Browse open RFQs',
     'your_quote' => 'Your quote',
     'view_my_quotes' => 'View my quotes',

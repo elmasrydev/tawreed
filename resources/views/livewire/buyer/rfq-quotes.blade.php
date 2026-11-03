@@ -221,7 +221,7 @@ new #[Layout('layouts::buyer', ['current' => 'requests'])] class extends Compone
                 {{ trans_choice('rfq.quotes_count', $this->quotes->count(), ['count' => $this->quotes->count()]) }}
             </h2>
 
-            <div class="hidden h-8 overflow-hidden rounded-lg border border-gray-300 text-[13px] font-semibold lg:inline-flex" role="group"
+            <div class="hidden h-8 shrink-0 overflow-hidden rounded-lg border border-gray-300 text-[13px] font-semibold xl:inline-flex" role="group"
                  aria-label="{{ __('buyer.view_mode') }}">
                 <button type="button" x-on:click="view = 'table'" :aria-pressed="view === 'table'"
                         :class="view === 'table' ? 'bg-brand-700 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'"
@@ -238,87 +238,97 @@ new #[Layout('layouts::buyer', ['current' => 'requests'])] class extends Compone
             </div>
         </div>
 
-        {{-- Table: desktop only, the default view. --}}
-        @php $columns = 'lg:grid-cols-[minmax(0,2.5fr)_minmax(0,0.9fr)_minmax(0,1.1fr)_minmax(0,0.9fr)_minmax(0,0.7fr)_minmax(0,1.1fr)_minmax(0,0.8fr)_172px]'; @endphp
-        <div x-show="view === 'table'" class="card hidden overflow-hidden lg:block">
-            <div class="table-head md:hidden lg:grid lg:gap-3 {{ $columns }}">
-                <span>{{ __('buyer.col_supplier') }}</span>
-                <span class="text-end">{{ __('buyer.col_unit_price') }}</span>
-                <span class="text-end">{{ __('buyer.col_total') }}</span>
-                <span>{{ __('buyer.col_delivery') }}</span>
-                <span>{{ __('buyer.col_valid') }}</span>
-                <span>{{ __('buyer.col_payment') }}</span>
-                <span>{{ __('buyer.col_sample') }}</span>
-                <span></span>
-            </div>
+        {{-- Table: wide screens only, the default view. Eight columns need more
+             room than lg + sidebar gives, and on a narrow xl window the table
+             scrolls sideways instead of clipping its last columns. --}}
+        @php $columns = 'xl:grid-cols-[minmax(0,2.4fr)_minmax(0,0.9fr)_minmax(0,1.1fr)_minmax(0,0.9fr)_minmax(0,0.7fr)_minmax(0,1.1fr)_minmax(0,0.8fr)_13rem]'; @endphp
+        <div x-show="view === 'table'" class="card hidden overflow-x-auto xl:block">
+            <div class="min-w-[60rem]">
+                <div class="table-head md:hidden xl:grid xl:gap-3 {{ $columns }}">
+                    <span>{{ __('buyer.col_supplier') }}</span>
+                    <span class="text-end">{{ __('buyer.col_unit_price') }}</span>
+                    <span class="text-end">{{ __('buyer.col_total') }}</span>
+                    <span>{{ __('buyer.col_delivery') }}</span>
+                    <span>{{ __('buyer.col_valid') }}</span>
+                    <span>{{ __('buyer.col_payment') }}</span>
+                    <span>{{ __('buyer.col_sample') }}</span>
+                    <span></span>
+                </div>
 
-            @foreach ($this->quotes as $quote)
-                @php $profile = $quote->supplier->supplierProfile; @endphp
-                <div wire:key="row-{{ $quote->id }}" @class([
-                    'data-row text-[13px] lg:gap-3', $columns,
-                    'bg-brand-100/60 hover:bg-brand-100' => $quote->isSelected(),
-                    'opacity-55' => ! $quote->isActionable() && ! $quote->isSelected(),
-                ])>
-                    <div class="flex min-w-0 items-center gap-2.5">
-                        <x-avatar :name="$profile?->company_name" :src="$profile?->getFirstMediaUrl('logo') ?: null" :size="32" />
-                        <div class="min-w-0">
-                            <x-buyer.supplier-link :profile="$profile" :seal="14" class="font-semibold text-gray-900" />
-                            <p class="flex items-center gap-1 text-[11px] text-gray-500 tabular">
-                                <x-lucide name="star" :size="11" class="text-accent-500" />
-                                {{ number_format((float) ($profile?->rating_avg ?? 0), 1) }}
-                                · {{ trans_choice('buyer.reviews_count', $profile?->reviews_count ?? 0, ['count' => $profile?->reviews_count ?? 0]) }}
-                            </p>
+                @foreach ($this->quotes as $quote)
+                    @php $profile = $quote->supplier->supplierProfile; @endphp
+                    <div wire:key="row-{{ $quote->id }}" @class([
+                        'data-row text-[13px] xl:gap-3', $columns,
+                        'bg-brand-100/60 hover:bg-brand-100' => $quote->isSelected(),
+                        'opacity-55' => ! $quote->isActionable() && ! $quote->isSelected(),
+                    ])>
+                        <div class="flex min-w-0 items-center gap-2.5">
+                            <x-avatar :name="$profile?->company_name" :src="$profile?->getFirstMediaUrl('logo') ?: null" :size="32" />
+                            <div class="min-w-0">
+                                <x-buyer.supplier-link :profile="$profile" :seal="14" class="font-semibold text-gray-900" />
+                                <p class="flex items-center gap-1 text-[11px] text-gray-500 tabular">
+                                    <x-lucide name="star" :size="11" class="text-accent-500" />
+                                    {{ number_format((float) ($profile?->rating_avg ?? 0), 1) }}
+                                    · {{ trans_choice('buyer.reviews_count', $profile?->reviews_count ?? 0, ['count' => $profile?->reviews_count ?? 0]) }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <x-buyer.money :amount="$quote->unit_price" class="font-bold text-brand-700" />
+                        </div>
+                        <div class="text-end">
+                            <x-buyer.money :amount="$quote->grandTotal()" class="font-semibold text-gray-900" />
+                            @if ($this->isLowest($quote))
+                                <p class="text-[10px] font-bold tracking-[0.4px] text-success-700 uppercase">{{ __('buyer.tag_lowest') }}</p>
+                            @endif
+                        </div>
+                        <div>
+                            <p class="tabular">{{ $quote->expected_delivery_date->translatedFormat('j M') }}</p>
+                            @if ($this->isFastest($quote))
+                                <p class="text-[10px] font-bold tracking-[0.4px] text-brand-500 uppercase">{{ __('buyer.tag_fastest') }}</p>
+                            @endif
+                        </div>
+                        <span class="text-gray-700 tabular">{{ trans_choice('buyer.days_count', $quote->validity_days, ['count' => $quote->validity_days]) }}</span>
+                        <span class="line-clamp-2 text-xs text-gray-700">{{ $quote->payment_terms ?: '—' }}</span>
+                        <span class="line-clamp-2 text-xs text-gray-700">{{ $quote->sample_availability ?: '—' }}</span>
+                        <div class="flex flex-wrap items-center justify-end gap-1">
+                            @can('decide', $quote)
+                                <button type="button" wire:click="startSelect({{ $quote->id }})" class="btn btn-primary btn-sm">
+                                    {{ __('buyer.select') }}
+                                </button>
+                                <button type="button" wire:click="shortlist({{ $quote->id }})"
+                                        title="{{ $quote->isShortlisted() ? __('rfq.shortlisted') : __('rfq.shortlist') }}"
+                                        aria-label="{{ $quote->isShortlisted() ? __('rfq.shortlisted') : __('rfq.shortlist') }}"
+                                        aria-pressed="{{ $quote->isShortlisted() ? 'true' : 'false' }}"
+                                        @class([
+                                            'btn btn-icon btn-sm border',
+                                            'border-warning-200 bg-warning-100 text-warning-800' => $quote->isShortlisted(),
+                                            'border-gray-300 bg-white text-gray-400 hover:text-warning-600' => ! $quote->isShortlisted(),
+                                        ])>
+                                    <x-lucide name="star" :size="14" />
+                                </button>
+                                <button type="button" wire:click="startReject({{ $quote->id }})"
+                                        title="{{ __('rfq.reject') }}" aria-label="{{ __('rfq.reject') }}"
+                                        class="btn btn-icon btn-sm border border-gray-300 bg-white text-danger-600 hover:bg-danger-50">
+                                    <x-lucide name="x" :size="14" />
+                                </button>
+                            @else
+                                <x-status-badge :status="$quote->status" :quote="$quote" size="sm" />
+                                @if ($quote->isSelected() && $quote->conversation)
+                                    <a href="{{ route('buyer.chats.show', $quote->conversation) }}" wire:navigate class="btn btn-success btn-sm">
+                                        <x-lucide name="message-square" :size="14" />
+                                        {{ __('buyer.open_chat') }}
+                                    </a>
+                                @endif
+                            @endcan
                         </div>
                     </div>
-                    <div class="text-end">
-                        <x-buyer.money :amount="$quote->unit_price" class="font-bold text-brand-700" />
-                    </div>
-                    <div class="text-end">
-                        <x-buyer.money :amount="$quote->grandTotal()" class="font-semibold text-gray-900" />
-                        @if ($this->isLowest($quote))
-                            <p class="text-[10px] font-bold tracking-[0.4px] text-success-700 uppercase">{{ __('buyer.tag_lowest') }}</p>
-                        @endif
-                    </div>
-                    <div>
-                        <p class="tabular">{{ $quote->expected_delivery_date->translatedFormat('j M') }}</p>
-                        @if ($this->isFastest($quote))
-                            <p class="text-[10px] font-bold tracking-[0.4px] text-brand-500 uppercase">{{ __('buyer.tag_fastest') }}</p>
-                        @endif
-                    </div>
-                    <span class="text-gray-700 tabular">{{ trans_choice('buyer.days_count', $quote->validity_days, ['count' => $quote->validity_days]) }}</span>
-                    <span class="line-clamp-2 text-xs text-gray-700">{{ $quote->payment_terms ?: '—' }}</span>
-                    <span class="line-clamp-2 text-xs text-gray-700">{{ $quote->sample_availability ?: '—' }}</span>
-                    <div class="flex items-center justify-end gap-1">
-                        @can('decide', $quote)
-                            <button type="button" wire:click="startSelect({{ $quote->id }})" class="btn btn-primary btn-sm">
-                                {{ __('buyer.select') }}
-                            </button>
-                            <button type="button" wire:click="shortlist({{ $quote->id }})"
-                                    title="{{ $quote->isShortlisted() ? __('rfq.shortlisted') : __('rfq.shortlist') }}"
-                                    aria-label="{{ $quote->isShortlisted() ? __('rfq.shortlisted') : __('rfq.shortlist') }}"
-                                    aria-pressed="{{ $quote->isShortlisted() ? 'true' : 'false' }}"
-                                    @class([
-                                        'btn btn-icon btn-sm border',
-                                        'border-warning-200 bg-warning-100 text-warning-800' => $quote->isShortlisted(),
-                                        'border-gray-300 bg-white text-gray-400 hover:text-warning-600' => ! $quote->isShortlisted(),
-                                    ])>
-                                <x-lucide name="star" :size="14" />
-                            </button>
-                            <button type="button" wire:click="startReject({{ $quote->id }})"
-                                    title="{{ __('rfq.reject') }}" aria-label="{{ __('rfq.reject') }}"
-                                    class="btn btn-icon btn-sm border border-gray-300 bg-white text-danger-600 hover:bg-danger-50">
-                                <x-lucide name="x" :size="14" />
-                            </button>
-                        @else
-                            <x-status-badge :status="$quote->status" :quote="$quote" size="sm" />
-                        @endcan
-                    </div>
-                </div>
-            @endforeach
+                @endforeach
+            </div>
         </div>
 
-        {{-- Cards: always on phones and tablets, optional on desktop. --}}
-        <div :class="view === 'cards' ? 'lg:grid' : 'lg:hidden'" class="grid gap-4 pt-1 md:grid-cols-2">
+        {{-- Cards: always below xl, optional on wide screens. --}}
+        <div :class="view === 'cards' ? 'xl:grid' : 'xl:hidden'" class="grid gap-4 pt-1 md:grid-cols-2">
             @foreach ($this->quotes as $quote)
                 @php
                     $profile = $quote->supplier->supplierProfile;

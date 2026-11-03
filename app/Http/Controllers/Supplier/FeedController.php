@@ -18,7 +18,8 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 class FeedController extends Controller
 {
     /**
-     * The anonymised request feed. Buyer identity is stripped by the view model
+     * The anonymised request feed, limited to requests in the supplier's
+     * categories and coverage. Buyer identity is stripped by the view model
      * before anything reaches a template.
      */
     public function index(Request $request): View
@@ -27,6 +28,7 @@ class FeedController extends Controller
 
         $rfqs = Rfq::query()
             ->browsable()
+            ->matchingSupplier($supplier->supplierProfile)
             ->with([...AnonymousRfq::RELATIONS, 'quotes' => $this->ownQuotesOnly($supplier)])
             ->when($request->integer('category'), fn ($query, int $id) => $query->where('category_id', $id))
             ->when($request->integer('governorate'), fn ($query, int $id) => $query->where('governorate_id', $id))
@@ -39,7 +41,7 @@ class FeedController extends Controller
             'rfqs' => $rfqs,
             'items' => $rfqs->map(fn (Rfq $rfq): AnonymousRfq => AnonymousRfq::make($rfq, $supplier)),
             'categories' => Category::query()->main()->get(),
-            'categoryCounts' => Rfq::query()->browsable()
+            'categoryCounts' => Rfq::query()->browsable()->matchingSupplier($supplier->supplierProfile)
                 ->selectRaw('category_id, count(*) as total')
                 ->groupBy('category_id')
                 ->pluck('total', 'category_id'),
@@ -64,7 +66,7 @@ class FeedController extends Controller
             'rfq' => $rfq,
             'attachments' => $rfq->getMedia('attachments'),
             'canQuote' => $canQuote,
-            'gate' => $canQuote || $item->hasOwnQuote() ? null : $this->gateFor($supplier, $item),
+            'gate' => $canQuote || $item->hasOwnQuote() ? null : $this->gateFor($supplier, $rfq, $item),
         ]);
     }
 
@@ -100,13 +102,24 @@ class FeedController extends Controller
      *
      * @return array{message: string, action: ?string, url: ?string}
      */
-    private function gateFor(User $supplier, AnonymousRfq $item): array
+    private function gateFor(User $supplier, Rfq $rfq, AnonymousRfq $item): array
     {
         if (! $item->acceptsQuotes) {
             return ['message' => __('quote.closed'), 'action' => __('supplier.browse_open_rfqs'), 'url' => route('supplier.feed')];
         }
 
-        return QuoteEligibility::explain($supplier)
-            ?? ['message' => __('quote.closed'), 'action' => null, 'url' => null];
+        if ($explanation = QuoteEligibility::explain($supplier)) {
+            return $explanation;
+        }
+
+        if (! $rfq->matchesSupplier($supplier->supplierProfile)) {
+            return [
+                'message' => __('supplier.gate_out_of_scope'),
+                'action' => __('supplier.gate_out_of_scope_action'),
+                'url' => route('supplier.account', ['tab' => 'coverage']),
+            ];
+        }
+
+        return ['message' => __('quote.closed'), 'action' => null, 'url' => null];
     }
 }

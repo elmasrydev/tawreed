@@ -67,7 +67,7 @@ it('creates a verified buyer with their company profile', function (): void {
     Notification::assertNothingSent();
 });
 
-it('creates a supplier with coverage, categories and a recorded verification', function (): void {
+it('creates a supplier with coverage and categories awaiting verification', function (): void {
     $governorates = Governorate::query()->take(2)->pluck('id')->all();
     $category = Category::query()->main()->value('id');
 
@@ -80,7 +80,6 @@ it('creates a supplier with coverage, categories and a recorded verification', f
                 'tax_number' => 'TX-456',
                 'governorate_ids' => $governorates,
                 'category_ids' => [$category],
-                'verification_status' => VerificationStatus::Verified->value,
             ],
         ]))
         ->call('create')
@@ -91,8 +90,26 @@ it('creates a supplier with coverage, categories and a recorded verification', f
     expect($profile->company_name)->toBe('Delta Packaging')
         ->and($profile->governorates->pluck('id')->sort()->values()->all())->toBe(collect($governorates)->sort()->values()->all())
         ->and($profile->categories->pluck('id')->all())->toBe([$category])
-        ->and($profile->isVerified())->toBeTrue()
-        ->and($profile->verified_by)->toBe($this->admin->id);
+        ->and($profile->verification_status)->toBe(VerificationStatus::Pending)
+        ->and($profile->isVerified())->toBeFalse();
+});
+
+it('does not let a new supplier be created as verified before their documents are accepted', function (): void {
+    Livewire::test(CreateUser::class)
+        ->fillForm(accountFields([
+            'role' => UserRole::Supplier->value,
+            'supplier' => [
+                'company_name' => 'Delta Packaging',
+                'commercial_reg_no' => 'CR-123',
+                'tax_number' => 'TX-456',
+                'governorate_ids' => Governorate::query()->take(1)->pluck('id')->all(),
+                'verification_status' => VerificationStatus::Verified->value,
+            ],
+        ]))
+        ->call('create')
+        ->assertHasFormErrors(['supplier.verification_status']);
+
+    expect(User::where('email', 'mona@example.test')->exists())->toBeFalse();
 });
 
 it('rejects a duplicate or malformed phone number', function (): void {

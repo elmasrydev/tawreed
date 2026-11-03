@@ -235,6 +235,20 @@ it('shows the buyer every supplier identity on the comparison screen', function 
         ->assertSee('92,500.00');
 });
 
+it('offers the chat for the selected quote in both the table and the cards view', function (): void {
+    $quote = Quote::factory()->for($this->rfq)->create(['supplier_id' => $this->supplier->id]);
+
+    app(SelectQuote::class)->handle($quote);
+
+    $chatUrl = route('buyer.chats.show', $quote->fresh()->conversation);
+
+    $html = Livewire::actingAs($this->buyer)
+        ->test('buyer.rfq-quotes', ['rfq' => $this->rfq->fresh()])
+        ->html();
+
+    expect(substr_count($html, 'href="'.$chatUrl.'"'))->toBe(2);
+});
+
 it('lists received quotes in the inbox with their request', function (): void {
     Quote::factory()->for($this->rfq)->create(['supplier_id' => $this->supplier->id]);
     Rfq::factory()->for($this->buyer, 'buyer')->create(['title' => 'Request without quotes']);

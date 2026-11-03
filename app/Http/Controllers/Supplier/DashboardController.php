@@ -6,11 +6,9 @@ use App\Enums\QuoteStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Quote;
 use App\Models\Rfq;
-use App\Models\SupplierProfile;
 use App\Models\User;
 use App\Support\ShellState;
 use App\ViewModels\AnonymousRfq;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -22,7 +20,7 @@ class DashboardController extends Controller
         $supplier = $request->user();
         $profile = $supplier->supplierProfile->load(['categories', 'governorates']);
 
-        $matching = $this->matchingRfqs($profile);
+        $matching = Rfq::query()->browsable()->matchingSupplier($profile);
 
         $newRfqs = (clone $matching)
             ->with([...AnonymousRfq::RELATIONS, 'quotes' => fn (HasMany $query) => $query->where('supplier_id', $supplier->id)])
@@ -51,25 +49,6 @@ class DashboardController extends Controller
             'newRfqs' => $newRfqs,
             'recentQuotes' => $recentQuotes,
         ]);
-    }
-
-    /**
-     * Open requests in the supplier's categories and coverage governorates. A
-     * supplier with no categories on file is matched on coverage alone.
-     *
-     * @return Builder<Rfq>
-     */
-    private function matchingRfqs(SupplierProfile $profile): Builder
-    {
-        $categoryIds = $profile->categories->modelKeys();
-        $governorateIds = $profile->governorates->modelKeys();
-
-        return Rfq::query()
-            ->browsable()
-            ->when($categoryIds !== [], fn (Builder $query) => $query->where(
-                fn (Builder $inner) => $inner->whereIn('category_id', $categoryIds)->orWhereIn('subcategory_id', $categoryIds)
-            ))
-            ->when($governorateIds !== [], fn (Builder $query) => $query->whereIn('governorate_id', $governorateIds));
     }
 
     /**

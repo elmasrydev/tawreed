@@ -1,12 +1,15 @@
 <?php
 
+use App\Actions\Admin\DecideSupplierVerification;
 use App\Enums\ReportStatus;
 use App\Enums\ReportType;
+use App\Enums\SupplierDocumentType;
 use App\Enums\UserRole;
 use App\Enums\UserStatus;
 use App\Enums\VerificationStatus;
 use App\Filament\Resources\Reports\Pages\ListReports;
 use App\Filament\Resources\Subscriptions\Pages\ListSubscriptions;
+use App\Filament\Resources\SupplierProfiles\Pages\EditSupplierProfile;
 use App\Filament\Resources\SupplierProfiles\Pages\ListSupplierProfiles;
 use App\Filament\Resources\Users\Pages\ListUsers;
 use App\Filament\Widgets\MarketplaceStats;
@@ -16,10 +19,12 @@ use App\Models\Quote;
 use App\Models\Report;
 use App\Models\Rfq;
 use App\Models\Subscription;
+use App\Models\SupplierDocument;
 use App\Models\SupplierProfile;
 use App\Models\User;
 use Filament\Actions\Testing\TestAction;
 use Filament\Auth\Pages\Login;
+use Illuminate\Validation\ValidationException;
 use Livewire\Livewire;
 
 beforeEach(function (): void {
@@ -79,6 +84,7 @@ it('approves a supplier and grants the verification badge', function (): void {
         ->create(['role' => UserRole::Supplier]);
 
     $profile = $supplier->supplierProfile;
+    acceptRequiredDocuments($profile);
 
     Livewire::actingAs($this->admin)
         ->test(VerificationQueue::class)
@@ -90,6 +96,47 @@ it('approves a supplier and grants the verification badge', function (): void {
         ->and($profile->verified_at)->not->toBeNull()
         ->and($profile->verified_by)->toBe($this->admin->id)
         ->and($profile->canSubmitQuotes())->toBeTrue();
+});
+
+it('blocks approval until every required document is accepted', function (): void {
+    $profile = User::factory()
+        ->has(SupplierProfile::factory()->pending(), 'supplierProfile')
+        ->create(['role' => UserRole::Supplier])
+        ->supplierProfile;
+
+    SupplierDocument::factory()->accepted()->for($profile)->create(['type' => SupplierDocumentType::CommercialRegistration]);
+    SupplierDocument::factory()->for($profile)->create(['type' => SupplierDocumentType::TaxCard]);
+
+    Livewire::actingAs($this->admin)
+        ->test(VerificationQueue::class)
+        ->assertActionDisabled(TestAction::make('approve')->table($profile));
+
+    expect(fn () => app(DecideSupplierVerification::class)->handle($profile, VerificationStatus::Verified, $this->admin))
+        ->toThrow(ValidationException::class, __('admin.verify_requires_documents'));
+
+    expect($profile->fresh()->verification_status)->toBe(VerificationStatus::Pending);
+});
+
+it('sends a reactivated supplier back to review when their documents are not accepted', function (): void {
+    $profile = User::factory()
+        ->has(SupplierProfile::factory()->suspended(), 'supplierProfile')
+        ->create(['role' => UserRole::Supplier])
+        ->supplierProfile;
+
+    Livewire::actingAs($this->admin)
+        ->test(EditSupplierProfile::class, ['record' => $profile->getRouteKey()])
+        ->callAction('reactivate');
+
+    expect($profile->fresh()->verification_status)->toBe(VerificationStatus::Pending);
+
+    acceptRequiredDocuments($profile);
+    $profile->refresh()->forceFill(['verification_status' => VerificationStatus::Suspended])->save();
+
+    Livewire::actingAs($this->admin)
+        ->test(EditSupplierProfile::class, ['record' => $profile->getRouteKey()])
+        ->callAction('reactivate');
+
+    expect($profile->fresh()->verification_status)->toBe(VerificationStatus::Verified);
 });
 
 it('rejects a supplier with a note they will see', function (): void {

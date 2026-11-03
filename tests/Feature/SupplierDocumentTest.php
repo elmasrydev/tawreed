@@ -144,6 +144,30 @@ it('lets an admin accept a document', function (): void {
         ->and($document->fresh()->note)->toBeNull();
 });
 
+it('lets an admin add an optional note when accepting a document', function (): void {
+    $document = SupplierDocument::factory()->create(['supplier_profile_id' => $this->profile->id]);
+
+    Livewire::actingAs(User::factory()->admin()->create())
+        ->test(DocumentsRelationManager::class, ['ownerRecord' => $this->profile, 'pageClass' => ViewSupplierProfile::class])
+        ->callAction(TestAction::make('accept_document')->table($document), data: ['note' => 'Matches the registry record.'])
+        ->assertHasNoFormErrors()
+        ->assertSee('Matches the registry record.');
+
+    expect($document->fresh()->status)->toBe(DocumentStatus::Accepted)
+        ->and($document->fresh()->note)->toBe('Matches the registry record.');
+});
+
+it('requires a note when rejecting a document', function (): void {
+    $document = SupplierDocument::factory()->create(['supplier_profile_id' => $this->profile->id]);
+
+    Livewire::actingAs(User::factory()->admin()->create())
+        ->test(DocumentsRelationManager::class, ['ownerRecord' => $this->profile, 'pageClass' => ViewSupplierProfile::class])
+        ->callAction(TestAction::make('reject_document')->table($document), data: ['note' => ''])
+        ->assertHasFormErrors(['note' => 'required']);
+
+    expect($document->fresh()->status)->toBe(DocumentStatus::Pending);
+});
+
 it('keeps the original upload time when an admin reviews the document', function (): void {
     $this->travelTo(now()->subDay());
     uploadDocument($this->supplier);

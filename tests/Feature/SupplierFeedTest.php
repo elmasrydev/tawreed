@@ -109,6 +109,50 @@ it('filters the feed by category and governorate', function (): void {
         ->assertDontSee('Espresso beans');
 });
 
+it('lists only requests in the supplier categories and coverage areas', function (): void {
+    $stationery = Category::where('slug', 'stationery')->firstOrFail();
+    $beverages = Category::where('slug', 'beverages')->firstOrFail();
+    $cairo = Governorate::where('slug', 'cairo')->firstOrFail();
+    $giza = Governorate::where('slug', 'giza')->firstOrFail();
+
+    $this->supplier->supplierProfile->categories()->attach($stationery);
+    $this->supplier->supplierProfile->governorates()->attach($cairo);
+
+    Rfq::factory()->create(['title' => 'Printed notebooks', 'category_id' => $stationery->id, 'governorate_id' => $cairo->id]);
+    Rfq::factory()->create(['title' => 'Giza notebooks', 'category_id' => $stationery->id, 'governorate_id' => $giza->id]);
+    Rfq::factory()->create(['title' => 'Cairo coffee beans', 'category_id' => $beverages->id, 'governorate_id' => $cairo->id]);
+
+    $this->actingAs($this->supplier)
+        ->get(route('supplier.feed'))
+        ->assertOk()
+        ->assertSee('Printed notebooks')
+        ->assertDontSee('Giza notebooks')
+        ->assertDontSee('Cairo coffee beans');
+});
+
+it('refuses a quote on a request outside the supplier categories or coverage', function (): void {
+    $stationery = Category::where('slug', 'stationery')->firstOrFail();
+    $beverages = Category::where('slug', 'beverages')->firstOrFail();
+    $cairo = Governorate::where('slug', 'cairo')->firstOrFail();
+    $giza = Governorate::where('slug', 'giza')->firstOrFail();
+
+    $this->supplier->supplierProfile->categories()->attach($stationery);
+    $this->supplier->supplierProfile->governorates()->attach($cairo);
+    Subscription::factory()->create(['supplier_id' => $this->supplier->id]);
+
+    $matching = Rfq::factory()->create(['category_id' => $stationery->id, 'governorate_id' => $cairo->id]);
+    $outOfScope = Rfq::factory()->create(['category_id' => $beverages->id, 'governorate_id' => $giza->id]);
+
+    expect(Gate::forUser($this->supplier)->allows('quote', $matching))->toBeTrue()
+        ->and(Gate::forUser($this->supplier)->allows('quote', $outOfScope))->toBeFalse();
+
+    $this->actingAs($this->supplier)
+        ->get(route('supplier.rfqs.show', $outOfScope))
+        ->assertOk()
+        ->assertDontSeeLivewire('supplier.submit-quote')
+        ->assertSee(__('supplier.gate_out_of_scope'), false);
+});
+
 it('lets only a verified, subscribed supplier quote an open request', function (): void {
     $rfq = Rfq::factory()->create();
 
