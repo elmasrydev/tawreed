@@ -52,42 +52,83 @@
                         <p class="max-w-xs text-[13px] text-gray-500">{{ __('buyer.recent_quotes_empty') }}</p>
                     </div>
                 @else
-                    {{-- Header and rows share one column template: the RFQ and supplier
-                         columns flex and truncate, while total, delivery and status get
-                         fixed widths sized for their longest values (in either language)
-                         so nothing spills into the next column. --}}
-                    @php $columns = 'md:grid-cols-[minmax(0,2fr)_minmax(0,1.4fr)_7.5rem_5rem_7.5rem]'; @endphp
-                    <div class="table-head md:gap-3.5 {{ $columns }}">
-                        <span>{{ __('buyer.col_rfq') }}</span>
-                        <span>{{ __('buyer.col_supplier') }}</span>
-                        <span class="text-end">{{ __('buyer.col_total') }}</span>
-                        <span>{{ __('buyer.col_delivery') }}</span>
-                        <span class="text-center">{{ __('ui.status') }}</span>
-                    </div>
+                    {{-- md and up: a semantic table. The colgroup fixes every column's
+                         width once for both thead and tbody (table-layout: fixed), so long
+                         RFQ titles or supplier names truncate instead of shifting other
+                         columns. Every column but Status uses start alignment (left in
+                         English, right in Arabic); Status is centered. --}}
+                    <table class="hidden w-full table-fixed text-[13px] md:table">
+                        <colgroup>
+                            <col>
+                            <col class="w-[24%]">
+                            <col class="w-[8.5rem]">
+                            <col class="w-24">
+                            <col class="w-[7.5rem]">
+                        </colgroup>
+                        <thead class="border-b border-gray-200 bg-gray-50 text-[11px] font-semibold tracking-[0.5px] text-gray-500 uppercase">
+                            <tr>
+                                <th scope="col" class="py-2.5 ps-4 pe-3 text-start font-semibold">{{ __('buyer.col_rfq') }}</th>
+                                <th scope="col" class="px-3 py-2.5 text-start font-semibold">{{ __('buyer.col_supplier') }}</th>
+                                <th scope="col" class="px-3 py-2.5 text-start font-semibold">{{ __('buyer.col_total') }}</th>
+                                <th scope="col" class="px-3 py-2.5 text-start font-semibold">{{ __('buyer.col_delivery') }}</th>
+                                <th scope="col" class="py-2.5 ps-3 pe-4 text-center font-semibold">{{ __('ui.status') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($recentQuotes as $quote)
+                                <tr wire:key="recent-quote-{{ $quote->id }}" class="border-b border-gray-100 transition-colors last:border-b-0 hover:bg-gray-50">
+                                    <td class="py-3 ps-4 pe-3 text-start">
+                                        <a href="{{ route('buyer.rfqs.quotes', $quote->rfq) }}" wire:navigate title="{{ $quote->rfq->title }}"
+                                           class="block truncate font-medium text-gray-900 hover:text-brand-500">
+                                            {{ $quote->rfq->title }}
+                                            @if ($quote->rfq->formattedQuantity())
+                                                <span class="text-gray-500">· <span dir="ltr">{{ $quote->rfq->formattedQuantity() }}</span> {{ $quote->rfq->unit?->name }}</span>
+                                            @endif
+                                        </a>
+                                    </td>
+                                    <td class="px-3 py-3 text-start">
+                                        <x-buyer.supplier-link :profile="$quote->supplier->supplierProfile" :seal="14" class="text-gray-700"
+                                                               :title="$quote->supplier->supplierProfile?->company_name" />
+                                    </td>
+                                    <td class="px-3 py-3 text-start">
+                                        <x-buyer.money :amount="$quote->grandTotal()" class="font-semibold text-gray-900" />
+                                    </td>
+                                    <td class="px-3 py-3 text-start whitespace-nowrap text-gray-700 tabular">
+                                        {{ $quote->expected_delivery_date->translatedFormat('j M') }}
+                                    </td>
+                                    <td class="py-3 ps-3 pe-4 text-center">
+                                        <x-status-badge :status="$quote->status" :quote="$quote" size="sm" />
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
 
-                    @foreach ($recentQuotes as $quote)
-                        <div class="data-row text-[13px] md:gap-3.5 {{ $columns }}">
-                            <a href="{{ route('buyer.rfqs.quotes', $quote->rfq) }}" wire:navigate title="{{ $quote->rfq->title }}"
-                               class="min-w-0 truncate font-medium text-gray-900 hover:text-brand-500">
-                                {{ $quote->rfq->title }}
-                                @if ($quote->rfq->formattedQuantity())
-                                    <span class="text-gray-500">· <span dir="ltr">{{ $quote->rfq->formattedQuantity() }}</span> {{ $quote->rfq->unit?->name }}</span>
-                                @endif
-                            </a>
-                            <div class="min-w-0">
-                                <x-buyer.supplier-link :profile="$quote->supplier->supplierProfile" :seal="14" class="text-gray-700"
-                                                       :title="$quote->supplier->supplierProfile?->company_name" />
+                    {{-- Phones: the same quotes as stacked rows. --}}
+                    <div class="md:hidden">
+                        @foreach ($recentQuotes as $quote)
+                            <div wire:key="recent-quote-card-{{ $quote->id }}" class="data-row text-[13px]">
+                                <a href="{{ route('buyer.rfqs.quotes', $quote->rfq) }}" wire:navigate
+                                   class="min-w-0 truncate font-medium text-gray-900 hover:text-brand-500">
+                                    {{ $quote->rfq->title }}
+                                    @if ($quote->rfq->formattedQuantity())
+                                        <span class="text-gray-500">· <span dir="ltr">{{ $quote->rfq->formattedQuantity() }}</span> {{ $quote->rfq->unit?->name }}</span>
+                                    @endif
+                                </a>
+                                <div class="min-w-0">
+                                    <x-buyer.supplier-link :profile="$quote->supplier->supplierProfile" :seal="14" class="text-gray-700" />
+                                </div>
+                                <div class="flex flex-wrap items-center justify-between gap-2">
+                                    <x-buyer.money :amount="$quote->grandTotal()" class="font-semibold text-gray-900" />
+                                    <span class="whitespace-nowrap text-gray-700 tabular">
+                                        <x-lucide name="truck" :size="13" class="inline text-gray-400" />
+                                        {{ $quote->expected_delivery_date->translatedFormat('j M') }}
+                                    </span>
+                                    <x-status-badge :status="$quote->status" :quote="$quote" size="sm" />
+                                </div>
                             </div>
-                            <div class="flex flex-wrap items-center justify-between gap-2 md:contents">
-                                <x-buyer.money :amount="$quote->grandTotal()" class="font-semibold text-gray-900 md:text-end" />
-                                <span class="whitespace-nowrap text-gray-700 tabular">
-                                    <x-lucide name="truck" :size="13" class="inline text-gray-400 md:hidden" />
-                                    {{ $quote->expected_delivery_date->translatedFormat('j M') }}
-                                </span>
-                                <span class="md:flex md:justify-center"><x-status-badge :status="$quote->status" :quote="$quote" size="sm" /></span>
-                            </div>
-                        </div>
-                    @endforeach
+                        @endforeach
+                    </div>
                 @endif
             </section>
 
