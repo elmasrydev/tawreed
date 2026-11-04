@@ -23,15 +23,18 @@
                 @endif
             </x-empty-state>
         @else
-            @php $columns = 'lg:grid-cols-[minmax(0,2.4fr)_minmax(0,1.4fr)_minmax(0,0.9fr)_minmax(0,1.2fr)_minmax(0,0.6fr)_minmax(0,1fr)_minmax(0,1.1fr)]'; @endphp
+            {{-- Table from xl up (stacked rows below): every column has a floor wide
+                 enough for its values, and all cells start-align with their
+                 headers so LTR and RTL line up the same way. --}}
+            @php $columns = 'xl:grid-cols-[minmax(10rem,2.4fr)_minmax(7rem,1.4fr)_minmax(6.5rem,0.9fr)_minmax(9rem,1.1fr)_minmax(4.5rem,0.6fr)_minmax(6.5rem,0.9fr)_minmax(7rem,1fr)]'; @endphp
 
             <div class="card overflow-hidden">
-                <div class="table-head md:hidden lg:grid lg:gap-3.5 {{ $columns }}">
+                <div class="table-head md:hidden xl:grid xl:gap-3.5 {{ $columns }}">
                     <span>{{ __('buyer.col_title') }}</span>
                     <span>{{ __('buyer.col_category') }}</span>
-                    <span class="text-end">{{ __('buyer.col_qty') }}</span>
+                    <span>{{ __('buyer.col_qty') }}</span>
                     <span>{{ __('buyer.col_deadline') }}</span>
-                    <span class="text-end">{{ __('buyer.col_quotes') }}</span>
+                    <span>{{ __('buyer.col_quotes') }}</span>
                     <span>{{ __('ui.status') }}</span>
                     <span></span>
                 </div>
@@ -42,33 +45,33 @@
                         $quantity = $rfq->formattedQuantity();
                     @endphp
 
-                    <div class="data-row lg:gap-3.5 {{ $columns }}">
+                    <div class="data-row xl:gap-3.5 {{ $columns }}">
                         <div class="flex min-w-0 items-start justify-between gap-3">
-                            <a href="{{ $url }}" wire:navigate class="min-w-0 font-medium text-gray-900 hover:text-brand-500 lg:truncate">
+                            <a href="{{ $url }}" wire:navigate class="min-w-0 font-medium text-gray-900 hover:text-brand-500 xl:truncate">
                                 {{ $rfq->title }}
                             </a>
-                            <x-status-badge :status="$rfq->status" size="sm" class="lg:hidden" />
+                            <x-status-badge :status="$rfq->status" size="sm" class="xl:hidden" />
                         </div>
 
-                        <span class="min-w-0 truncate text-[13px] text-gray-500">{{ $rfq->categoryPath() ?? '—' }}</span>
+                        <span class="min-w-0 truncate text-[13px] text-gray-500" title="{{ $rfq->categoryPath() }}">{{ $rfq->categoryPath() ?? '—' }}</span>
 
-                        <span class="hidden text-end tabular lg:block">
+                        <span class="hidden min-w-0 whitespace-nowrap tabular xl:block">
                             @if ($quantity)
                                 <span dir="ltr">{{ $quantity }}</span> {{ $rfq->unit?->name }}
                             @else
                                 <span class="text-gray-400">—</span>
                             @endif
                         </span>
-                        <span class="hidden lg:block"><x-buyer.rfq-deadline :rfq="$rfq" /></span>
-                        <span @class(["hidden text-end font-semibold tabular lg:block", "text-gray-400" => $rfq->isDraft()])>{{ $rfq->isDraft() ? "—" : $rfq->quotes_count }}</span>
-                        <span class="hidden lg:block"><x-status-badge :status="$rfq->status" size="sm" /></span>
-                        <span class="hidden justify-end lg:flex">
+                        <span class="hidden min-w-0 xl:block"><x-buyer.rfq-deadline :rfq="$rfq" /></span>
+                        <span @class(["hidden font-semibold tabular xl:block", "text-gray-400" => $rfq->isDraft()])>{{ $rfq->isDraft() ? "—" : $rfq->quotes_count }}</span>
+                        <span class="hidden xl:block"><x-status-badge :status="$rfq->status" size="sm" /></span>
+                        <span class="hidden justify-end xl:flex">
                             <a href="{{ $url }}" wire:navigate class="link px-2 py-1 text-[13px] whitespace-nowrap">
                                 {{ $rfq->isDraft() ? __('buyer.continue_editing') : __('common.view') }}
                             </a>
                         </span>
 
-                        <div class="flex flex-wrap items-center gap-x-3 gap-y-2 text-[13px] text-gray-600 lg:hidden">
+                        <div class="flex flex-wrap items-center gap-x-3 gap-y-2 text-[13px] text-gray-600 xl:hidden">
                             @if ($quantity)
                                 <span class="flex items-center gap-1 tabular">
                                     <x-lucide name="package" :size="13" class="text-gray-400" />
