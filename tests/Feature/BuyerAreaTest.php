@@ -1,5 +1,6 @@
 <?php
 
+use App\Actions\Quote\SelectQuote;
 use App\Enums\QuoteStatus;
 use App\Models\Quote;
 use App\Models\RejectionReason;
@@ -97,6 +98,26 @@ it('redirects the quotes page of a draft back to the wizard', function (): void 
     Livewire\Livewire::actingAs($this->buyer)
         ->test('buyer.rfq-quotes', ['rfq' => $draft])
         ->assertRedirect(route('buyer.rfqs.edit', $draft));
+});
+
+it('offers the chat actions in both the table and the cards view', function (): void {
+    $rfq = Rfq::factory()->for($this->buyer, 'buyer')->create();
+    Quote::factory()->for($rfq)->create();
+
+    $html = Livewire\Livewire::actingAs($this->buyer)
+        ->test('buyer.rfq-quotes', ['rfq' => $rfq])
+        ->html();
+
+    expect(substr_count($html, e(__('rfq.select_and_chat'))))->toBe(2);
+
+    $selected = Quote::factory()->for(Rfq::factory()->for($this->buyer, 'buyer'))->create();
+    $conversation = app(SelectQuote::class)->handle($selected);
+
+    $html = Livewire\Livewire::actingAs($this->buyer)
+        ->test('buyer.rfq-quotes', ['rfq' => $selected->rfq->fresh()])
+        ->html();
+
+    expect(substr_count($html, route('buyer.chats.show', $conversation)))->toBe(2);
 });
 
 it('opens the award confirmation before selecting a quote', function (): void {
