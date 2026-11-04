@@ -238,18 +238,18 @@ new #[Layout('layouts::buyer', ['current' => 'requests'])] class extends Compone
             </div>
         </div>
 
-        {{-- Table: wide screens only, the default view. Eight columns need more
-             room than lg + sidebar gives, and on a narrow xl window the table
-             scrolls sideways instead of clipping its last columns. --}}
-        @php $columns = 'xl:grid-cols-[minmax(0,2.4fr)_minmax(0,0.9fr)_minmax(0,1.1fr)_minmax(0,0.9fr)_minmax(0,0.7fr)_minmax(0,1.1fr)_minmax(0,0.8fr)_13rem]'; @endphp
+        {{-- Table: wide screens only, the default view. Unit price sits under the
+             total and validity under the delivery date, so six columns fit the
+             content area beside the sidebar; every column has a floor wide
+             enough for its values, and the card scrolls sideways rather than
+             letting cells overlap if the window is narrower still. --}}
+        @php $columns = 'xl:grid-cols-[minmax(11rem,2fr)_minmax(9rem,1.2fr)_minmax(6.5rem,0.9fr)_minmax(6rem,1fr)_minmax(5.5rem,0.9fr)_16rem]'; @endphp
         <div x-show="view === 'table'" class="card hidden overflow-x-auto xl:block">
             <div class="min-w-[60rem]">
                 <div class="table-head md:hidden xl:grid xl:gap-3 {{ $columns }}">
                     <span>{{ __('buyer.col_supplier') }}</span>
-                    <span class="text-end">{{ __('buyer.col_unit_price') }}</span>
                     <span class="text-end">{{ __('buyer.col_total') }}</span>
                     <span>{{ __('buyer.col_delivery') }}</span>
-                    <span>{{ __('buyer.col_valid') }}</span>
                     <span>{{ __('buyer.col_payment') }}</span>
                     <span>{{ __('buyer.col_sample') }}</span>
                     <span></span>
@@ -273,28 +273,31 @@ new #[Layout('layouts::buyer', ['current' => 'requests'])] class extends Compone
                                 </p>
                             </div>
                         </div>
-                        <div class="text-end">
-                            <x-buyer.money :amount="$quote->unit_price" class="font-bold text-brand-700" />
-                        </div>
-                        <div class="text-end">
-                            <x-buyer.money :amount="$quote->grandTotal()" class="font-semibold text-gray-900" />
+                        <div class="min-w-0 text-end">
+                            <x-buyer.money :amount="$quote->grandTotal()" class="font-bold text-gray-900" />
+                            <p class="text-[11px] whitespace-nowrap text-gray-500">
+                                {{ __('buyer.col_unit_price') }}: <x-buyer.money :amount="$quote->unit_price" class="font-semibold text-brand-700" />
+                            </p>
                             @if ($this->isLowest($quote))
                                 <p class="text-[10px] font-bold tracking-[0.4px] text-success-700 uppercase">{{ __('buyer.tag_lowest') }}</p>
                             @endif
                         </div>
-                        <div>
-                            <p class="tabular">{{ $quote->expected_delivery_date->translatedFormat('j M') }}</p>
+                        <div class="min-w-0">
+                            <p class="font-semibold whitespace-nowrap tabular">{{ $quote->expected_delivery_date->translatedFormat('j M') }}</p>
+                            <p class="text-[11px] whitespace-nowrap text-gray-500 tabular">
+                                {{ __('buyer.col_valid') }}: {{ trans_choice('buyer.days_count', $quote->validity_days, ['count' => $quote->validity_days]) }}
+                            </p>
                             @if ($this->isFastest($quote))
                                 <p class="text-[10px] font-bold tracking-[0.4px] text-brand-500 uppercase">{{ __('buyer.tag_fastest') }}</p>
                             @endif
                         </div>
-                        <span class="text-gray-700 tabular">{{ trans_choice('buyer.days_count', $quote->validity_days, ['count' => $quote->validity_days]) }}</span>
-                        <span class="line-clamp-2 text-xs text-gray-700">{{ $quote->payment_terms ?: '—' }}</span>
-                        <span class="line-clamp-2 text-xs text-gray-700">{{ $quote->sample_availability ?: '—' }}</span>
+                        <span class="line-clamp-2 min-w-0 text-xs text-gray-700" title="{{ $quote->payment_terms }}">{{ $quote->payment_terms ?: '—' }}</span>
+                        <span class="line-clamp-2 min-w-0 text-xs text-gray-700" title="{{ $quote->sample_availability }}">{{ $quote->sample_availability ?: '—' }}</span>
                         <div class="flex flex-wrap items-center justify-end gap-1">
                             @can('decide', $quote)
-                                <button type="button" wire:click="startSelect({{ $quote->id }})" class="btn btn-primary btn-sm">
-                                    {{ __('buyer.select') }}
+                                <button type="button" wire:click="startSelect({{ $quote->id }})" class="btn btn-primary btn-sm whitespace-nowrap">
+                                    <x-lucide name="message-square" :size="14" />
+                                    {{ __('rfq.select_and_chat') }}
                                 </button>
                                 <button type="button" wire:click="shortlist({{ $quote->id }})"
                                         title="{{ $quote->isShortlisted() ? __('rfq.shortlisted') : __('rfq.shortlist') }}"
