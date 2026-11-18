@@ -12,10 +12,16 @@ use Illuminate\Support\Str;
 /**
  * Local and test stand-in for Paymob. Checkout skips the provider and sends
  * the supplier straight back with a signed success, so the flow works end to
- * end without an account. It refuses to run in production.
+ * end without an account. It only ever runs in the local and testing
+ * environments, so a misconfigured server can never hand out free plans.
  */
 class FakePaymentGateway implements PaymentGateway
 {
+    public static function isAllowed(): bool
+    {
+        return app()->environment(['local', 'testing']);
+    }
+
     public function name(): string
     {
         return 'fake';
@@ -23,8 +29,8 @@ class FakePaymentGateway implements PaymentGateway
 
     public function createCheckout(Payment $payment): string
     {
-        if (app()->isProduction()) {
-            throw new PaymentFailedException('The fake payment gateway is disabled in production.');
+        if (! self::isAllowed()) {
+            throw new PaymentFailedException('The fake payment gateway only runs locally.');
         }
 
         return URL::signedRoute('supplier.subscription.payment-return', [
@@ -38,7 +44,7 @@ class FakePaymentGateway implements PaymentGateway
 
     public function verifyCallback(array $data): PaymentResult
     {
-        if (app()->isProduction() || ! request()->hasValidSignature()) {
+        if (! self::isAllowed() || ! request()->hasValidSignature()) {
             throw new InvalidPaymentSignatureException('Invalid fake gateway callback.');
         }
 

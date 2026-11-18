@@ -8,6 +8,7 @@ use App\Models\Plan;
 use App\Models\Subscription;
 use App\Models\User;
 use App\Services\Payment\PaymobGateway;
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Http\Client\Request as HttpRequest;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
@@ -249,4 +250,23 @@ it('expires checkouts that were abandoned', function (): void {
     $this->artisan('payments:expire-stale')->assertSuccessful();
 
     expect($this->payment->fresh()->status)->toBe(PaymentStatus::Expired);
+});
+
+it('never falls back to the fake gateway outside local and testing', function (): void {
+    $this->app->forgetInstance(PaymentGateway::class);
+    $this->app->detectEnvironment(fn (): string => 'production');
+    config(['services.paymob.secret_key' => null]);
+    Http::fake();
+    $this->withoutMiddleware(PreventRequestForgery::class);
+
+    expect(app(PaymentGateway::class))->toBeInstanceOf(PaymobGateway::class);
+
+    $this->actingAs($this->supplier)
+        ->from(route('supplier.subscription.checkout', $this->monthly))
+        ->post(route('supplier.subscription.subscribe', $this->monthly))
+        ->assertRedirect(route('supplier.subscription.checkout', $this->monthly))
+        ->assertSessionHas('status', __('subscription.payment_failed'));
+
+    Http::assertNothingSent();
+    expect(Subscription::count())->toBe(0);
 });

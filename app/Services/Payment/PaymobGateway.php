@@ -46,6 +46,12 @@ class PaymobGateway implements PaymentGateway
 
     public function createCheckout(Payment $payment): string
     {
+        if (! $this->isConfigured()) {
+            Log::error('Paymob is not configured: set PAYMOB_SECRET_KEY, PAYMOB_PUBLIC_KEY, PAYMOB_HMAC_SECRET and PAYMOB_INTEGRATION_IDS.');
+
+            throw new PaymentFailedException('Paymob is not configured.');
+        }
+
         $payment->loadMissing(['plan', 'supplier']);
 
         $amountCents = $payment->totalCents();
@@ -102,6 +108,10 @@ class PaymobGateway implements PaymentGateway
      */
     public function verifyCallback(array $data): PaymentResult
     {
+        if ($this->hmacSecret === '') {
+            throw new InvalidPaymentSignatureException('Paymob HMAC secret is not configured.');
+        }
+
         if (! array_key_exists('order.id', $data) && array_key_exists('order', $data)) {
             $data['order.id'] = $data['order'];
         }
@@ -146,6 +156,14 @@ class PaymobGateway implements PaymentGateway
             ->implode('');
 
         return hash_hmac('sha512', $concatenated, $this->hmacSecret);
+    }
+
+    private function isConfigured(): bool
+    {
+        return $this->secretKey !== ''
+            && $this->publicKey !== ''
+            && $this->hmacSecret !== ''
+            && $this->integrationIds !== [];
     }
 
     /**
