@@ -2,12 +2,10 @@
 
 namespace App\Actions\Subscription;
 
-use App\Contracts\PaymentGateway;
 use App\Enums\SubscriptionStatus;
 use App\Models\Invoice;
-use App\Models\Plan;
+use App\Models\Payment;
 use App\Models\Subscription;
-use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class SubscribeToPlan
@@ -17,18 +15,17 @@ class SubscribeToPlan
      */
     public const VAT_RATE = 0.14;
 
-    public function __construct(private PaymentGateway $gateway) {}
-
     /**
-     * Charges the supplier, starts the plan and issues an electronic invoice.
-     * A plan bought while one is still running extends from its end date
-     * rather than discarding the remaining days.
+     * Starts the plan a confirmed payment bought and issues an electronic
+     * invoice for exactly what was charged. A plan bought while one is still
+     * running extends from its end date rather than discarding the remaining days.
      */
-    public function handle(User $supplier, Plan $plan): Subscription
+    public function handle(Payment $payment, string $paymentReference): Subscription
     {
-        $reference = $this->gateway->charge($supplier, $plan);
+        return DB::transaction(function () use ($payment, $paymentReference): Subscription {
+            $supplier = $payment->supplier;
+            $plan = $payment->plan;
 
-        return DB::transaction(function () use ($supplier, $plan, $reference): Subscription {
             $current = $supplier->activeSubscription();
             $startsAt = $current?->ends_at ?? now();
 
@@ -42,29 +39,21 @@ class SubscribeToPlan
                 'ends_at' => $startsAt->copy()->addDays($plan->days + $trialDays),
                 'status' => SubscriptionStatus::Active,
                 'auto_renew' => false,
-                'amount_egp' => $plan->price_egp,
-                'payment_ref' => $reference,
+                'amount_egp' => $payment->amount_egp,
+                'payment_ref' => $paymentReference,
             ]);
 
-            $this->issueInvoice($subscription);
+            Invoice::create([
+                'subscription_id' => $subscription->id,
+                'supplier_id' => $supplier->id,
+                'number' => Invoice::nextNumber(),
+                'amount_egp' => $payment->amount_egp,
+                'vat_egp' => $payment->vat_egp,
+                'total_egp' => $payment->total_egp,
+                'issued_at' => now(),
+            ]);
 
             return $subscription;
         });
-    }
-
-    private function issueInvoice(Subscription $subscription): Invoice
-    {
-        $net = (float) $subscription->amount_egp;
-        $vat = round($net * self::VAT_RATE, 2);
-
-        return Invoice::create([
-            'subscription_id' => $subscription->id,
-            'supplier_id' => $subscription->supplier_id,
-            'number' => Invoice::nextNumber(),
-            'amount_egp' => $net,
-            'vat_egp' => $vat,
-            'total_egp' => $net + $vat,
-            'issued_at' => now(),
-        ]);
     }
 }

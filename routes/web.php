@@ -10,12 +10,15 @@ use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\PublicRfqController;
 use App\Http\Controllers\SplashController;
 use App\Http\Controllers\SupplierDocumentFileController;
+use App\Http\Controllers\Webhooks\PaymobWebhookController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', SplashController::class)->name('splash');
 Route::get('rfqs', PublicRfqController::class)->name('rfqs.index');
 Route::get('categories', CategoryController::class)->name('categories.index');
+
+Route::post('webhooks/paymob', PaymobWebhookController::class)->name('webhooks.paymob');
 
 Route::patch('locale/{locale}', [LocaleController::class, 'update'])->name('locale.update');
 

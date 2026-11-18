@@ -64,6 +64,12 @@ return [
         'expired' => 'منتهٍ',
         'cancelled' => 'ملغى',
     ],
+    'payment_status' => [
+        'pending' => 'قيد الانتظار',
+        'paid' => 'مدفوع',
+        'failed' => 'فشل',
+        'expired' => 'منتهي',
+    ],
     'message_type' => [
         'text' => 'رسالة',
         'file' => 'ملف',

@@ -64,6 +64,12 @@ return [
         'expired' => 'Expired',
         'cancelled' => 'Cancelled',
     ],
+    'payment_status' => [
+        'pending' => 'Pending',
+        'paid' => 'Paid',
+        'failed' => 'Failed',
+        'expired' => 'Expired',
+    ],
     'message_type' => [
         'text' => 'Message',
         'file' => 'File',

@@ -21,6 +21,10 @@ return Application::configure(basePath: dirname(__DIR__))
             EnsureUserIsActive::class,
         ]);
 
+        $middleware->validateCsrfTokens(except: [
+            'webhooks/paymob',
+        ]);
+
         $middleware->alias([
             'role' => EnsureUserHasRole::class,
             'subscribed' => EnsureSupplierSubscribed::class,

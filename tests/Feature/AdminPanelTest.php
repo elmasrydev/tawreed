@@ -7,6 +7,7 @@ use App\Enums\SupplierDocumentType;
 use App\Enums\UserRole;
 use App\Enums\UserStatus;
 use App\Enums\VerificationStatus;
+use App\Filament\Resources\Payments\Pages\ListPayments;
 use App\Filament\Resources\Reports\Pages\ListReports;
 use App\Filament\Resources\Subscriptions\Pages\ListSubscriptions;
 use App\Filament\Resources\SupplierProfiles\Pages\EditSupplierProfile;
@@ -15,6 +16,7 @@ use App\Filament\Resources\Users\Pages\ListUsers;
 use App\Filament\Widgets\MarketplaceStats;
 use App\Filament\Widgets\VerificationQueue;
 use App\Models\Invoice;
+use App\Models\Payment;
 use App\Models\Quote;
 use App\Models\Report;
 use App\Models\Rfq;
@@ -240,6 +242,16 @@ it('extends a subscription and issues an invoice', function (): void {
     expect($subscription->ends_at->greaterThan($endsBefore))->toBeTrue()
         ->and($subscription->ends_at->toDateString())->toBe($endsBefore->copy()->addDays(30)->toDateString())
         ->and($subscription->invoices()->count())->toBe(1);
+});
+
+it('lists payment attempts for the billing team', function (): void {
+    $paid = Payment::factory()->paid()->create();
+    $pending = Payment::factory()->create();
+
+    Livewire::actingAs($this->admin)
+        ->test(ListPayments::class)
+        ->assertOk()
+        ->assertCanSeeTableRecords([$paid, $pending]);
 });
 
 it('reports the marketplace headline numbers', function (): void {

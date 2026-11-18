@@ -32,6 +32,7 @@ Route::delete('account/portfolio/{portfolioItem}', [PortfolioController::class, 
 Route::get('subscription', [SubscriptionController::class, 'show'])->name('subscription');
 Route::get('subscription/plans/{plan}/checkout', [SubscriptionController::class, 'checkout'])->name('subscription.checkout');
 Route::post('subscription/plans/{plan}', [SubscriptionController::class, 'store'])->name('subscription.subscribe');
+Route::get('subscription/payment/return', [SubscriptionController::class, 'paymentReturn'])->name('subscription.payment-return');
 Route::patch('subscription/auto-renew', [SubscriptionController::class, 'toggleAutoRenew'])->name('subscription.auto-renew');
 Route::get('invoices/{invoice}', [SubscriptionController::class, 'invoice'])->name('invoices.show');
 

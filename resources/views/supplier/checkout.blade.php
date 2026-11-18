@@ -16,13 +16,13 @@
                 <h2 class="card-title">{{ __('subscription.payment_method') }}</h2>
 
                 <label class="flex cursor-pointer items-start gap-3 rounded-card border-2 border-brand-500 bg-brand-100 p-3.5">
-                    <input type="radio" name="payment_method" value="cash_on_delivery" checked class="mt-1 size-4 accent-brand-700">
+                    <input type="radio" name="payment_method" value="card" checked class="mt-1 size-4 accent-brand-700">
                     <span class="flex min-w-0 flex-col gap-1">
                         <span class="flex items-center gap-2 text-[15px] font-semibold text-gray-900">
-                            <x-lucide name="truck" :size="18" class="text-brand-500" />
-                            {{ __('subscription.cash_on_delivery') }}
+                            <x-lucide name="credit-card" :size="18" class="text-brand-500" />
+                            {{ __('subscription.card_payment') }}
                         </span>
-                        <span class="text-[13px] leading-relaxed text-gray-600">{{ __('subscription.cash_on_delivery_body') }}</span>
+                        <span class="text-[13px] leading-relaxed text-gray-600">{{ __('subscription.card_payment_body') }}</span>
                     </span>
                 </label>
             </div>

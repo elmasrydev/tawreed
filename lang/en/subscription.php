@@ -44,8 +44,9 @@ return [
     'back_to_plans' => 'Back to plans',
     'order_summary' => 'Order summary',
     'payment_method' => 'Payment method',
-    'cash_on_delivery' => 'Cash on delivery',
-    'cash_on_delivery_body' => 'Pay in cash when our representative visits you to collect the subscription fee.',
-    'confirm_order' => 'Confirm order',
-    'checkout_note' => 'Your electronic invoice is issued as soon as the order is confirmed.',
+    'card_payment' => 'Debit / credit card',
+    'card_payment_body' => 'Pay securely through Paymob. You will be taken to the payment page to enter your card details.',
+    'confirm_order' => 'Proceed to payment',
+    'checkout_note' => 'Your subscription starts and your electronic invoice is issued as soon as the payment is confirmed.',
+    'payment_pending' => 'Your payment is being processed. Your plan will activate as soon as it is confirmed.',
 ];

@@ -71,6 +71,11 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(Invoice::class, 'supplier_id');
     }
 
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class, 'supplier_id');
+    }
+
     public function otpCodes(): HasMany
     {
         return $this->hasMany(OtpCode::class);

@@ -2,10 +2,16 @@
 
 namespace App\Http\Controllers\Supplier;
 
+use App\Actions\Subscription\SettlePayment;
+use App\Actions\Subscription\StartSubscriptionCheckout;
 use App\Actions\Subscription\SubscribeToPlan;
+use App\Contracts\PaymentGateway;
+use App\Enums\PaymentStatus;
+use App\Exceptions\InvalidPaymentSignatureException;
 use App\Exceptions\PaymentFailedException;
 use App\Http\Controllers\Controller;
 use App\Models\Invoice;
+use App\Models\Payment;
 use App\Models\Plan;
 use App\Support\ShellState;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -33,7 +39,7 @@ class SubscriptionController extends Controller
     }
 
     /**
-     * Order summary for a plan before it is paid. Cash on delivery is the only payment method for now.
+     * Order summary for a plan before the supplier is sent to Paymob to pay by card.
      */
     public function checkout(Request $request, Plan $plan): View
     {
@@ -50,19 +56,47 @@ class SubscriptionController extends Controller
         ]);
     }
 
-    public function store(Request $request, Plan $plan, SubscribeToPlan $subscribeToPlan): RedirectResponse
+    /**
+     * Opens a hosted checkout for the plan and sends the supplier there.
+     */
+    public function store(Request $request, Plan $plan, StartSubscriptionCheckout $startCheckout): RedirectResponse
     {
         abort_unless($plan->is_active, 404);
 
         try {
-            $subscribeToPlan->handle($request->user(), $plan);
+            $checkoutUrl = $startCheckout->handle($request->user(), $plan);
         } catch (PaymentFailedException) {
             return back()->with('status', __('subscription.payment_failed'));
         }
 
-        return redirect()
-            ->route('supplier.subscription')
-            ->with('status', __('subscription.activated'));
+        return redirect()->away($checkoutUrl);
+    }
+
+    /**
+     * Where the gateway sends the supplier back after paying. The webhook is
+     * the source of truth, but a signed redirect is settled here too so the
+     * supplier sees their plan straight away if it arrives first.
+     */
+    public function paymentReturn(Request $request, PaymentGateway $gateway, SettlePayment $settlePayment): RedirectResponse
+    {
+        try {
+            $result = $gateway->verifyCallback($this->rawQuery($request));
+        } catch (InvalidPaymentSignatureException) {
+            return redirect()->route('supplier.subscription')->with('status', __('subscription.payment_failed'));
+        }
+
+        $payment = Payment::query()
+            ->where('reference', $result->reference)
+            ->where('supplier_id', $request->user()->id)
+            ->firstOrFail();
+
+        $payment = $settlePayment->handle($result) ?? $payment;
+
+        return match ($payment->status) {
+            PaymentStatus::Paid => redirect()->route('supplier.subscription')->with('status', __('subscription.activated')),
+            PaymentStatus::Pending => redirect()->route('supplier.subscription')->with('status', __('subscription.payment_pending')),
+            default => redirect()->route('supplier.subscription.checkout', $payment->plan_id)->with('status', __('subscription.payment_failed')),
+        };
     }
 
     public function toggleAutoRenew(Request $request): RedirectResponse
@@ -87,5 +121,27 @@ class SubscriptionController extends Controller
 
         return Pdf::loadView('supplier.invoice-pdf', ['invoice' => $invoice])
             ->download("{$invoice->number}.pdf");
+    }
+
+    /**
+     * Reads the query string without PHP's rewriting of dots in keys to
+     * underscores, since Paymob signs keys such as "source_data.pan".
+     *
+     * @return array<string, string>
+     */
+    private function rawQuery(Request $request): array
+    {
+        $fields = [];
+
+        foreach (explode('&', (string) $request->server('QUERY_STRING')) as $pair) {
+            if ($pair === '') {
+                continue;
+            }
+
+            [$key, $value] = array_pad(explode('=', $pair, 2), 2, '');
+            $fields[urldecode($key)] = urldecode($value);
+        }
+
+        return $fields;
     }
 }
