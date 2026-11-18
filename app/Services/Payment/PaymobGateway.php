@@ -47,7 +47,7 @@ class PaymobGateway implements PaymentGateway
     public function createCheckout(Payment $payment): string
     {
         if (! $this->isConfigured()) {
-            Log::error('Paymob is not configured: set PAYMOB_SECRET_KEY, PAYMOB_PUBLIC_KEY, PAYMOB_HMAC_SECRET and PAYMOB_INTEGRATION_IDS.');
+            Log::error('Paymob is not configured: set PAYMOB_API_SECRET_KEY, PAYMOB_API_PUBLIC_KEY, PAYMOB_API_HMAC and PAYMOB_INTEGRATION_IDS.');
 
             throw new PaymentFailedException('Paymob is not configured.');
         }

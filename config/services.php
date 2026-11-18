@@ -30,9 +30,9 @@ return [
 
     'paymob' => [
         'base_url' => env('PAYMOB_BASE_URL', 'https://accept.paymob.com'),
-        'secret_key' => env('PAYMOB_SECRET_KEY'),
-        'public_key' => env('PAYMOB_PUBLIC_KEY'),
-        'hmac_secret' => env('PAYMOB_HMAC_SECRET'),
+        'secret_key' => env('PAYMOB_API_SECRET_KEY'),
+        'public_key' => env('PAYMOB_API_PUBLIC_KEY'),
+        'hmac_secret' => env('PAYMOB_API_HMAC'),
         'integration_ids' => array_values(array_filter(array_map(
             'intval',
             explode(',', (string) env('PAYMOB_INTEGRATION_IDS', '')),
