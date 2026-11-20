@@ -8,6 +8,7 @@ use App\Models\BusinessType;
 use App\Models\Category;
 use App\Models\Governorate;
 use App\Models\User;
+use App\Services\OtpService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
@@ -243,6 +244,30 @@ it('sends an unverified account to the email verification screen after signing i
         ->assertRedirect(route('email.verify'));
 
     expect($user->fresh()->hasVerifiedEmail())->toBeFalse();
+});
+
+it('keeps an account that has not entered its email code out of its area', function (): void {
+    $this->actingAs(User::factory()->supplier()->unverified()->create())
+        ->get(route('supplier.dashboard'))
+        ->assertRedirect(route('email.verify'));
+
+    $this->actingAs(User::factory()->buyer()->unverified()->create())
+        ->get(route('buyer.home'))
+        ->assertRedirect(route('email.verify'));
+});
+
+it('keeps a supplier on the verification screen after a wrong code', function (): void {
+    $supplier = User::factory()->supplier()->unverified()->create();
+    $otp = app(OtpService::class)->issue($supplier);
+    $wrongCode = $otp->code === '000000' ? '111111' : '000000';
+
+    $this->actingAs($supplier)
+        ->from(route('email.verify'))
+        ->post(route('email.verify'), ['code' => $wrongCode])
+        ->assertRedirect(route('email.verify'))
+        ->assertSessionHasErrors('code');
+
+    $this->get(route('supplier.dashboard'))->assertRedirect(route('email.verify'));
 });
 
 it('keeps a buyer out of the supplier area and vice versa', function (): void {

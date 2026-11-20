@@ -48,12 +48,12 @@ Route::middleware('auth')->group(function (): void {
         ->name('supplier-documents.show');
 });
 
-Route::middleware(['auth', 'role:'.UserRole::Buyer->value])
+Route::middleware(['auth', 'verified', 'role:'.UserRole::Buyer->value])
     ->prefix('buyer')
     ->name('buyer.')
     ->group(base_path('routes/buyer.php'));
 
-Route::middleware(['auth', 'role:'.UserRole::Supplier->value])
+Route::middleware(['auth', 'verified', 'role:'.UserRole::Supplier->value])
     ->prefix('supplier')
     ->name('supplier.')
     ->group(base_path('routes/supplier.php'));
