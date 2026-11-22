@@ -59,11 +59,11 @@ class RfqPolicy
     /**
      * Verified suppliers with an active subscription may quote an open
      * request in their categories and coverage that they have not quoted
-     * before.
+     * before, and never one posted from their own buyer account.
      */
     public function quote(User $user, Rfq $rfq): bool
     {
-        if (! QuoteEligibility::canQuote($user)) {
+        if (! QuoteEligibility::canQuote($user) || $rfq->isPostedByLinkedAccountOf($user)) {
             return false;
         }
 

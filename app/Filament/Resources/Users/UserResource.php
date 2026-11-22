@@ -13,10 +13,10 @@ use App\Filament\Resources\Users\Pages\ListUsers;
 use App\Models\BusinessType;
 use App\Models\Governorate;
 use App\Models\User;
+use App\Rules\DiffersFromLinkedAccountPasswords;
 use App\Rules\EgyptianMobile;
-use App\Support\PhoneNumber;
+use App\Rules\UniqueContactForRole;
 use BackedEnum;
-use Closure;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
@@ -72,29 +72,27 @@ class UserResource extends Resource
                     ->email()
                     ->required()
                     ->maxLength(180)
-                    ->unique(ignoreRecord: true),
+                    ->rules(fn (Get $get, ?User $record): array => [
+                        new UniqueContactForRole('email', self::roleOf($get, $record), $record?->getKey()),
+                    ]),
                 TextInput::make('phone')
                     ->label(__('ui.phone'))
                     ->required()
                     ->tel()
-                    ->rules(fn (?User $record): array => [
+                    ->rules(fn (Get $get, ?User $record): array => [
                         new EgyptianMobile,
-                        function (string $attribute, mixed $value, Closure $fail) use ($record): void {
-                            $taken = User::withTrashed()
-                                ->where('phone', PhoneNumber::normalize((string) $value))
-                                ->when($record, fn ($query) => $query->whereKeyNot($record->getKey()))
-                                ->exists();
-
-                            if ($taken) {
-                                $fail(__('validation.unique', ['attribute' => __('ui.phone')]));
-                            }
-                        },
+                        new UniqueContactForRole('phone', self::roleOf($get, $record), $record?->getKey()),
                     ]),
                 TextInput::make('password')
                     ->label(__('ui.password'))
                     ->password()
                     ->revealable()
                     ->rule(Password::defaults())
+                    ->rule(fn (Get $get, ?User $record): DiffersFromLinkedAccountPasswords => new DiffersFromLinkedAccountPasswords(
+                        $get('email'),
+                        $get('phone'),
+                        $record?->getKey(),
+                    ))
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->dehydrated(fn (?string $state): bool => filled($state))
                     ->helperText(fn (string $operation): ?string => $operation === 'edit' ? __('admin.password_keep_hint') : null),
@@ -200,9 +198,19 @@ class UserResource extends Resource
                         ->orWhereHas('supplierProfile', fn ($q) => $q->where('commercial_reg_no', 'like', "%{$search}%")))
                     ->placeholder('—'),
                 TextColumn::make('role')
-                    ->label(__('ui.biz_type'))
+                    ->label(__('admin.role'))
                     ->badge()
                     ->formatStateUsing(fn (UserRole $state): string => $state->label()),
+                TextColumn::make('linked_account')
+                    ->label(__('admin.linked_account'))
+                    ->badge()
+                    ->color('gray')
+                    ->getStateUsing(fn (User $record): ?string => $record->isAdmin()
+                        ? null
+                        : $record->linkedAccounts()->map(fn (User $linked): string => $linked->role->label())->implode(', '))
+                    ->tooltip(__('admin.linked_account_hint'))
+                    ->placeholder('—')
+                    ->toggleable(),
                 TextColumn::make('status')
                     ->label(__('ui.account_status'))
                     ->badge()

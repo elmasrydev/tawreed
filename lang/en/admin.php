@@ -130,4 +130,7 @@ return [
     'rfq_published_mail_quantity' => 'Quantity',
     'rfq_published_mail_deadline' => 'Quote deadline',
     'rfq_published_mail_button' => 'Open requests in admin',
+
+    'linked_account' => 'Also registered as',
+    'linked_account_hint' => 'The same email or phone also has an account under this role.',
 ];

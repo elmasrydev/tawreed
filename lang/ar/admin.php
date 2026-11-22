@@ -130,4 +130,7 @@ return [
     'rfq_published_mail_quantity' => 'الكمية',
     'rfq_published_mail_deadline' => 'آخر موعد للعروض',
     'rfq_published_mail_button' => 'عرض الطلبات في لوحة التحكم',
+
+    'linked_account' => 'مسجّل أيضًا كـ',
+    'linked_account_hint' => 'نفس البريد أو الهاتف لديه أيضًا حساب بهذا الدور.',
 ];

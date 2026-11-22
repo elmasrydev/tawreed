@@ -29,6 +29,7 @@ class FeedController extends Controller
         $rfqs = Rfq::query()
             ->browsable()
             ->matchingSupplier($supplier->supplierProfile)
+            ->notPostedByLinkedAccountOf($supplier)
             ->with([...AnonymousRfq::RELATIONS, 'quotes' => $this->ownQuotesOnly($supplier)])
             ->when($request->integer('category'), fn ($query, int $id) => $query->where('category_id', $id))
             ->when($request->integer('governorate'), fn ($query, int $id) => $query->where('governorate_id', $id))
@@ -41,7 +42,7 @@ class FeedController extends Controller
             'rfqs' => $rfqs,
             'items' => $rfqs->map(fn (Rfq $rfq): AnonymousRfq => AnonymousRfq::make($rfq, $supplier)),
             'categories' => Category::query()->main()->get(),
-            'categoryCounts' => Rfq::query()->browsable()->matchingSupplier($supplier->supplierProfile)
+            'categoryCounts' => Rfq::query()->browsable()->matchingSupplier($supplier->supplierProfile)->notPostedByLinkedAccountOf($supplier)
                 ->selectRaw('category_id, count(*) as total')
                 ->groupBy('category_id')
                 ->pluck('total', 'category_id'),
@@ -110,6 +111,10 @@ class FeedController extends Controller
 
         if ($explanation = QuoteEligibility::explain($supplier)) {
             return $explanation;
+        }
+
+        if ($rfq->isPostedByLinkedAccountOf($supplier)) {
+            return ['message' => __('supplier.gate_own_request'), 'action' => __('supplier.browse_open_rfqs'), 'url' => route('supplier.feed')];
         }
 
         if (! $rfq->matchesSupplier($supplier->supplierProfile)) {

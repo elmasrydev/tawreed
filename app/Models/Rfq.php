@@ -252,6 +252,27 @@ class Rfq extends Model implements HasMedia
         return self::query()->whereKey($this->getKey())->matchingSupplier($profile)->exists();
     }
 
+    /**
+     * Hides requests the supplier posted themselves from a buyer account that
+     * shares their email or phone.
+     */
+    #[Scope]
+    protected function notPostedByLinkedAccountOf(Builder $query, User $supplier): void
+    {
+        $query->whereNotIn('buyer_id', $supplier->linkedAccounts()->modelKeys());
+    }
+
+    /**
+     * Whether the request was posted from the supplier's own buyer account,
+     * recognised by a shared email or phone.
+     */
+    public function isPostedByLinkedAccountOf(User $supplier): bool
+    {
+        return $this->buyer !== null
+            && $this->buyer_id !== $supplier->id
+            && $this->buyer->sharesContactWith($supplier);
+    }
+
     #[Scope]
     protected function forBuyer(Builder $query, User $buyer): void
     {

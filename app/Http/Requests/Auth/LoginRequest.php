@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Support\PhoneNumber;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -36,14 +37,13 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::validate($this->credentials())) {
+        $user = $this->matchingAccount();
+
+        if ($user === null) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages(['login' => __('auth.failed')]);
         }
-
-        /** @var User $user */
-        $user = Auth::getLastAttempted();
 
         RateLimiter::clear($this->throttleKey());
 
@@ -56,17 +56,20 @@ class LoginRequest extends FormRequest
     }
 
     /**
-     * @return array<string, mixed>
+     * A buyer and a supplier account may share an email or phone, each with
+     * its own password, so the password decides which account signs in.
      */
-    protected function credentials(): array
+    protected function matchingAccount(): ?User
     {
         $login = $this->string('login')->toString();
         $field = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
+        $password = $this->string('password')->toString();
 
-        return [
-            $field => $field === 'phone' ? PhoneNumber::normalize($login) : $login,
-            'password' => $this->string('password')->toString(),
-        ];
+        return User::query()
+            ->where($field, $field === 'phone' ? PhoneNumber::normalize($login) : $login)
+            ->orderBy('id')
+            ->get()
+            ->first(fn (User $user): bool => Hash::check($password, $user->password));
     }
 
     protected function ensureIsNotRateLimited(): void

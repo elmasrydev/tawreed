@@ -17,5 +17,5 @@ return [
     'failed' => 'These credentials do not match our records.',
     'password' => 'The provided password is incorrect.',
     'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
-
+    'password_matches_linked_account' => 'This password is already used by your other account with this email or phone. Choose a different password.',
 ];
