@@ -124,4 +124,10 @@ return [
     'upload_document' => 'Upload document',
     'file' => 'File',
     'document_uploaded' => 'Document uploaded',
+
+    'rfq_published_mail_subject' => 'New RFQ :reference: :title',
+    'rfq_published_mail_heading' => 'A new request was published',
+    'rfq_published_mail_quantity' => 'Quantity',
+    'rfq_published_mail_deadline' => 'Quote deadline',
+    'rfq_published_mail_button' => 'Open requests in admin',
 ];

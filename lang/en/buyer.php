@@ -136,6 +136,9 @@ return [
     'language_hint' => 'Interface language',
     'log_out_hint' => 'Sign out of TawreedHub on this device',
     'what_suppliers_see' => 'What suppliers see',
+    'edit_profile' => 'Edit profile',
+    'profile_saved' => 'Organisation details saved.',
+    'contact_locked_hint' => 'Used to sign in. Contact support to change it.',
 
     // Supplier profile
     'member_since' => 'Member since :year',

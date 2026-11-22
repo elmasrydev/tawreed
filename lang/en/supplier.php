@@ -96,6 +96,8 @@ return [
     'company_saved' => 'Company information saved.',
     'contact_locked_hint' => 'Used to sign in. Contact support to change it.',
     'locked_field_hint' => 'Verified by our team. Contact support to change it.',
+    'edit_coverage' => 'Edit coverage & payment',
+    'coverage_saved' => 'Coverage and payment details saved.',
     'verification_documents' => 'Verification documents',
     'reviewer_note' => 'Reviewer note: :note',
     'uploaded_on' => 'Uploaded :date',

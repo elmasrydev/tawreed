@@ -3,6 +3,7 @@
 use App\Http\Controllers\Supplier\AccountController;
 use App\Http\Controllers\Supplier\ChatController;
 use App\Http\Controllers\Supplier\CompanyProfileController;
+use App\Http\Controllers\Supplier\CoverageController;
 use App\Http\Controllers\Supplier\DashboardController;
 use App\Http\Controllers\Supplier\DocumentController;
 use App\Http\Controllers\Supplier\FeedController;
@@ -24,6 +25,7 @@ Route::livewire('rfqs/{rfq}/quote', 'supplier.submit-quote')->name('rfqs.quote')
 Route::get('quotes', [QuoteController::class, 'index'])->name('quotes.index');
 Route::get('account', AccountController::class)->name('account');
 Route::put('account/company', [CompanyProfileController::class, 'update'])->name('company.update');
+Route::put('account/coverage', [CoverageController::class, 'update'])->name('coverage.update');
 Route::post('account/documents', [DocumentController::class, 'store'])->name('documents.store');
 Route::post('account/portfolio', [PortfolioController::class, 'store'])->name('portfolio.store');
 Route::put('account/portfolio/{portfolioItem}', [PortfolioController::class, 'update'])->name('portfolio.update');

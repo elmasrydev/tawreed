@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\RegisteredBuyerController;
 use App\Http\Controllers\Auth\RegisteredSupplierController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\PublicRfqController;
 use App\Http\Controllers\SplashController;
@@ -17,6 +18,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', SplashController::class)->name('splash');
 Route::get('rfqs', PublicRfqController::class)->name('rfqs.index');
 Route::get('categories', CategoryController::class)->name('categories.index');
+Route::post('contact', [ContactController::class, 'store'])
+    ->middleware('throttle:5,10')
+    ->name('contact.store');
 
 Route::post('webhooks/paymob', PaymobWebhookController::class)->name('webhooks.paymob');
 

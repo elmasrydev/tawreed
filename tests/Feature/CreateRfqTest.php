@@ -3,6 +3,7 @@
 use App\Enums\RfqStatus;
 use App\Enums\SupplyType;
 use App\Events\RfqPublished;
+use App\Mail\RfqPublishedMail;
 use App\Models\Category;
 use App\Models\Governorate;
 use App\Models\Rfq;
@@ -10,6 +11,7 @@ use App\Models\Unit;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
@@ -70,6 +72,34 @@ it('publishes a request from the review step and lands on my requests', function
         ->and($rfq->published_at)->not->toBeNull();
 
     Event::assertDispatched(RfqPublished::class);
+});
+
+it('emails the admin a copy of every published request', function (): void {
+    Mail::fake();
+
+    completeWizard()->assertRedirect(route('buyer.rfqs.index'));
+
+    $rfq = Rfq::sole();
+
+    Mail::assertSent(RfqPublishedMail::class, fn (RfqPublishedMail $mail): bool => $mail->hasTo('samar.maher@tawreedhub.net')
+        && $mail->rfq->is($rfq));
+});
+
+it('shows the buyer contact details in the admin request email', function (): void {
+    $rfq = Rfq::factory()->for($this->buyer, 'buyer')->create();
+
+    (new RfqPublishedMail($rfq))
+        ->assertSeeInHtml($rfq->reference)
+        ->assertSeeInHtml($this->buyer->email)
+        ->assertSeeInHtml($this->buyer->buyerProfile->company_name);
+});
+
+it('still publishes the request when the admin email fails', function (): void {
+    Mail::shouldReceive('to')->andThrow(new RuntimeException('SMTP down'));
+
+    completeWizard()->assertRedirect(route('buyer.rfqs.index'));
+
+    expect(Rfq::sole()->status)->toBe(RfqStatus::Open);
 });
 
 it('numbers references sequentially within the year', function (): void {

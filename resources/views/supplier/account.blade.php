@@ -104,12 +104,85 @@
                             @endforeach
                         </dl>
                     </section>
+                @elseif ($tab === 'coverage' && $isEditingCoverage)
+                    @php
+                        $selectedGovernorates = array_map('strval', (array) old('governorate_ids', $profile->governorates->pluck('id')->all()));
+                        $selectedCategories = array_map('strval', (array) old('category_ids', $profile->categories->pluck('id')->all()));
+                    @endphp
+                    <section class="card p-5 sm:p-6">
+                        <h2 class="card-title mb-4">
+                            <x-lucide name="map-pin" :size="16" class="text-brand-500" />
+                            {{ __('supplier.edit_coverage') }}
+                        </h2>
+                        <form method="POST" action="{{ route('supplier.coverage.update') }}" class="flex flex-col gap-6">
+                            @csrf
+                            @method('PUT')
+
+                            <div x-data="{ count: {{ count($selectedGovernorates) }}, total: {{ $governorates->count() }},
+                                           sync() { this.count = this.$refs.governorates.querySelectorAll('input:checked').length },
+                                           setAll(checked) { this.$refs.governorates.querySelectorAll('input').forEach(input => input.checked = checked); this.sync() } }"
+                                 class="flex flex-col gap-2.5">
+                                <div class="flex items-center justify-between gap-3 text-[13px]">
+                                    <span class="font-semibold text-gray-700">
+                                        {{ __('ui.coverage_areas') }}
+                                        <span class="ms-1 font-normal text-gray-500 tabular" x-text="@js(__('auth_ui.selected_count', ['count' => '__COUNT__'])).replace('__COUNT__', count)">{{ __('auth_ui.selected_count', ['count' => count($selectedGovernorates)]) }}</span>
+                                    </span>
+                                    <button type="button" class="link cursor-pointer text-[13px]" @click="setAll(count < total)"
+                                            x-text="count < total ? @js(__('auth_ui.select_all')) : @js(__('auth_ui.clear_all'))">{{ __('auth_ui.select_all') }}</button>
+                                </div>
+                                <div x-ref="governorates" class="flex flex-wrap gap-2" @change="sync()">
+                                    @foreach ($governorates as $governorate)
+                                        <label class="pill-choice rounded-lg">
+                                            <input type="checkbox" name="governorate_ids[]" value="{{ $governorate->id }}" class="sr-only"
+                                                   @checked(in_array((string) $governorate->id, $selectedGovernorates, true))>
+                                            {{ $governorate->name }}
+                                        </label>
+                                    @endforeach
+                                </div>
+                                @error('governorate_ids') <p class="error-text">{{ $message }}</p> @enderror
+                                @error('governorate_ids.*') <p class="error-text">{{ $message }}</p> @enderror
+                            </div>
+
+                            <div x-data="{ count: {{ count($selectedCategories) }} }" class="flex flex-col gap-2.5">
+                                <div class="text-[13px]">
+                                    <span class="font-semibold text-gray-700">{{ __('ui.categories_supplied') }}</span>
+                                    <span class="font-normal text-gray-400">{{ __('ui.optional') }}</span>
+                                    <span class="ms-1 text-gray-500 tabular" x-text="@js(__('auth_ui.selected_count', ['count' => '__COUNT__'])).replace('__COUNT__', count)">{{ __('auth_ui.selected_count', ['count' => count($selectedCategories)]) }}</span>
+                                </div>
+                                <div class="flex flex-wrap gap-2" @change="count = $el.querySelectorAll('input:checked').length">
+                                    @foreach ($categories as $category)
+                                        <label class="pill-choice h-[34px] px-[13px]">
+                                            <input type="checkbox" name="category_ids[]" value="{{ $category->id }}" class="peer sr-only"
+                                                   @checked(in_array((string) $category->id, $selectedCategories, true))>
+                                            <x-lucide name="check" :size="12" :stroke="3" class="hidden peer-checked:block" />
+                                            {{ $category->parent ? $category->parent->name.' › ' : '' }}{{ $category->name }}
+                                        </label>
+                                    @endforeach
+                                </div>
+                                @error('category_ids') <p class="error-text">{{ $message }}</p> @enderror
+                                @error('category_ids.*') <p class="error-text">{{ $message }}</p> @enderror
+                            </div>
+
+                            <x-field name="payment_method" :label="__('ui.payment_method')" :value="$profile->payment_method" maxlength="120" placeholder="CIB" />
+
+                            <div class="flex flex-wrap justify-end gap-2">
+                                <a href="{{ route('supplier.account', ['tab' => 'coverage']) }}" class="btn btn-secondary">{{ __('ui.cancel') }}</a>
+                                <button type="submit" class="btn btn-primary">{{ __('ui.save') }}</button>
+                            </div>
+                        </form>
+                    </section>
                 @elseif ($tab === 'coverage')
                     <section class="card flex flex-col gap-3.5 p-5 sm:p-6">
-                        <h2 class="card-title">
-                            <x-lucide name="map-pin" :size="16" class="text-brand-500" />
-                            {{ __('ui.coverage_areas') }}
-                        </h2>
+                        <div class="flex flex-wrap items-center justify-between gap-3">
+                            <h2 class="card-title">
+                                <x-lucide name="map-pin" :size="16" class="text-brand-500" />
+                                {{ __('ui.coverage_areas') }}
+                            </h2>
+                            <a href="{{ route('supplier.account', ['tab' => 'coverage', 'edit' => 1]) }}" class="btn btn-secondary btn-sm">
+                                <x-lucide name="edit" :size="14" />
+                                {{ __('supplier.edit_coverage') }}
+                            </a>
+                        </div>
                         <div class="flex flex-wrap gap-1.5">
                             @forelse ($profile->governorates as $governorate)
                                 <span class="inline-flex h-7 items-center rounded-md bg-brand-100 px-2.5 text-[13px] font-medium text-brand-700">{{ $governorate->name }}</span>

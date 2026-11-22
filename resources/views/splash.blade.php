@@ -10,6 +10,7 @@
         '#suppliers' => __('landing.nav_suppliers'),
         '#pricing' => $plans->isNotEmpty() ? __('landing.nav_pricing') : null,
         '#faq' => __('landing.nav_faq'),
+        '#contact' => __('landing.nav_contact'),
     ]);
 
     $steps = [
@@ -398,6 +399,42 @@
                     <a href="{{ route('register.supplier') }}" class="btn h-[52px] rounded-card border-[1.5px] border-white/50 px-7 text-base text-white hover:bg-white/10 lg:min-w-[280px]">{{ __('landing.cta_supplier') }}</a>
                 </div>
             </div>
+        </section>
+        {{-- Contact us --}}
+        <section id="contact" class="{{ $container }} grid scroll-mt-20 items-start gap-8 pt-16 lg:grid-cols-[380px_minmax(0,1fr)] lg:gap-16 lg:pt-24">
+            <div class="flex flex-col gap-3.5">
+                <x-landing.section-heading :eyebrow="__('landing.contact_eyebrow')" :title="__('landing.contact_title')" align="start" size="md" />
+                <p class="text-[15px] leading-normal text-gray-500">{{ __('landing.contact_body') }}</p>
+            </div>
+
+            <form method="POST" action="{{ route('contact.store') }}" class="card grid gap-4 p-5 sm:grid-cols-2 sm:p-7" data-testid="contact-form">
+                @csrf
+
+                <div class="hidden" aria-hidden="true">
+                    <label for="website">Website</label>
+                    <input id="website" name="website" type="text" tabindex="-1" autocomplete="off">
+                </div>
+
+                <x-field name="name" id="contact_name" :label="__('landing.contact_name')" required maxlength="120" autocomplete="name" />
+                <x-field name="email" id="contact_email" type="email" :label="__('landing.contact_email')" required maxlength="180" autocomplete="email" dir="ltr" />
+                <div class="sm:col-span-2">
+                    <x-phone-input name="phone" :label="__('landing.contact_phone')" :required="false" autocomplete="tel-national" />
+                </div>
+                <div class="sm:col-span-2">
+                    <label for="contact_message" class="label">{{ __('landing.contact_message') }}</label>
+                    <textarea id="contact_message" name="message" rows="5" required minlength="10" maxlength="2000"
+                              placeholder="{{ __('landing.contact_message_placeholder') }}"
+                              @error('message') aria-invalid="true" @enderror
+                              @class(['input', 'input-error' => $errors->has('message')])>{{ old('message') }}</textarea>
+                    @error('message') <p class="error-text">{{ $message }}</p> @enderror
+                </div>
+                <div class="flex justify-end sm:col-span-2">
+                    <button type="submit" class="btn btn-primary h-11 px-6">
+                        <x-lucide name="send" :size="16" />
+                        {{ __('landing.contact_submit') }}
+                    </button>
+                </div>
+            </form>
         </section>
     </main>
 

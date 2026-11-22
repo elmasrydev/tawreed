@@ -115,4 +115,16 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Admin Inbox
+    |--------------------------------------------------------------------------
+    |
+    | The team inbox that receives landing page "Contact us" messages and a
+    | copy of every newly published RFQ.
+    |
+    */
+
+    'admin_address' => env('MAIL_ADMIN_ADDRESS', 'samar.maher@tawreedhub.net'),
+
 ];

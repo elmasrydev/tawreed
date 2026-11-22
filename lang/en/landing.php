@@ -125,4 +125,19 @@ return [
 
     'admin_category_image' => 'Image',
     'admin_category_image_hint' => 'Shown on the landing page for main categories. A wide 16:9 photo works best.',
+
+    'nav_contact' => 'Contact us',
+    'contact_eyebrow' => 'Contact us',
+    'contact_title' => 'Have a question? Talk to our team.',
+    'contact_body' => 'Send us a message and we will get back to you by email, usually within one working day.',
+    'contact_name' => 'Name',
+    'contact_email' => 'Email',
+    'contact_phone' => 'Phone',
+    'contact_message' => 'Message',
+    'contact_message_placeholder' => 'How can we help?',
+    'contact_submit' => 'Send message',
+    'contact_sent' => 'Thanks! Your message has been sent. We will get back to you soon.',
+    'contact_mail_subject' => 'New contact message from :name',
+    'contact_mail_heading' => 'New message from the TawreedHub contact form',
+    'contact_mail_reply_hint' => 'Reply to this email to answer the sender directly.',
 ];

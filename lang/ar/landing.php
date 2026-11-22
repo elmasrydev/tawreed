@@ -125,4 +125,19 @@ return [
 
     'admin_category_image' => 'الصورة',
     'admin_category_image_hint' => 'تظهر في الصفحة الرئيسية للفئات الرئيسية. الأفضل صورة عريضة بنسبة 16:9.',
+
+    'nav_contact' => 'تواصل معنا',
+    'contact_eyebrow' => 'تواصل معنا',
+    'contact_title' => 'لديك سؤال؟ تحدّث مع فريقنا.',
+    'contact_body' => 'أرسل لنا رسالتك وسنرد عليك عبر البريد الإلكتروني، عادةً خلال يوم عمل واحد.',
+    'contact_name' => 'الاسم',
+    'contact_email' => 'البريد الإلكتروني',
+    'contact_phone' => 'الهاتف',
+    'contact_message' => 'الرسالة',
+    'contact_message_placeholder' => 'كيف يمكننا مساعدتك؟',
+    'contact_submit' => 'إرسال الرسالة',
+    'contact_sent' => 'شكرًا! تم إرسال رسالتك وسنتواصل معك قريبًا.',
+    'contact_mail_subject' => 'رسالة تواصل جديدة من :name',
+    'contact_mail_heading' => 'رسالة جديدة من نموذج التواصل في توريد هاب',
+    'contact_mail_reply_hint' => 'رُدّ على هذا البريد للرد على المرسل مباشرةً.',
 ];

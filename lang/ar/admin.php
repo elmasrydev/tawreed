@@ -124,4 +124,10 @@ return [
     'upload_document' => 'رفع مستند',
     'file' => 'الملف',
     'document_uploaded' => 'تم رفع المستند',
+
+    'rfq_published_mail_subject' => 'طلب جديد :reference: :title',
+    'rfq_published_mail_heading' => 'تم نشر طلب جديد',
+    'rfq_published_mail_quantity' => 'الكمية',
+    'rfq_published_mail_deadline' => 'آخر موعد للعروض',
+    'rfq_published_mail_button' => 'عرض الطلبات في لوحة التحكم',
 ];

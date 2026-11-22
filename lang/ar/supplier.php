@@ -96,6 +96,8 @@ return [
     'company_saved' => 'تم حفظ بيانات الشركة.',
     'contact_locked_hint' => 'يُستخدم لتسجيل الدخول. تواصل مع الدعم لتغييره.',
     'locked_field_hint' => 'تم التحقق منه بواسطة فريقنا. تواصل مع الدعم لتغييره.',
+    'edit_coverage' => 'تعديل التغطية والدفع',
+    'coverage_saved' => 'تم حفظ بيانات التغطية والدفع.',
     'verification_documents' => 'مستندات التوثيق',
     'reviewer_note' => 'ملاحظة المراجع: :note',
     'uploaded_on' => 'رُفع في :date',

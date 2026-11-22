@@ -4,6 +4,7 @@ use App\Http\Controllers\Buyer\AccountController;
 use App\Http\Controllers\Buyer\ChatController;
 use App\Http\Controllers\Buyer\HomeController;
 use App\Http\Controllers\Buyer\OrderController;
+use App\Http\Controllers\Buyer\ProfileController;
 use App\Http\Controllers\Buyer\QuoteController;
 use App\Http\Controllers\Buyer\RfqController;
 use App\Http\Controllers\Buyer\SupplierProfileController;
@@ -26,6 +27,7 @@ Route::get('quotes', [QuoteController::class, 'index'])->name('quotes.index');
 Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
 Route::get('suppliers/{supplierProfile}', SupplierProfileController::class)->name('suppliers.show');
 Route::get('account', AccountController::class)->name('account');
+Route::put('account/profile', [ProfileController::class, 'update'])->name('profile.update');
 
 Route::get('chats', [ChatController::class, 'index'])->name('chats.index');
 Route::get('chats/{conversation}', [ChatController::class, 'show'])

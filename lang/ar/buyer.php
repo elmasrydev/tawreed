@@ -136,6 +136,9 @@ return [
     'language_hint' => 'لغة الواجهة',
     'log_out_hint' => 'تسجيل الخروج من توريد هاب على هذا الجهاز',
     'what_suppliers_see' => 'ما يراه المورّدون',
+    'edit_profile' => 'تعديل البيانات',
+    'profile_saved' => 'تم حفظ بيانات المؤسسة.',
+    'contact_locked_hint' => 'يُستخدم لتسجيل الدخول. تواصل مع الدعم لتغييره.',
 
     // Supplier profile
     'member_since' => 'عضو منذ :year',
