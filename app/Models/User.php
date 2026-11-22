@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -149,6 +150,30 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
+     * The person's account under the other role: a buyer and a supplier
+     * account may share an email or phone.
+     *
+     * @return Collection<int, User>
+     */
+    public function linkedAccounts(): Collection
+    {
+        return self::query()
+            ->linkedTo($this->email, $this->phone)
+            ->whereKeyNot($this->getKey())
+            ->get();
+    }
+
+    /**
+     * Whether both accounts belong to the same person, judged by a shared
+     * email or phone.
+     */
+    public function sharesContactWith(User $other): bool
+    {
+        return $this->email === $other->email
+            || ($this->phone !== null && $this->phone === $other->phone);
+    }
+
+    /**
      * Filament only admits admins to the panel.
      */
     public function canAccessPanel(Panel $panel): bool
@@ -166,5 +191,17 @@ class User extends Authenticatable implements FilamentUser
     protected function active(Builder $query): void
     {
         $query->where('status', UserStatus::Active);
+    }
+
+    /**
+     * Accounts with this email or phone, under any role.
+     */
+    #[Scope]
+    protected function linkedTo(Builder $query, ?string $email, ?string $phone): void
+    {
+        $query->where(fn (Builder $inner) => $inner
+            ->when($email, fn (Builder $q) => $q->orWhere('email', $email))
+            ->when($phone, fn (Builder $q) => $q->orWhere('phone', $phone))
+            ->when(! $email && ! $phone, fn (Builder $q) => $q->whereRaw('1 = 0')));
     }
 }

@@ -20,7 +20,7 @@ class DashboardController extends Controller
         $supplier = $request->user();
         $profile = $supplier->supplierProfile->load(['categories', 'governorates']);
 
-        $matching = Rfq::query()->browsable()->matchingSupplier($profile);
+        $matching = Rfq::query()->browsable()->matchingSupplier($profile)->notPostedByLinkedAccountOf($supplier);
 
         $newRfqs = (clone $matching)
             ->with([...AnonymousRfq::RELATIONS, 'quotes' => fn (HasMany $query) => $query->where('supplier_id', $supplier->id)])
